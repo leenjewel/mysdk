@@ -1,6 +1,6 @@
 #APP_STL := c++_static
 #NDK_TOOLCHAIN_VERSION=clang
-APP_PLATFORM:=android-10
+APP_PLATFORM:=android-8
 APP_STL := gnustl_static
 NDK_TOOLCHAIN_VERSION=4.9
 

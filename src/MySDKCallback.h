@@ -9,10 +9,10 @@ namespace mysdk
     class MySDKCallback
     {
         public:
-            virtual void onSuccess(std::string sdkName, std::string result);
-            virtual void onFail(std::string sdkName, std::string error, std::string result);
-            virtual void onCancel(std::string sdkName, std::string result);
-            virtual void onPayResult(bool isError, std::string error, std::string sdkName, std::string productID, std::string orderID, std::string result);
+            virtual void onSuccess(std::string sdkName, std::string methodName, std::string result);
+            virtual void onFail(std::string sdkName, std::string methodName, int errorCode, std::string errorMessage, std::string result);
+            virtual void onCancel(std::string sdkName, std::string methodName, std::string result);
+            virtual void onPayResult(bool isError, int errorCode, std::string errorMessage, std::string sdkName, std::string productID, std::string orderID, std::string result);
             virtual ~MySDKCallback();
 
             int handle = 0;

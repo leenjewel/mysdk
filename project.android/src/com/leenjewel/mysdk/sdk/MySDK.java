@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
 import com.leenjewel.mysdk.callback.MySDKCallback;
+import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
 
 import android.app.Activity;
 import android.app.Application;
@@ -61,15 +62,15 @@ public class MySDK {
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				logDebug(className+" not found.");
-				sdk = NullMySDK.getNullMySDK();
+				sdk = NullMySDK.getNullMySDK(sdkName);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				logDebug(className+" not found.");
-				sdk = NullMySDK.getNullMySDK();
+				sdk = NullMySDK.getNullMySDK(sdkName);
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				logDebug(className+" not found.");
-				sdk = NullMySDK.getNullMySDK();
+				sdk = NullMySDK.getNullMySDK(sdkName);
 			} finally {
 				_sdkMap.put(sdkName, sdk);
 			}
@@ -249,43 +250,48 @@ public class MySDK {
 		}
 	}
 	
-	static public int applySDKMethodAndReturnInt(String sdkName, String params) {
+	static public int applySDKMethodAndReturnInt(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMethodAndReturnInt(params);
+		return sdk.applySDKMethodAndReturnInt(methodName, params);
 	}
 	
-	static public float applySDKMethodAndReturnFloat(String sdkName, String params) {
+	static public long applySDKMehtodAndReturnLong(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMethodAndReturnFloat(params);
+		return sdk.applySDKMehtodAndReturnLong(methodName, params);
+	}
+	
+	static public float applySDKMethodAndReturnFloat(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
+		IMySDK sdk = getSDK(sdkName);
+		return sdk.applySDKMethodAndReturnFloat(methodName, params);
 	}
 
-	static public double applySDKMethodAndReturnDouble(String sdkName, String params) {
+	static public double applySDKMethodAndReturnDouble(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMethodAndReturnDouble(params);
+		return sdk.applySDKMethodAndReturnDouble(methodName, params);
 	}
 
-	static public boolean applySDKMethodAndReturnBoolean(String sdkName, String params) {
+	static public boolean applySDKMethodAndReturnBoolean(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMethodAndReturnBoolean(params);
+		return sdk.applySDKMethodAndReturnBoolean(methodName, params);
 	}
 
-	static public String applySDKMethodAndReturnString(String sdkName, String params) {
+	static public String applySDKMethodAndReturnString(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMethodAndReturnString(params);
+		return sdk.applySDKMethodAndReturnString(methodName, params);
 	}
 
-	static public void applySDKMethodWithCallback(final String sdkName, final String params, final IMySDKCallback callback) {
+	static public void applySDKMethodWithCallback(final String sdkName, final String methodName, final String params, final IMySDKCallback callback) {
 		final IMySDK sdk = getSDK(sdkName);
 		Activity activity = getActivity();
 		if (null == activity) {
-			sdk.applySDKMethodWithCallback(params, callback);
+			sdk.applySDKMethodWithCallback(methodName, params, callback);
 		} else {
 			activity.runOnUiThread(new Runnable(){
 
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					sdk.applySDKMethodWithCallback(params, callback);
+					sdk.applySDKMethodWithCallback(methodName, params, callback);
 				}});
 		}
 	}
@@ -309,8 +315,8 @@ public class MySDK {
 		}
 	}
 
-	static public void applySDKMethodWithCallback(String sdkName, String params, int handle) {
-		applySDKMethodWithCallback(sdkName, params, new MySDKCallback(handle));
+	static public void applySDKMethodWithCallback(String sdkName, String methodName, String params, int handle) {
+		applySDKMethodWithCallback(sdkName, methodName, params, new MySDKCallback(handle));
 	}
 	
 	static public void applySDKPay(String sdkName, String productID, String orderID, String params, int handle) {

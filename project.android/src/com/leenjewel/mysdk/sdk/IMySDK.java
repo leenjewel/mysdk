@@ -1,6 +1,7 @@
 package com.leenjewel.mysdk.sdk;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
+import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
 
 import android.app.Activity;
 import android.app.Application;
@@ -23,12 +24,13 @@ public interface IMySDK {
 	public void activityOnNewIntent(Activity activity, Intent intent);
 	public void activityOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
 
-	public int applySDKMethodAndReturnInt(String params);
-	public float applySDKMethodAndReturnFloat(String params);
-	public double applySDKMethodAndReturnDouble(String params);
-	public boolean applySDKMethodAndReturnBoolean(String params);
-	public String applySDKMethodAndReturnString(String params);
-	public void applySDKMethodWithCallback(String params, IMySDKCallback callback);
+	public int applySDKMethodAndReturnInt(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public long applySDKMehtodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public float applySDKMethodAndReturnFloat(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public double applySDKMethodAndReturnDouble(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public boolean applySDKMethodAndReturnBoolean(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public String applySDKMethodAndReturnString(String methodName, String params) throws MySDKDoNotImplementMethod;
 	
+	public void applySDKMethodWithCallback(String methodName, String params, IMySDKCallback callback);
 	public void applySDKPay(String productID, String orderID, String params, IMySDKCallback callback);
 }

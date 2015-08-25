@@ -1,5 +1,8 @@
 package com.leenjewel.mysdk.sdk;
 
+import com.leenjewel.mysdk.callback.IMySDKCallback;
+import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -7,17 +10,14 @@ import android.os.Bundle;
 
 public class NullMySDK implements IMySDK {
 	
-	static private NullMySDK _instance = null;
+	protected String _sdkName = null;
 	
-	private NullMySDK() {
-		
+	public NullMySDK(String sdkName) {
+		_sdkName = sdkName;
 	}
 	
-	static public NullMySDK getNullMySDK() {
-		if (null == _instance) {
-			_instance = new NullMySDK();
-		}
-		return _instance;
+	static public NullMySDK getNullMySDK(String sdkName) {
+		return new NullMySDK(sdkName);
 	}
 
 	@Override
@@ -81,8 +81,55 @@ public class NullMySDK implements IMySDK {
 	}
 
 	@Override
-	public void activityOnActivityResult(Activity activity, int requestCode,
-			int resultCode, Intent data) {
+	public void activityOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int applySDKMethodAndReturnInt(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethodAndReturnInt");
+	}
+
+	@Override
+	public long applySDKMehtodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMehtodAndReturnLong");
+	}
+
+	@Override
+	public float applySDKMethodAndReturnFloat(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethodAndReturnFloat");
+	}
+
+	@Override
+	public double applySDKMethodAndReturnDouble(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethodAndReturnDouble");
+	}
+
+	@Override
+	public boolean applySDKMethodAndReturnBoolean(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethodAndReturnBoolean");
+	}
+
+	@Override
+	public String applySDKMethodAndReturnString(String methodName, String params) throws MySDKDoNotImplementMethod {
+		// TODO Auto-generated method stub
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethodAndReturnString");
+	}
+
+	@Override
+	public void applySDKMethodWithCallback(String methodName, String params, IMySDKCallback callback) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applySDKPay(String productID, String orderID, String params, IMySDKCallback callback) {
 		// TODO Auto-generated method stub
 		
 	}
