@@ -2,7 +2,7 @@
 #define __MYSDK_CALLBACK_H_
 
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 
 namespace mysdk
 {
@@ -21,7 +21,7 @@ namespace mysdk
             static MySDKCallback* getCallback(int handle);
             static int addCallback(MySDKCallback *callback);
             static int cleanCallback(int handle);
-    }
-}
+    };
+};
 
 #endif

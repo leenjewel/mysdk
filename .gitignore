@@ -243,3 +243,5 @@ hs_err_pid*
 
 # Debug files
 *.dSYM/
+
+project.android/obj

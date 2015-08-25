@@ -1,7 +1,10 @@
+LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE        :=  mysdk
-LOCAL_C_INCLUDES    :=  $(LOCAL_PATH)/jni
-LOCAL_SRC_FILES := myLibrary.cpp
+LOCAL_C_INCLUDES    :=  $(LOCAL_PATH)/jni \
+	$(LOCAL_PATH)/../src
+LOCAL_SRC_FILES     :=  ../../src/MySDKCallback.cpp
 
 include $(BUILD_SHARED_LIBRARY)

@@ -9,6 +9,17 @@ using namespace mysdk;
 
 extern "C"
 {
+    std::string jstring2string(JNIEnv* env, jstring jstr)
+    {
+        if (!env || !jstr) {
+            return "";
+        }
+        const char* chars = env->GetStringUTFChars(jstr, NULL);
+        std::string ret(chars);
+        env->ReleaseStringUTFChars(jstr, chars);
+        return ret;
+    }
+
     int Java_com_leenjewel_mysdk_callback_MySDKCallback_onSuccessByHandle(JNIEnv* env, jobject thisz, jint handle, jstring jsdkName, jstring jresult)
     {
         if (!handle) {
@@ -18,8 +29,8 @@ extern "C"
         if (!callback) {
             return 0;
         }
-        std::string sdkName = jstring2string(jsdkName);
-        std::string result = jstring2string(jresult);
+        std::string sdkName = jstring2string(env, jsdkName);
+        std::string result = jstring2string(env, jresult);
         callback->onSuccess(sdkName, result);
         MySDKCallback::cleanCallback(handle);
     }
@@ -33,9 +44,9 @@ extern "C"
         if (!callback) {
             return 0;
         }
-        std::string error = jstring2string(jerror);
-        std::string sdkName = jstring2string(jsdkName);
-        std::string result = jstring2string(jresult);
+        std::string error = jstring2string(env, jerror);
+        std::string sdkName = jstring2string(env, jsdkName);
+        std::string result = jstring2string(env, jresult);
         callback->onFail(sdkName, error, result);
         MySDKCallback::cleanCallback(handle);
     }
@@ -49,8 +60,8 @@ extern "C"
         if (!callback) {
             return 0;
         }
-        std::string sdkName = jstring2string(jsdkName);
-        std::string result = jstring2string(jresult);
+        std::string sdkName = jstring2string(env, jsdkName);
+        std::string result = jstring2string(env, jresult);
         callback->onCancel(sdkName, result);
         MySDKCallback::cleanCallback(handle);
     }
@@ -64,26 +75,15 @@ extern "C"
         if (!callback) {
             return 0;
         }
-        std::string error = jstring2string(jerror);
-        std::string sdkName = jstring2string(jsdkName);
-        std::string productID = jstring2string(jproductID);
-        std::string orderID = jstring2string(jorderID);
-        std::string result = jstring2string(jresult);
+        std::string error = jstring2string(env, jerror);
+        std::string sdkName = jstring2string(env, jsdkName);
+        std::string productID = jstring2string(env, jproductID);
+        std::string orderID = jstring2string(env, jorderID);
+        std::string result = jstring2string(env, jresult);
         callback->onPayResult(isError, error, sdkName, productID, orderID, result);
         MySDKCallback::cleanCallback(handle);
         return 0;
     }
-}
-
-std::string jstring2string(JNIEnv* env, jstring jstr)
-{
-    if (!env || !jstr) {
-        return "";
-    }
-    const char* chars = env->GetStringUTFChars(jstr, NULL);
-    std::string ret(chars);
-    env->ReleaseStringUTFChars(jstr, chars);
-    return ret;
 }
 
 static MySDKCallback* _head = NULL;
@@ -132,6 +132,10 @@ int MySDKCallback::cleanCallback(int handle)
         callback = callback->next;
     }
     return 0;
+}
+
+MySDKCallback::~MySDKCallback()
+{
 }
 
 void MySDKCallback::onSuccess(std::string sdkName, std::string result)
