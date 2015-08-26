@@ -117,6 +117,7 @@ public class MySDK {
 	}
 	
 	static public void onCreate(Application application) {
+		System.loadLibrary("mysdk");
 		String[] sdkNameList = getSDKNameList(application);
 		if (null == sdkNameList) {
 			return;
