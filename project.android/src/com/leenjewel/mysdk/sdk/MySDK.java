@@ -116,6 +116,18 @@ public class MySDK {
 		return _sdkNameList;
 	}
 	
+	static public boolean hasSDK(String sdkName) {
+		if (null == sdkName || sdkName.length() == 0 || null == _sdkNameList) {
+			return false;
+		}
+		for (String skn : _sdkNameList) {
+			if (sdkName.equals(skn)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	static public void onCreate(Application application) {
 		System.loadLibrary("mysdk");
 		String[] sdkNameList = getSDKNameList(application);
