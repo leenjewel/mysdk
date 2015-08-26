@@ -3,9 +3,6 @@
 #include "MySDKJNIHelper.h"
 #include "MySDKCallback.h"
 
-#define LOG_TAG    "MySDK"
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
-
 using namespace mysdk;
 
 extern "C"
