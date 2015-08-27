@@ -2,6 +2,7 @@
 #define __MYSDK_H__
 
 #include <string>
+#include "MySDKLog.h"
 #include "MySDKListener.h"
 
 namespace mysdk
