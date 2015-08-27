@@ -82,8 +82,12 @@ public class MySDK {
 		if (null == _sdkNameList) {
 			try {
 				ApplicationInfo ai = application.getPackageManager().getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
+				if (null == ai) {
+					logWaring("meta-data not found.");
+					return null;
+				}
 				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
-				if (null == mySDKNameList) {
+				if (null == mySDKNameList || mySDKNameList.length() == 0) {
 					logWaring("MY_SDK_NAME_LIST is null.");
 					return null;
 				}
@@ -101,8 +105,12 @@ public class MySDK {
 		if (null == _sdkNameList) {
 			try {
 				ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
+				if (null == ai) {
+					logWaring("meta-data not found.");
+					return null;
+				}
 				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
-				if (null == mySDKNameList) {
+				if (null == mySDKNameList || mySDKNameList.length() == 0) {
 					logWaring("MY_SDK_NAME_LIST is null.");
 					return null;
 				}
@@ -131,7 +139,7 @@ public class MySDK {
 	static public void onCreate(Application application) {
 		System.loadLibrary("mysdk");
 		String[] sdkNameList = getSDKNameList(application);
-		if (null == sdkNameList) {
+		if (null == sdkNameList || 0 == sdkNameList.length) {
 			return;
 		}
 		for (String sdkName : sdkNameList) {
@@ -144,7 +152,7 @@ public class MySDK {
 	static public void onCreate(Activity activity, Bundle savedInstanceState) {
 		_activity = activity;
 		String[] sdkNameList = getSDKNameList(activity);
-		if (null == sdkNameList) {
+		if (null == sdkNameList || 0 == sdkNameList.length) {
 			return;
 		}
 		for (String sdkName : sdkNameList) {
