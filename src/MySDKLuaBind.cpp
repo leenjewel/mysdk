@@ -1,5 +1,6 @@
 #include "MySDKLuaBind.h"
 #include "MySDK.h"
+#include "MySDKLuaCallback.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -113,7 +114,8 @@ LUA_MYSDK_APPLY_END
 int mysdk_apply_sdk_method_with_callback(lua_State* L)
 {
 LUA_MYSDK_APPLY_BEGIN
-    LUA_FUNCTION callbackHandle = toluamysdk_ref_function(L, 5, 0);
+    LUA_FUNCTION luaFunctionHandle = toluamysdk_ref_function(L, 5, 0);
+    int callbackHandle = MySDKCallback::addCallback(new MySDKLuaCallback(L, luaFunctionHandle));
     MySDK::applySDKMethodWithCallback(sdkName, methodName, params, callbackHandle);
 LUA_MYSDK_APPLY_END
 }
@@ -135,7 +137,8 @@ int mysdk_apply_sdk_pay(lua_State* L)
         if (!ok) return 0;
         ok &= luaval_to_std_string(L,5,&params);
         if (!ok) return 0;
-        LUA_FUNCTION callbackHandle = toluamysdk_ref_function(L, 6, 0);
+        LUA_FUNCTION luaFunctionHandle = toluamysdk_ref_function(L, 6, 0);
+        int callbackHandle = MySDKCallback::addCallback(new MySDKLuaCallback(L, luaFunctionHandle));
         MySDK::applySDKPay(sdkName, productID, orderID, params, callbackHandle);
     }
     return 0;
@@ -144,6 +147,22 @@ int mysdk_apply_sdk_pay(lua_State* L)
 int register_mysdk_to_lua(lua_State* L)
 {
     toluamysdk_open(L);
+    luaL_Reg mysdkRegs[] = {
+        {"hasSDK", mysdk_has_sdk},
+        {"applySDKMethodAndReturnInt", mysdk_apply_sdk_method_and_return_int},
+        {"applySDKMethodAndReturnLong", mysdk_apply_sdk_method_and_return_long},
+        {"applySDKMethodAndReturnFloat", mysdk_apply_sdk_method_and_return_float},
+        {"applySDKMethodAndReturnDouble", mysdk_apply_sdk_method_and_return_double},
+        {"applySDKMethodAndReturnBoolean", mysdk_apply_sdk_method_and_return_boolean},
+        {"applySDKMethodAndReturnString", mysdk_apply_sdk_method_and_return_string},
+        {"applySDKMethodWithCallback", mysdk_apply_sdk_method_with_callback},
+        {"applySDKPay", mysdk_apply_sdk_pay},
+        {NULL,NULL}
+    };
+    luaL_newmetatable(L, "mysdk_MySDK");
+    luaL_register(L, NULL, mysdkRegs);
+    lua_setfield(L, -1, "__index");
+    lua_setglobal(L, "MySDK");
     return 0;
 }
 

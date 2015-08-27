@@ -55,6 +55,7 @@ LOCAL_SRC_FILES     := \
 	../../src/MySDKCallback.cpp \
 	../../src/MySDKJNIHelper.cpp \
 	../../src/MySDKLuaBind.cpp \
+	../../src/MySDKLuaCallback.cpp \
 	../../src/MySDK.cpp
 
 LOCAL_LDLIBS :=  -llog
