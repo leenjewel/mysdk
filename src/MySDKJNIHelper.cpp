@@ -8,11 +8,20 @@ static JavaVM* _jvm = nullptr;
 
 void MySDKJNIHelper::setJavaVM(JavaVM* jvm)
 {
+#if MYSDK_DEBUG
+    pthread_t thisthread = pthread_self();
+    LOGD("setJavaVM(%p) pthread_self() = %ld", jvm, thisthread);
+#endif
     _jvm = jvm;
+    pthread_key_create(&_g_key, nullptr);
 }
 
 JavaVM* MySDKJNIHelper::getJavaVM()
 {
+#if MYSDK_DEBUG
+    pthread_t thisthread = pthread_self();
+    LOGD("getJavaVM pthread_self() = %ld", thisthread);
+#endif
     return _jvm;
 }
 
@@ -38,7 +47,7 @@ JNIEnv* MySDKJNIHelper::cacheJNIEnv(JavaVM* jvm)
 JNIEnv* MySDKJNIHelper::getJNIEnv()
 {
     JNIEnv* env = (JNIEnv*)pthread_getspecific(_g_key);
-    if (!env) {
+    if (nullptr == env) {
         env = MySDKJNIHelper::cacheJNIEnv(_jvm);
     }
     return env;
@@ -46,11 +55,14 @@ JNIEnv* MySDKJNIHelper::getJNIEnv()
 
 std::string MySDKJNIHelper::jstring2string(jstring jstr)
 {
-    JNIEnv* env = MySDKJNIHelper::getJNIEnv();
-    if (!env || !jstr) {
+    if (nullptr == jstr) {
         return "";
     }
-    const char* chars = env->GetStringUTFChars(jstr, NULL);
+    JNIEnv* env = MySDKJNIHelper::getJNIEnv();
+    if (!env) {
+        return nullptr;
+    }
+    const char* chars = env->GetStringUTFChars(jstr, nullptr);
     std::string ret(chars);
     env->ReleaseStringUTFChars(jstr, chars);
     return ret;

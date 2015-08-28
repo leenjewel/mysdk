@@ -17,6 +17,19 @@
             android:layout_height="wrap_content"
             android:paddingTop="20dp" >
 
+            <RadioButton
+                android:id="@+id/radioButtonIsTestCPP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test C++ InterFace" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
             <Button
                 android:id="@+id/btnApplySDKMethodAndReturnInt"
                 android:layout_width="wrap_content"

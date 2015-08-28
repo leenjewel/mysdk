@@ -10,6 +10,7 @@ public class MySDKAPPExampleApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		MySDK.onCreate(this);
+		System.loadLibrary("mysdkappexample");
 	}
 	
 }
