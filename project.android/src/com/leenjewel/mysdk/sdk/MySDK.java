@@ -31,17 +31,17 @@ public class MySDK {
 		_isDebugMode = isDebugMode;
 	}
 	
-	static private void logWaring(String log) {
+	static public void logWaring(String log) {
 		android.util.Log.w(MY_SDK_TAG, log);
 	}
 	
-	static private void logDebug(String log) {
+	static public void logDebug(String log) {
 		if (_isDebugMode) {
 			android.util.Log.d(MY_SDK_TAG, log);
 		}
 	}
 	
-	static private void logError(String log) {
+	static public void logError(String log) {
 		android.util.Log.e(MY_SDK_TAG, log);
 	}
 	

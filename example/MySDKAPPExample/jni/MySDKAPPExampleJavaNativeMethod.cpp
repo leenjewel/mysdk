@@ -69,26 +69,34 @@ extern "C"
         std::string ret = MySDK::applySDKMethodAndReturnString(sdkName, methodName, params);
         return env->NewStringUTF(ret.c_str());
     }
+
+#define MYSDK_STR_CHAR(str) (str.empty()?"":str.c_str())
     
 	void Java_com_leenjewel_mysdk_appexample_MySDKAPPExampleActivity_applySDKMethodWithCallback(JNIEnv* env, jobject thisz, jstring jsdkName, jstring jmethodName, jstring jparams)
     {
         MySDKListener* listener = new MySDKListener();
         listener->onSuccess = [](std::string sdkName, std::string methodName, std::string result)->void
         {
-            char* ret;
-            int l = sprintf(ret, "[CPP Test]return: %s->%s(%s)\n", sdkName.c_str(), methodName.c_str(), result.c_str());
+            LOGD("MySDKAPPExampleJavaNativeMethod listener->onSuccess");
+            char ret[1024] = {0};
+            int l = sprintf(ret, "[CPP Test]return: %s->%s(%s)\n", MYSDK_STR_CHAR(sdkName), MYSDK_STR_CHAR(methodName), MYSDK_STR_CHAR(result));
+            LOGD("MySDKAPPExampleJavaNativeMethod setTestResult");
             setTestResult(std::string(ret));
         };
         listener->onFail = [](std::string sdkName, std::string methodName, int errorCode, std::string errorMessage, std::string result)->void
         {
-            char* ret;
-            int l = sprintf(ret, "[CPP Test]return: %s->%s(%d, %s, %s)\n", sdkName.c_str(), methodName.c_str(), errorCode, errorMessage.c_str(), result.c_str());
+            LOGD("MySDKAPPExampleJavaNativeMethod listener->onFail");
+            char ret[1024] = {0};
+            int l = sprintf(ret, "[CPP Test]return: %s->%s(%d, %s, %s)\n", MYSDK_STR_CHAR(sdkName), MYSDK_STR_CHAR(methodName), errorCode, MYSDK_STR_CHAR(errorMessage), MYSDK_STR_CHAR(result));
+            LOGD("MySDKAPPExampleJavaNativeMethod setTestResult");
             setTestResult(std::string(ret));
         };
         listener->onCancel = [](std::string sdkName, std::string methodName, std::string result)->void
         {
-            char* ret;
-            int l = sprintf(ret, "[CPP Test]return: %s->%s(%s)\n", sdkName.c_str(), methodName.c_str(), result.c_str());
+            LOGD("MySDKAPPExampleJavaNativeMethod listener->onCancel");
+            char ret[1024] = {0};
+            int l = sprintf(ret, "[CPP Test]return: %s->%s(%s)\n", MYSDK_STR_CHAR(sdkName), MYSDK_STR_CHAR(methodName), MYSDK_STR_CHAR(result));
+            LOGD("MySDKAPPExampleJavaNativeMethod setTestResult");
             setTestResult(std::string(ret));
         };
         std::string sdkName = MySDKJNIHelper::jstring2string(jsdkName);
@@ -102,7 +110,7 @@ extern "C"
         MySDKListener* listener = new MySDKListener();
         listener->onPayResult = [](bool isError, int errorCode, std::string errorMessage, std::string sdkName, std::string productID, std::string orderID, std::string result)->void
         {
-            char* ret;
+            char ret[1024] = {0};
             int l = sprintf(ret, "[CPP Test]return: %s->pay(%d, %d, %s, %s, %s, %s)", sdkName.c_str(),  isError, errorCode, errorMessage.c_str(), productID.c_str(), orderID.c_str(), result.c_str());
             setTestResult(std::string(ret));
         };
