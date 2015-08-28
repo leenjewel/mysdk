@@ -87,9 +87,9 @@ public class AexamplesdkMySDK implements IMySDK {
 	}
 
 	@Override
-	public long applySDKMehtodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod {
+	public long applySDKMethodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod {
 		// TODO Auto-generated method stub
-		android.util.Log.d("AexamplesdkMySDK", "applySDKMehtodAndReturnLong");
+		android.util.Log.d("AexamplesdkMySDK", "applySDKMethodAndReturnLong");
 		return (Long.valueOf(params) * 10);
 	}
 

@@ -276,9 +276,9 @@ public class MySDK {
 		return sdk.applySDKMethodAndReturnInt(methodName, params);
 	}
 	
-	static public long applySDKMehtodAndReturnLong(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
+	static public long applySDKMethodAndReturnLong(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMehtodAndReturnLong(methodName, params);
+		return sdk.applySDKMethodAndReturnLong(methodName, params);
 	}
 	
 	static public float applySDKMethodAndReturnFloat(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {

@@ -82,7 +82,7 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 				longRet = applySDKMethodAndReturnLong(SDK_NAME, "add", "20");
 				ret += "[CPP Test]return: "+String.valueOf(longRet)+"\n";
 			} else {
-				longRet = MySDK.applySDKMehtodAndReturnLong(SDK_NAME, "add", "2");
+				longRet = MySDK.applySDKMethodAndReturnLong(SDK_NAME, "add", "2");
 				ret += "return: "+String.valueOf(longRet)+"\n";
 			}
 			break;
