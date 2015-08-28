@@ -25,7 +25,7 @@ public interface IMySDK {
 	public void activityOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
 
 	public int applySDKMethodAndReturnInt(String methodName, String params) throws MySDKDoNotImplementMethod;
-	public long applySDKMehtodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod;
+	public long applySDKMethodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod;
 	public float applySDKMethodAndReturnFloat(String methodName, String params) throws MySDKDoNotImplementMethod;
 	public double applySDKMethodAndReturnDouble(String methodName, String params) throws MySDKDoNotImplementMethod;
 	public boolean applySDKMethodAndReturnBoolean(String methodName, String params) throws MySDKDoNotImplementMethod;

@@ -31,17 +31,17 @@ public class MySDK {
 		_isDebugMode = isDebugMode;
 	}
 	
-	static private void logWaring(String log) {
+	static public void logWaring(String log) {
 		android.util.Log.w(MY_SDK_TAG, log);
 	}
 	
-	static private void logDebug(String log) {
+	static public void logDebug(String log) {
 		if (_isDebugMode) {
 			android.util.Log.d(MY_SDK_TAG, log);
 		}
 	}
 	
-	static private void logError(String log) {
+	static public void logError(String log) {
 		android.util.Log.e(MY_SDK_TAG, log);
 	}
 	
@@ -82,8 +82,12 @@ public class MySDK {
 		if (null == _sdkNameList) {
 			try {
 				ApplicationInfo ai = application.getPackageManager().getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
+				if (null == ai) {
+					logWaring("meta-data not found.");
+					return null;
+				}
 				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
-				if (null == mySDKNameList) {
+				if (null == mySDKNameList || mySDKNameList.length() == 0) {
 					logWaring("MY_SDK_NAME_LIST is null.");
 					return null;
 				}
@@ -101,8 +105,12 @@ public class MySDK {
 		if (null == _sdkNameList) {
 			try {
 				ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
+				if (null == ai) {
+					logWaring("meta-data not found.");
+					return null;
+				}
 				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
-				if (null == mySDKNameList) {
+				if (null == mySDKNameList || mySDKNameList.length() == 0) {
 					logWaring("MY_SDK_NAME_LIST is null.");
 					return null;
 				}
@@ -131,7 +139,7 @@ public class MySDK {
 	static public void onCreate(Application application) {
 		System.loadLibrary("mysdk");
 		String[] sdkNameList = getSDKNameList(application);
-		if (null == sdkNameList) {
+		if (null == sdkNameList || 0 == sdkNameList.length) {
 			return;
 		}
 		for (String sdkName : sdkNameList) {
@@ -144,7 +152,7 @@ public class MySDK {
 	static public void onCreate(Activity activity, Bundle savedInstanceState) {
 		_activity = activity;
 		String[] sdkNameList = getSDKNameList(activity);
-		if (null == sdkNameList) {
+		if (null == sdkNameList || 0 == sdkNameList.length) {
 			return;
 		}
 		for (String sdkName : sdkNameList) {
@@ -268,9 +276,9 @@ public class MySDK {
 		return sdk.applySDKMethodAndReturnInt(methodName, params);
 	}
 	
-	static public long applySDKMehtodAndReturnLong(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
+	static public long applySDKMethodAndReturnLong(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {
 		IMySDK sdk = getSDK(sdkName);
-		return sdk.applySDKMehtodAndReturnLong(methodName, params);
+		return sdk.applySDKMethodAndReturnLong(methodName, params);
 	}
 	
 	static public float applySDKMethodAndReturnFloat(String sdkName, String methodName, String params) throws MySDKDoNotImplementMethod {

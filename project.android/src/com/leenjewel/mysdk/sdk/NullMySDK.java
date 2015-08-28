@@ -93,9 +93,9 @@ public class NullMySDK implements IMySDK {
 	}
 
 	@Override
-	public long applySDKMehtodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod {
+	public long applySDKMethodAndReturnLong(String methodName, String params) throws MySDKDoNotImplementMethod {
 		// TODO Auto-generated method stub
-		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMehtodAndReturnLong");
+		throw new MySDKDoNotImplementMethod(_sdkName, "applySDKMethßodAndReturnLong");
 	}
 
 	@Override

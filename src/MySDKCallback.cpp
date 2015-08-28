@@ -1,4 +1,5 @@
 #include "MySDKCallback.h"
+#include "MySDKLog.h"
 
 using namespace mysdk;
 
@@ -62,31 +63,31 @@ MySDKCallback::~MySDKCallback()
     }
 }
 
+#define MYSDK_CALL_LISTENER(method,...) \
+    if (_listener && _listener->method) {\
+        LOGD("MySDKCallback call listener %s", #method);\
+        _listener->method(__VA_ARGS__);\
+    } else {\
+        LOGD("MySDKCallback listener method %s is null", #method);\
+    }
+
 void MySDKCallback::onSuccess(std::string sdkName, std::string methodName, std::string result)
 {
-    if (_listener && _listener->onSuccess) {
-        _listener->onSuccess(sdkName, methodName, result);
-    }
+    MYSDK_CALL_LISTENER(onSuccess, sdkName, methodName, result)
 }
 
 void MySDKCallback::onFail(std::string sdkName, std::string methodName, int errorCode, std::string errorMessage, std::string result)
 {
-    if (_listener && _listener->onFail) {
-        _listener->onFail(sdkName, methodName, errorCode, errorMessage, result);
-    }
+    MYSDK_CALL_LISTENER(onFail, sdkName, methodName, errorCode, errorMessage, result)
 }
 
 void MySDKCallback::onCancel(std::string sdkName, std::string methodName, std::string result)
 {
-    if (_listener && _listener->onCancel) {
-        _listener->onCancel(sdkName, methodName, result);
-    }
+    MYSDK_CALL_LISTENER(onCancel, sdkName, methodName, result)
 }
 
 void MySDKCallback::onPayResult(bool isError, int errorCode, std::string errorMessage, std::string sdkName, std::string productID, std::string orderID, std::string result)
 {
-    if (_listener && _listener->onPayResult) {
-        _listener->onPayResult(isError, errorCode, errorMessage, sdkName, productID, orderID, result);
-    }
+    MYSDK_CALL_LISTENER(onPayResult, isError, errorCode, errorMessage, sdkName, productID, orderID, result)
 }
 

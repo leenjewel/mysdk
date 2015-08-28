@@ -17,6 +17,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onSuccess : " + String.valueOf(_handle));
 			onSuccessByHandle(_handle, sdkName, methodName, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -24,6 +25,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onSuccess : " + String.valueOf(_handle));
 					onSuccessByHandle(_handle, sdkName, methodName, result);
 				}});
 		}
@@ -34,6 +36,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onFail : " + String.valueOf(_handle));
 			onFailByHandle(_handle, sdkName, methodName, errorCode, errorMessage, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -41,6 +44,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onFail : " + String.valueOf(_handle));
 					onFailByHandle(_handle, sdkName, methodName, errorCode, errorMessage, result);
 				}});
 		}
@@ -51,6 +55,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onCancel : " + String.valueOf(_handle));
 			onCancelByHandle(_handle, sdkName, methodName, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -58,6 +63,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onCancel : " + String.valueOf(_handle));
 					onCancelByHandle(_handle, sdkName, methodName, result);
 				}});
 		}
@@ -69,6 +75,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onPayResult : " + String.valueOf(_handle));
 			onPayResultByHandle(_handle, isError, errorCode, errorMessage, sdkName, productID, orderID, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -76,6 +83,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onPayResult : " + String.valueOf(_handle));
 					onPayResultByHandle(_handle, isError, errorCode, errorMessage, sdkName, productID, orderID, result);
 				}});
 		}

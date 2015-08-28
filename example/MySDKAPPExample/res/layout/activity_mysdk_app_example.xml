@@ -1,0 +1,121 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
+            <RadioButton
+                android:id="@+id/radioButtonIsTestCPP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test C++ InterFace" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnInt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnInt" />
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnLong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnLong" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnFloat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnFloat" />
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnDouble"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnDouble" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnBoolean"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnBoolean" />
+
+            <Button
+                android:id="@+id/btnApplySDKMethodAndReturnString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="returnString" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp" >
+
+            <Button
+                android:id="@+id/btnApplySDKMethodWithCallback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="withCallback" />
+
+            <Button
+                android:id="@+id/btnApplySDKPay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="applySDKPay" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp" >
+
+            <TextView
+                android:id="@+id/textViewResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Result:"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
