@@ -2,10 +2,7 @@
 #define __MYSDK_LUA_CALLBACK_H__
 
 #include "MySDKCallback.h"
-extern "C"
-{
-#include "lua.h"
-}
+#include "MySDKLuaBind.h"
 
 namespace mysdk
 {
