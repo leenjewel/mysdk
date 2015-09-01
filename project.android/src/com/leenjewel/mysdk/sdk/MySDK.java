@@ -1,5 +1,8 @@
 package com.leenjewel.mysdk.sdk;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
@@ -8,15 +11,18 @@ import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 
 public class MySDK {
 	
 	final static public String MY_SDK_TAG = "MySDK";
+	final static private String MY_SDK_CONFIG = "mysdk.conf";
 	
 	static private boolean _isDebugMode = false;
 	static private HashMap<String, IMySDK> _sdkMap = new HashMap<String, IMySDK>();
@@ -78,46 +84,29 @@ public class MySDK {
 		return sdk;
 	}
 	
-	static private String[] getSDKNameList(Application application) {
+	static private String[] getSDKNameList(Context context) {
 		if (null == _sdkNameList) {
+			AssetManager assetMgr = context.getAssets();
 			try {
-				ApplicationInfo ai = application.getPackageManager().getApplicationInfo(application.getPackageName(), PackageManager.GET_META_DATA);
-				if (null == ai) {
-					logWaring("meta-data not found.");
-					return null;
+				InputStream stream = assetMgr.open(MY_SDK_CONFIG);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				int i = -1;
+				while ((i = stream.read()) != -1) {
+					baos.write(i);
 				}
-				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
+				String mySDKNameList = baos.toString();
+				stream.close();
+				baos.close();
+				assetMgr.close();
+				
 				if (null == mySDKNameList || mySDKNameList.length() == 0) {
 					logWaring("MY_SDK_NAME_LIST is null.");
 					return null;
 				}
 				_sdkNameList = mySDKNameList.split(",");
-			} catch (NameNotFoundException e) {
+			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				logWaring("MY_SDK_NAME_LIST is null.");
-				return null;
-			}
-		}
-		return _sdkNameList;
-	}
-	
-	static private String[] getSDKNameList(Activity activity) {
-		if (null == _sdkNameList) {
-			try {
-				ApplicationInfo ai = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
-				if (null == ai) {
-					logWaring("meta-data not found.");
-					return null;
-				}
-				String mySDKNameList = ai.metaData.getString("MY_SDK_NAME_LIST");
-				if (null == mySDKNameList || mySDKNameList.length() == 0) {
-					logWaring("MY_SDK_NAME_LIST is null.");
-					return null;
-				}
-				_sdkNameList = mySDKNameList.split(",");
-			} catch (NameNotFoundException e) {
-				// TODO Auto-generated catch block
-				logWaring("MY_SDK_NAME_LIST is null.");
+				e1.printStackTrace();
 				return null;
 			}
 		}
