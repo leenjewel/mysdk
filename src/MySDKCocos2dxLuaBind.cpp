@@ -18,6 +18,7 @@ int mysdk_has_sdk(lua_State* L)
         }
         bool ret = MySDK::hasSDK(sdkName);
         tolua_pushboolean(L, ret);
+        return 1;
     }
     return 0;
 }
@@ -62,6 +63,7 @@ int mysdk_apply_sdk_method_and_return_int(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnInt)
         int ret = MySDK::applySDKMethodAndReturnInt(sdkName, methodName, params);
         tolua_pushnumber(L, (lua_Number)ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -70,6 +72,7 @@ int mysdk_apply_sdk_method_and_return_long(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnLong)
         long ret = MySDK::applySDKMethodAndReturnLong(sdkName, methodName, params);
         tolua_pushnumber(L, (lua_Number)ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -78,6 +81,7 @@ int mysdk_apply_sdk_method_and_return_float(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnFloat)
         float ret = MySDK::applySDKMethodAndReturnFloat(sdkName, methodName, params);
         tolua_pushnumber(L, (lua_Number)ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -86,6 +90,7 @@ int mysdk_apply_sdk_method_and_return_double(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnDouble)
         double ret = MySDK::applySDKMethodAndReturnDouble(sdkName, methodName, params);
         tolua_pushnumber(L, (lua_Number)ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -94,6 +99,7 @@ int mysdk_apply_sdk_method_and_return_boolean(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnBoolean)
         bool ret = MySDK::applySDKMethodAndReturnBoolean(sdkName, methodName, params);
         tolua_pushboolean(L, ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -102,6 +108,7 @@ int mysdk_apply_sdk_method_and_return_string(lua_State* L)
 LUA_MYSDK_APPLY_BEGIN(applySDKMethodAndReturnString)
         std::string ret = MySDK::applySDKMethodAndReturnString(sdkName, methodName, params);
         tolua_pushcppstring(L, ret);
+        return 1;
 LUA_MYSDK_APPLY_END
 }
 
@@ -143,7 +150,7 @@ int mysdk_apply_sdk_pay(lua_State* L)
             LOGW("MySDKCocos2dxLuaBind applySDKPay params error from luaval.");
             return 0;
         }
-        LUA_FUNCTION luaFunctionHandle = toluafix_ref_function(L, 6, 0);
+        LUA_FUNCTION luaFunctionHandle = toluafix_ref_function(L, 5, 0);
         int callbackHandle = MySDKCallback::addCallback(new MySDKLuaCallback(L, luaFunctionHandle));
         MySDK::applySDKPay(sdkName, productID, orderID, params, callbackHandle);
     }
