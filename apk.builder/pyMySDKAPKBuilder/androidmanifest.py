@@ -4,8 +4,16 @@ from xmlutil import *
 class AndroidManifest :
 
     def __init__(self, android_manifest_xml) :
-        self.manifest_root = XMLUtil.parseXML(android_manifest_xml)
+        self.manifest_root = XMLUtil.parse_xml(android_manifest_xml)
         self.application_root = self.manifest_root.find("application")
+
+
+    def get_manifest_element(self) :
+        return self.manifest_root
+
+
+    def get_application_element(self) :
+        return self.application_root
 
 
     def get_package_name(self) :
@@ -46,5 +54,24 @@ class AndroidManifest :
             self.application_root.insert(0, meta_data)
         XMLUtil.set_element_attr(meta_data, "value", value)
         return meta_data
+
+
+    def save(self, save_path) :
+        fp = open(save_path, "w")
+        fp.write(XMLUtil.pretty_xml(self.manifest_root))
+        fp.close()
+
+
+    def merge(self, other_manifest) :
+        other_manifest_root = XMLUtil.parse_xml(other_manifest)
+        for child_element in other_manifest_root :
+            if child_element.tag == "uses-permission" :
+                self.add_uses_permission(XMLUtil.get_element_attr(child_element, "name"))
+            elif child_element.tag == "application" :
+                for application_child_element in child_element :
+                    self.application_root.append(application_child_element)
+            else :
+                self.manifest_root.append(child_element)
+
 
 

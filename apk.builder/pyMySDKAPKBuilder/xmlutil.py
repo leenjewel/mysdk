@@ -22,7 +22,7 @@ class XMLUtil:
 
     # elemnt为传进来的Elment类，参数indent用于缩进，newline用于换行    
     @staticmethod
-    def prettyXML(element, indent = "    ", newline = "\n", level = 0):
+    def pretty_xml(element, indent = "    ", newline = "\n", level = 0):
         if element:  # 判断element是否有子元素    
             if element.text == None or element.text.isspace(): # 如果element的text没有内容    
                 element.text = newline + indent * (level + 1)
@@ -34,12 +34,14 @@ class XMLUtil:
                 subelement.tail = newline + indent * (level + 1)
             else:  # 如果是list的最后一个元素， 说明下一行是母元素的结束，缩进应该少一个    
                 subelement.tail = newline + indent * level
-            XMLUtil.prettyXML(subelement, indent, newline, level = level + 1) # 对子元素进行递归操作
+            XMLUtil.pretty_xml(subelement, indent, newline, level = level + 1) # 对子元素进行递归操作
         return ET.tostring(element, 'utf-8') #要转化的xml文件
 
 
     @staticmethod
-    def parseXML(a_xml) :
+    def parse_xml(a_xml) :
+        if isinstance(a_xml, ET.ElementTree) :
+            return a_xml
         if os.path.isfile(a_xml) :
             return ET.parse(a_xml).getroot()
         else :
@@ -47,9 +49,9 @@ class XMLUtil:
 
 
     @staticmethod
-    def mergeXML(a_xml, other_xml) :
-        a_xml_root = XMLUtil.parseXML(a_xml)
-        other_xml_root = XMLUtil.parseXML(other_xml)
+    def merge_xml(a_xml, other_xml) :
+        a_xml_root = XMLUtil.parse_xml(a_xml)
+        other_xml_root = XMLUtil.parse_xml(other_xml)
         for child_element in other_xml_root :
             a_xml_root.append(child_element)
         return a_xml_root
@@ -67,7 +69,15 @@ class XMLUtil:
         else :
             return element.find(condition)
 
- 
+
+    @staticmethod
+    def get_element_attr(element, name, with_namespace = True) :
+        if with_namespace :
+            return element.get(android_namespace_tag + name)
+        else :
+            return element.get(name)
+
+
     @staticmethod
     def set_element_attr(element, name, value, with_namespace = True) :
         if with_namespace :
