@@ -26,7 +26,7 @@ class AndroidManifest :
 
     def has_uses_permission(self, permission, tag = "uses-permission") :
         condition = "%s[@android:name='%s']"  %(tag, permission)
-        uses_permission = XMLUtil.find_element(self.manifest, condition)
+        uses_permission = XMLUtil.find_element(self.manifest_root, condition)
         if None == uses_permission :
             return False
         return True
@@ -36,8 +36,8 @@ class AndroidManifest :
         uses_permission = None
         if not self.has_uses_permission(permission, tag) :
             uses_permission = XMLUtil.new_element(tag)
-            XMLUtil.set_element_attr(uses_permission, name, permission)
-            self.manifest.insert(0, uses_permission)
+            XMLUtil.set_element_attr(uses_permission, "name", permission)
+            self.manifest_root.insert(0, uses_permission)
         return uses_permission
 
 

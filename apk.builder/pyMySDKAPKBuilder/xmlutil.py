@@ -63,6 +63,12 @@ class XMLUtil:
 
 
     @staticmethod
+    def new_comment(comment) :
+        return ET.Comment(comment)
+
+
+
+    @staticmethod
     def find_element(element, condition, with_namespace = True) :
         if with_namespace :
             return element.find(condition, android_namespace_dct)
