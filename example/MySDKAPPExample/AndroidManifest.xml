@@ -24,8 +24,6 @@
             </intent-filter>
         </activity>
         
-        <meta-data android:name="MY_SDK_NAME_LIST" android:value="aexamplesdk"/>
-        
     </application>
 
 </manifest>

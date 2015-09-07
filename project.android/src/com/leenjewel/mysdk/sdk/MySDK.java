@@ -1,9 +1,13 @@
 package com.leenjewel.mysdk.sdk;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
 import com.leenjewel.mysdk.callback.MySDKCallback;
@@ -13,9 +17,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 
@@ -23,11 +24,15 @@ public class MySDK {
 	
 	final static public String MY_SDK_TAG = "MySDK";
 	final static private String MY_SDK_CONFIG = "mysdk.conf";
+	final static private String MYSDK_CONF_SDK_LIST = "sdk_list";
+	final static private String MYSDK_CONF_SDK_CONFIG = "sdk_config";
+	final static private String MYSDK_CONF_SDK_CLASS_PATH = "class_path";
 	
 	static private boolean _isDebugMode = false;
 	static private HashMap<String, IMySDK> _sdkMap = new HashMap<String, IMySDK>();
 	static private String[] _sdkNameList = null;
 	static private Activity _activity = null;
+	static private JSONObject _sdkConfig = null;
 	
 	static public Activity getActivity() {
 		return _activity;
@@ -54,12 +59,25 @@ public class MySDK {
 	static public IMySDK getSDK(String sdkName) {
 		IMySDK sdk = _sdkMap.get(sdkName);
 		if (null == sdk) {
-			String sn = sdkName.toLowerCase();
-			StringBuilder sb = new StringBuilder(); 
-	        sb.append(Character.toUpperCase(sn.charAt(0))); 
-	        sb.append(sn.substring(1)); 
-	        String classPrefix = sb.toString();
-	        String className = MySDK.class.getPackage().getName()+"."+classPrefix+"MySDK";
+			String className = null;
+			try {
+				if (null != _sdkConfig && _sdkConfig.has(sdkName)) {
+					JSONObject sdkConfig = _sdkConfig.getJSONObject(sdkName);
+					if (sdkConfig.has(MYSDK_CONF_SDK_CLASS_PATH)) {
+						className = sdkConfig.getString(MYSDK_CONF_SDK_CLASS_PATH);
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			if (null == className) {
+				String sn = sdkName.toLowerCase();
+				StringBuilder sb = new StringBuilder(); 
+				sb.append(Character.toUpperCase(sn.charAt(0))); 
+				sb.append(sn.substring(1)); 
+				String classPrefix = sb.toString();
+				className = MySDK.class.getPackage().getName()+"."+classPrefix+"MySDK";
+			}
 	        ClassLoader classLoader = MySDK.class.getClassLoader();
 	        try {
 				Class sdkClass = classLoader.loadClass(className);
@@ -87,27 +105,49 @@ public class MySDK {
 	static private String[] getSDKNameList(Context context) {
 		if (null == _sdkNameList) {
 			AssetManager assetMgr = context.getAssets();
+			BufferedReader reader = null;
 			try {
-				InputStream stream = assetMgr.open(MY_SDK_CONFIG);
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				int i = -1;
-				while ((i = stream.read()) != -1) {
-					baos.write(i);
+				reader = new BufferedReader(new InputStreamReader(assetMgr.open(MY_SDK_CONFIG), "UTF-8"));
+				String mysdkConfJson = "";
+				String line = reader.readLine();
+				while (line != null) {
+					mysdkConfJson += line;
+					line = reader.readLine();
 				}
-				String mySDKNameList = baos.toString();
-				stream.close();
-				baos.close();
-				assetMgr.close();
-				
-				if (null == mySDKNameList || mySDKNameList.length() == 0) {
-					logWaring("MY_SDK_NAME_LIST is null.");
+				if (null == mysdkConfJson || mysdkConfJson.length() == 0) {
+					logWaring("MySDK conf is null.");
 					return null;
 				}
-				_sdkNameList = mySDKNameList.split(",");
-			} catch (IOException e1) {
+				JSONObject mysdkConf = new JSONObject(mysdkConfJson);
+				if (mysdkConf.has(MYSDK_CONF_SDK_LIST)) {
+					JSONArray sdkList = mysdkConf.getJSONArray(MYSDK_CONF_SDK_LIST);
+					if (sdkList.length() > 0) {
+						_sdkNameList = new String[sdkList.length()];
+						for (int i = 0; i < sdkList.length(); i++) {
+							_sdkNameList[i] = sdkList.getString(i);
+						}
+					}
+				}
+				if (mysdkConf.has(MYSDK_CONF_SDK_CONFIG)) {
+					_sdkConfig = mysdkConf.getJSONObject(MYSDK_CONF_SDK_CONFIG);
+				}
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 				return null;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		return _sdkNameList;
