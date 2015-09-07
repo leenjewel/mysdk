@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.RadioButton;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class MySDKAPPExampleActivity extends Activity implements OnClickListener {
@@ -60,7 +60,7 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 		try {
 		String ret = "Result:\n";
 		final TextView tv = (TextView)this.findViewById(R.id.textViewResult);
-		RadioButton rb = (RadioButton)this.findViewById(R.id.radioButtonIsTestCPP);
+		CheckBox rb = (CheckBox)this.findViewById(R.id.checkBoxIsTestCPP);
 		boolean isTestCPP = rb.isChecked();
 		int btnID = btn.getId();
 		switch (btnID) {

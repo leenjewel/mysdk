@@ -24,9 +24,9 @@ class CommandUtil:
             py_out_line = pipe.stdout.readline()
             if py_out_line == '':
                 break
-            yield options.get("out_prefix", "") + py_out_line.strip()
+            yield options.get("out_prefix", "") + py_out_line
 
         error = pipe.stderr.read().strip()
-        if len(error) :
+        if len(error) > 0 :
             yield error
 

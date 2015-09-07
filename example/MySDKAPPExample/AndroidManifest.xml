@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="21" />
+        android:minSdkVersion="17"
+        android:targetSdkVersion="23" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +14,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:name=".MySDKAPPExampleApplication" >
-        
-        <meta-data android:name="MY_SDK_NAME_LIST" android:value="aexamplesdk" />
-        
         <activity
             android:name=".MySDKAPPExampleActivity"
             android:label="@string/app_name" >
@@ -26,6 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <meta-data android:name="MY_SDK_NAME_LIST" android:value="aexamplesdk"/>
+        
     </application>
 
 </manifest>

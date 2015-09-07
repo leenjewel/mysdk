@@ -62,8 +62,8 @@ class APKBuilder :
         context = self.javac_R(context)
         context = self.jar_class(context, context.apk_dir, "bin")
         context = self.dex_jar(context, context.apk_dir)
-        context = self.aapt_package_res(context)
-        context = self.java_apk(context)
+        context = self.rebuild_apk(context)
+        context = self.sign_apk(context, "/Users/leenjewel/workspaces/MySDK/example/MySDKAPPExample/keystore", "com.leenjewel.mysdk", "mysdk")
 
 
     def check(self, context) :
@@ -81,6 +81,7 @@ class APKBuilder :
         context.javac = "javac"
         context.jar = "jar"
         context.java = "java"
+        context.jarsigner = "jarsigner"
 
         context.env = {}
 
@@ -98,11 +99,18 @@ class APKBuilder :
         apk_dir = os.path.split(os.path.realpath(context.apk_path))[0]
         out_dir = os.path.join(apk_dir, "out")
         if not os.path.exists(out_dir) :
-            os.mkdirs(out_dir)
+            os.makedirs(out_dir)
         apktool_jar = os.path.join(context.pwd, "jar", "apktool.jar")
-        error = CommandUtil.run("java", "-jar", "-Xmx512M", "-Djava.awt.headless=true", apktool_jar, "-f", "--output", out_dir, "d", context.apk_path)
+        commands = [
+            "java", "-jar",
+            "-Xmx512M", "-Djava.awt.headless=true",
+            apktool_jar, "-f",
+            "--output", out_dir,
+            "d", context.apk_path,
+        ]
+        error = CommandUtil.run(*commands)
         if error != None :
-            exception = "APKBuilder decode apk %s ERROR:\n%s"  %(context.apk_path, error)
+            exception = "APKBuilder decode apk %s ERROR:\n%s\n%s"  %(context.apk_path, " ".join(commands), error)
             raise Exception(exception)
         context.apk_dir = out_dir
         apk_manifest_xml = os.path.join(context.apk_dir, "AndroidManifest.xml")
@@ -341,49 +349,55 @@ class APKBuilder :
         return context
 
 
-    def aapt_package_res(self, context) :
-        # apk_res = os.path.join(context.apk_dir, "res")
-        # if os.path.exists(apk_res) :
-        #     for path, dirs, files in os.walk(apk_res) :
-        #         for res_file in files :
-        #             if ".xml" == res_file[-4:] :
-        #                 fp = open(os.path.join(path, res_file), "r")
-        #                 data = fp.read().replace("@android:style/", "android:")
-        #                 fp.close()
-        #                 fp = open(os.path.join(path, res_file), "w")
-        #                 fp.write(data)
-        #                 fp.close()
+    def rebuild_apk(self, context) :
+        baksmali_jar = os.path.join(context.pwd, "jar", "baksmali.jar")
+        smali_dir = os.path.join(context.apk_dir, "smali")
+        dex_dir = os.path.join(context.apk_dir, "bin", "classes.dex")
         commands = [
-            context.aapt,
-            "package",
-            "-f",
-            "-M", os.path.join(context.apk_dir, "AndroidManifest.xml"),
-            "-S", os.path.join(context.apk_dir, "res"),
-            "-I", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar"),
-            "-F", os.path.join(context.apk_dir, "bin", "resources.ap_")
+            "java", "-jar",
+            baksmali_jar,
+            "-o", smali_dir,
+            dex_dir,
         ]
         error = CommandUtil.run(*commands)
-        if error :
-            raise Exception("APKBuilder appt_package_res ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        if error:
+            raise Exception("APKBuilder rebuild_apk baksmali ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        apktool_jar = os.path.join(context.pwd, "jar", "apktool.jar")
+        unsigned_apk_path = os.path.join(os.path.split(os.path.realpath(context.apk_path))[0], "out.unsigned.apk")
+        commands = [
+            "java", "-jar",
+            "-Xmx512M", "-Djava.awt.headless=true",
+            apktool_jar, "-f",
+            "--output", unsigned_apk_path,
+            "b", context.apk_dir,
+        ]
+        error = CommandUtil.run(*commands)
+        if error:
+            raise Exception("APKBuilder rebuild_apk rebuild ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        context.unsigned_apk_path = unsigned_apk_path
         return context
 
 
-    def java_apk(self, context) :
+    def sign_apk(self, context, keystore, storepass, alias, keypass = None) :
+        if None == keypass :
+            keypass = storepass
+        signed_apk_path = os.path.join(os.path.split(context.unsigned_apk_path)[0], "out.signed.apk")
         commands = [
-            context.java,
-            "-cp",
-            os.path.join(context.android_sdk_dir, "tools", "lib", "sdklib.jar"),
-            "com.android.sdklib.build.ApkBuilderMain",
-            os.path.join(context.apk_dir, "../", "out.apk"),
-            "-v", "-u",
-            "-z", os.path.join(context.apk_dir, "bin", "resources.ap_"),
-            "-f", os.path.join(context.apk_dir, "bin", "classes.dex"),
+            context.jarsigner,
+            "-digestalg", "SHA1",
+            "-sigalg", "MD5withRSA",
+            "-verbose",
+            "-keystore", keystore,
+            "-storepass", storepass,
+            "-keypass", keypass,
+            "-signedjar", signed_apk_path,
+            context.unsigned_apk_path, alias,
         ]
         error = CommandUtil.run(*commands)
-        if error :
-            raise Exception("APKBuilder java_apk ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        if error:
+            raise Exception("APKBuilder sign_apk ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        context.signed_apk_path = signed_apk_path
         return context
-
 
 
 
