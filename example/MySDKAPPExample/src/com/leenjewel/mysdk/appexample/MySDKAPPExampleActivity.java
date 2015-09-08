@@ -5,6 +5,7 @@ import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
 import com.leenjewel.mysdk.sdk.MySDK;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +53,12 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 	protected void onPause() {
 		super.onPause();
 		MySDK.onPause(this);
+	}
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		MySDK.onActivityResult(this, requestCode, resultCode, data);
 	}
 
 	@Override

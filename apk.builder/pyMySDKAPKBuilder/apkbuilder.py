@@ -265,7 +265,8 @@ class APKBuilder :
             "--auto-add-overlay",
             "-J", gen_dir,
             "-M", os.path.join(project_path, "AndroidManifest.xml"),
-            "-I", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar")
+            "-I", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar"),
+            "-S", os.path.join(context.apk_dir, "res"),
         ]
         res_dir = (os.path.join(project_path, "res"))
         if os.path.exists(res_dir) :
