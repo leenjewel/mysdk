@@ -287,6 +287,7 @@ class APKBuilder :
 
 
     def javac_class(self, context, project_path, src_path) :
+        gen_dir = os.path.join(context.apk_dir, "gen")
         bin_dir = os.path.join(context.apk_dir, "bin")
         if not os.path.exists(bin_dir) :
             os.mkdir(bin_dir)
@@ -294,6 +295,7 @@ class APKBuilder :
             context.javac,
             "-target", "1.7",
             "-source", "1.7",
+            "-classpath", gen_dir,
             "-bootclasspath", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar"),
             "-d", bin_dir
         ]

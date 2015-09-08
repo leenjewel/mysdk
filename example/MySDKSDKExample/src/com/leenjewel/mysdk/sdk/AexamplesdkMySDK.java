@@ -2,6 +2,7 @@ package com.leenjewel.mysdk.sdk;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
 import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
+import com.leenjewel.mysdk.sdkexample.SDKExampleCallbackActivity;
 
 import android.app.Activity;
 import android.app.Application;
@@ -10,7 +11,13 @@ import android.os.Bundle;
 
 public class AexamplesdkMySDK implements IMySDK {
 	
+	final static private int REQUEST_CODE = 55555;
+	final static public int RETURN_SUCCESS = 0;
+	final static public int RETURN_FAIL = 1;
+	final static public int RETURN_CANCEL = 2;
+	
 	private Activity _activity = null;
+	private IMySDKCallback _callback = null;
 
 	@Override
 	public void applicationOnCreate(Application application) {
@@ -77,6 +84,25 @@ public class AexamplesdkMySDK implements IMySDK {
 	public void activityOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "activityOnActivityResult");
+		if (REQUEST_CODE == requestCode) {
+			if (null == _callback) {
+				return;
+			}
+			switch (resultCode) {
+			case RETURN_SUCCESS:
+				_callback.onSuccess("aexamplesdk", "activityOnActivityResult", "");
+				break;
+			case RETURN_FAIL:
+				_callback.onFail("aexamplesdk", "activityOnActivityResult", 1, "fail", "");
+				break;
+			case RETURN_CANCEL:
+				_callback.onCancel("aexamplesdk", "activityOnActivityResult", "");
+				break;
+			default:
+				_callback.onFail("aexamplesdk", "activityOnActivityResult", 2, "unknow resultCode", String.valueOf(resultCode));
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -125,7 +151,10 @@ public class AexamplesdkMySDK implements IMySDK {
 	public void applySDKMethodWithCallback(String methodName, String params, IMySDKCallback callback) {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "applySDKMethodWithCallback");
-		callback.onSuccess("aexamplesdk", methodName, "aexamplesdk-"+methodName+"-"+params);
+		// callback.onSuccess("aexamplesdk", methodName, "aexamplesdk-"+methodName+"-"+params);
+		_callback = callback;
+		Intent intent = new Intent(_activity, SDKExampleCallbackActivity.class);
+		_activity.startActivityForResult(intent, REQUEST_CODE);
 	}
 
 	@Override

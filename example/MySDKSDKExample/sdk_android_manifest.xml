@@ -4,6 +4,11 @@
     <application>
         <meta-data android:name="TEST-PACKAGE" android:value="{{PACKAGE}}"></meta-data>
         <meta-data android:name="TEST-LAUNCH" android:value="{{LAUNCH_ACTIVITY}}"></meta-data>
+        <activity 
+            android:name="com.leenjewel.mysdk.sdkexample.SDKExampleCallbackActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Dialog"
+        ></activity>
     </application>
     
 </sdk_android_manifest>
