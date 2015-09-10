@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 #
-# Copyright [2015] [leenjewel]
+# Copyright 2015 leenjewel
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -395,6 +395,7 @@ class APKBuilder :
         align_apk_path = os.path.join(os.path.split(context.signed_apk_path)[0], "out.signed.align.apk")
         commands = [
             context.zipalign,
+            "-f",
             "4",
             context.signed_apk_path,
             align_apk_path,

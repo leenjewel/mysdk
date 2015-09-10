@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright [2015] [leenjewel]
+# Copyright 2015 leenjewel
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,12 +52,12 @@ if __name__ == '__main__' :
 
     work_space = WorkSpace(args.name, args.work_space)
 
-    if None == args.apk_path :
-        raise Exception("APK file not found.")
     work_space.init_apk(args.apk_path)
 
     work_space.init_sdk(args.sdk_list, args.sdk_path)
 
     apk_builder = APKBuilder(work_space)
     apk_builder.build()
+
+    work_space.save()
 

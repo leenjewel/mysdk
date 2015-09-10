@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 #
-# Copyright [2015] [leenjewel]
+# Copyright 2015 leenjewel
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ class WorkSpace(object) :
             self.root = os.getcwd()
         else :
             self.root = root
-        self.context = {}
+        self.context = {
+                "sdk_search_path" : [],
+                "sdk_id_list" : [],
+        }
         self.init_work_space(name, root)
         self.init_android_sdk()
         self.init_java_sdk()
@@ -41,6 +44,9 @@ class WorkSpace(object) :
         if not os.path.exists(work_dir) :
             os.mkdir(work_dir)
         self.context["work_dir"] = work_dir
+        work_space_json = os.path.join(work_dir, "workspace.json")
+        if os.path.isfile(work_space_json) :
+            self.open(work_space_json)
 
 
     def is_exe(self, file_path) :
@@ -105,7 +111,12 @@ class WorkSpace(object) :
         self.context["baksmali"] = os.path.abspath(os.path.join(pwd, "jar", "baksmali.jar"))
 
 
-    def init_apk(self, apk_file) :
+    def init_apk(self, apk_file = None) :
+        if not isinstance(apk_file, str) or not os.path.isfile(apk_file) :
+            if self.context.has_key("apk_path") and os.path.isfile(self.context["apk_path"]) :
+                apk_file = self.context["apk_path"]
+            else :
+                raise Exception("Android APK file not found.")
         apk_file_path, apk_file_name = os.path.split(apk_file)
         work_apk_file = os.path.join(self.context["work_dir"], apk_file_name)
         if not os.path.isfile(work_apk_file) :
@@ -113,10 +124,20 @@ class WorkSpace(object) :
         self.context["apk_path"] = os.path.abspath(work_apk_file)
 
 
-    def init_sdk(self, sdk_list, sdk_path_list) :
+    def init_sdk(self, sdk_list = None, sdk_path_list = None) :
         self.context["sdk_list"] = []
         sdks = {}
-        for sdk_search_path in sdk_path_list :
+
+        sdk_search_paths = self.context["sdk_search_path"]
+        if isinstance(sdk_path_list, list) :
+            sdk_search_paths += sdk_path_list
+        sdk_search_paths = list(set(sdk_search_paths))
+
+        if not isinstance(sdk_list, list) or len(sdk_list) == 0:
+            sdk_list = self.context["sdk_id_list"]
+
+        for sdk_search_path in sdk_search_paths :
+            self.context["sdk_search_path"].append(sdk_search_path)
             for path, dirs, files in os.walk(sdk_search_path) :
                 for sdk_dir in dirs :
                     sdk_path = os.path.join(path, sdk_dir)
@@ -132,9 +153,31 @@ class WorkSpace(object) :
             if not sdks.has_key(sdk_id) :
                 raise Exception("SDK %s not found."  %(sdk_id))
             self.context["sdk_list"].append(sdks[sdk_id])
+        self.context["sdk_search_path"] = sdk_search_paths
 
 
     def get_context(self) :
         return self.context
+
+
+    def open(self, json_path) :
+        fp = open(json_path, "r")
+        out = json.load(fp, "utf-8")
+        for k, v in out.items() :
+            self.context[k] = v
+        fp.close()
+
+
+    def save(self, save_path = None) :
+        out = {
+            "sdk_id_list" : [sdk.get_config("id") for sdk in self.context["sdk_list"]],
+            "sdk_search_path" : list(set(self.context["sdk_search_path"])),
+            "apk_path" : self.context["apk_path"],
+        }
+        if None == save_path :
+            save_path = (os.path.join(self.context["work_dir"], "workspace.json"))
+        fp = open(save_path, "w")
+        json.dump(out, fp)
+        fp.close()
 
 
