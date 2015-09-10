@@ -1,4 +1,20 @@
 #-*- coding:utf-8 -*-
+#
+# Copyright [2015] [leenjewel]
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import os
 import json
 import shutil
@@ -30,11 +46,9 @@ class APKBuilderContext(object) :
 
 class APKBuilder :
 
-    def __init__(self, apk_path, sdk) :
-        self.context = APKBuilderContext()
+    def __init__(self, work_space) :
+        self.context = APKBuilderContext(work_space.get_context())
         self.context.pwd = os.path.split(os.path.realpath(__file__))[0]
-        self.context.apk_path = apk_path
-        self.context.sdks = sdk
         self.check(self.context)
 
 
@@ -42,20 +56,18 @@ class APKBuilder :
         context = self.decode_apk(self.context)
         context = self.parse_manifest(context)
 
-        for sdk_path in context.sdks :
-            sdk_config = SDKConfig(sdk_path)
+        for sdk_config in context.sdk_list :
             context = self.sdk_manifest(context, sdk_config)
             context = self.sdk_permission(context, sdk_config)
             context = self.sdk_assets(context, sdk_config)
             context = self.sdk_res(context, sdk_config)
             context = self.sdk_setup(context, sdk_config)
-            context.sdk_config_list.append(sdk_config)
 
         context = self.finish_manifest(context)
         context = self.write_manifest(context)
         context = self.write_mysdk_config(context)
 
-        for sdk_config in context.sdk_config_list :
+        for sdk_config in context.sdk_list :
             context = self.sdk_build_res(context, sdk_config)
             context = self.sdk_build_src(context, sdk_config)
 
@@ -64,34 +76,17 @@ class APKBuilder :
         context = self.dex_jar(context, context.apk_dir)
         context = self.rebuild_apk(context)
         context = self.sign_apk(context, "/Users/leenjewel/workspaces/MySDK/example/MySDKAPPExample/keystore", "com.leenjewel.mysdk", "mysdk")
+        context = self.align_apk(context)
 
 
     def check(self, context) :
-        context.android_sdk_dir = os.environ.get("ANDROID_SDK_ROOT")
-        for path, dirs, files in os.walk(os.path.join(context.android_sdk_dir, "build-tools")) :
-            for tool_file in files :
-                if tool_file == "aapt" :
-                    context.aapt = os.path.join(path, tool_file)
-                elif tool_file == "aidl" :
-                    context.aidl = os.path.join(path, tool_file)
-                elif tool_file == "dx" :
-                    context.dx = os.path.join(path, tool_file)
-
         context.android_platform = "android-23"
-        context.javac = "javac"
-        context.jar = "jar"
-        context.java = "java"
-        context.jarsigner = "jarsigner"
-
         context.env = {}
-
         context.sdk_config_list = []
-
         context.mysdk_config = {
-                "sdk_list" : [],
-                "sdk_config" : {},
+            "sdk_list" : [],
+            "sdk_config" : {},
         }
-
         return context
 
 
@@ -100,11 +95,10 @@ class APKBuilder :
         out_dir = os.path.join(apk_dir, "out")
         if not os.path.exists(out_dir) :
             os.makedirs(out_dir)
-        apktool_jar = os.path.join(context.pwd, "jar", "apktool.jar")
         commands = [
-            "java", "-jar",
+            context.java, "-jar",
             "-Xmx512M", "-Djava.awt.headless=true",
-            apktool_jar, "-f",
+            context.apktool, "-f",
             "--output", out_dir,
             "d", context.apk_path,
         ]
@@ -265,17 +259,13 @@ class APKBuilder :
             "--auto-add-overlay",
             "-J", gen_dir,
             "-M", os.path.join(project_path, "AndroidManifest.xml"),
-            "-I", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar"),
+            "-I", os.path.join(context.android_sdk_root, "platforms", context.android_platform, "android.jar"),
             "-S", os.path.join(context.apk_dir, "res"),
         ]
         res_dir = (os.path.join(project_path, "res"))
         if os.path.exists(res_dir) :
             commands.append("-S")
             commands.append(res_dir)
-        # libs_dir = os.path.join(project_path, "libs")
-        # if os.path.exists(libs_dir) :
-        #     commands.append("-S")
-        #     commands.append(libs_dir)
         assets_dir = os.path.join(project_path, "assets")
         if os.path.exists(assets_dir) :
             commands.append("-A")
@@ -297,7 +287,7 @@ class APKBuilder :
             "-target", "1.7",
             "-source", "1.7",
             "-classpath", gen_dir,
-            "-bootclasspath", os.path.join(context.android_sdk_dir, "platforms", context.android_platform, "android.jar"),
+            "-bootclasspath", os.path.join(context.android_sdk_root, "platforms", context.android_platform, "android.jar"),
             "-d", bin_dir
         ]
         libs_dir = os.path.join(project_path, "libs")
@@ -353,24 +343,22 @@ class APKBuilder :
 
 
     def rebuild_apk(self, context) :
-        baksmali_jar = os.path.join(context.pwd, "jar", "baksmali.jar")
         smali_dir = os.path.join(context.apk_dir, "smali")
         dex_dir = os.path.join(context.apk_dir, "bin", "classes.dex")
         commands = [
-            "java", "-jar",
-            baksmali_jar,
+            context.java, "-jar",
+            context.baksmali,
             "-o", smali_dir,
             dex_dir,
         ]
         error = CommandUtil.run(*commands)
         if error:
             raise Exception("APKBuilder rebuild_apk baksmali ERROR:\n%s\n%s"  %(" ".join(commands), error))
-        apktool_jar = os.path.join(context.pwd, "jar", "apktool.jar")
         unsigned_apk_path = os.path.join(os.path.split(os.path.realpath(context.apk_path))[0], "out.unsigned.apk")
         commands = [
-            "java", "-jar",
+            context.java, "-jar",
             "-Xmx512M", "-Djava.awt.headless=true",
-            apktool_jar, "-f",
+            context.apktool, "-f",
             "--output", unsigned_apk_path,
             "b", context.apk_dir,
         ]
@@ -400,6 +388,21 @@ class APKBuilder :
         if error:
             raise Exception("APKBuilder sign_apk ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.signed_apk_path = signed_apk_path
+        return context
+
+
+    def align_apk(self, context) :
+        align_apk_path = os.path.join(os.path.split(context.signed_apk_path)[0], "out.signed.align.apk")
+        commands = [
+            context.zipalign,
+            "4",
+            context.signed_apk_path,
+            align_apk_path,
+        ]
+        error = CommandUtil.run(*commands)
+        if error :
+            raise Exception("APKBuilder zipalign ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        context.align_apk_path = align_apk_path
         return context
 
 
