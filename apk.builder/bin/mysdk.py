@@ -49,8 +49,16 @@ if __name__ == '__main__' :
 
     args = parser.parse_args()
 
-
-    work_space = WorkSpace(args.name, args.work_space)
+    if not os.path.exists(args.work_space) :
+        os.makedirs(args.work_space)
+    name = args.name
+    if None == args.name or len(args.name) == 0 :
+        for path, dirs, files in os.walk(args.work_space) :
+            if len(dirs) == 0 :
+                raise Exception("need project name")
+            name = dirs[0]
+            break
+    work_space = WorkSpace(name, args.work_space)
 
     work_space.init_apk(args.apk_path)
 

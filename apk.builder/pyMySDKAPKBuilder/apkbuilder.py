@@ -77,6 +77,8 @@ class APKBuilder :
         context = self.rebuild_apk(context)
         context = self.sign_apk(context, "/Users/leenjewel/workspaces/MySDK/example/MySDKAPPExample/keystore", "com.leenjewel.mysdk", "mysdk")
         context = self.align_apk(context)
+        context = self.clean(context)
+        return context
 
 
     def check(self, context) :
@@ -424,9 +426,9 @@ class APKBuilder :
         return context
 
 
-
-if __name__ == "__main__" :
-    import sys
-    apk_builder = APKBuilder(sys.argv[1], sys.argv[2:])
-    apk_builder.build()
+    def clean(self, context) :
+        shutil.rmtree(context.apk_dir)
+        os.remove(context.unsigned_apk_path)
+        os.remove(context.signed_apk_path)
+        return context
 
