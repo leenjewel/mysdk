@@ -75,14 +75,18 @@ class APKBuilder :
         context = self.dex_jar(context, context.apk_dir)
         context = self.aapt_res_assets(context)
         context = self.rebuild_apk(context)
-        context = self.sign_apk(context, "/Users/leenjewel/workspaces/MySDK/example/MySDKAPPExample/keystore", "com.leenjewel.mysdk", "mysdk")
-        context = self.align_apk(context)
+        if context.keystore and os.path.isfile(context.keystore) :
+            context = self.sign_apk(context, context.keystore, context.storepass, context.alias, context.keypass)
+            context = self.align_apk(context)
         context = self.clean(context)
         return context
 
 
     def check(self, context) :
-        context.android_platform = "android-23"
+        android_platforms = os.path.join(context.android_sdk_root, "platforms")
+        if None == context.android_platform or \
+            not os.path.exists(os.path.join(android_platforms, context.android_platform)) :
+                raise Exception("Android platform %s not found."  %(str(context.android_platform)))
         context.env = {}
         context.sdk_config_list = []
         context.mysdk_config = {
@@ -427,8 +431,25 @@ class APKBuilder :
 
 
     def clean(self, context) :
-        shutil.rmtree(context.apk_dir)
-        os.remove(context.unsigned_apk_path)
-        os.remove(context.signed_apk_path)
+        if context.apk_dir and os.path.exists(context.apk_dir) :
+            shutil.rmtree(context.apk_dir)
+        if context.align_apk_path and os.path.isfile(context.align_apk_path) :
+            if context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
+                os.remove(context.unsigned_apk_path)
+            if context.signed_apk_path and os.path.isfile(context.signed_apk_path) :
+                os.remove(context.signed_apk_path)
+            output_apk = os.path.join(os.path.split(context.align_apk_path)[0], "out.apk")
+            os.rename(context.align_apk_path, output_apk)
+            context.output_apk = os.path.abspath(output_apk)
+        elif context.signed_apk_path and os.path.isfile(context.signed_apk_path) :
+            if context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
+                os.remove(context.unsigned_apk_path)
+            output_apk = os.path.join(os.path.split(context.signed_apk_path)[0], "out.apk")
+            os.rename(context.signed_apk_path, output_apk)
+            context.output_apk = os.path.abspath(output_apk)
+        elif context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
+            output_apk = os.path.join(os.path.split(context.unsigned_apk_path)[0], "out.apk")
+            os.rename(context.unsigned_apk_path, output_apk)
+            context.output_apk = os.path.abspath(output_apk)
         return context
 

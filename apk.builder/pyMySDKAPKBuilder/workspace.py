@@ -44,6 +44,9 @@ class WorkSpace(object) :
         if not os.path.exists(work_dir) :
             os.mkdir(work_dir)
         self.context["work_dir"] = work_dir
+        work_space_json = os.path.join(root, "workspace.json")
+        if os.path.isfile(work_space_json) :
+            self.open(work_space_json)
         work_space_json = os.path.join(work_dir, "workspace.json")
         if os.path.isfile(work_space_json) :
             self.open(work_space_json)
@@ -72,20 +75,21 @@ class WorkSpace(object) :
     def init_android_sdk(self) :
         tools = ["aapt", "dx", "zipalign"]
         for tool in tools :
-            find_path = self.which(tool)
-            if None == find_path :
+            if self.context.has_key("android_sdk_root") and os.path.exists(self.context["android_sdk_root"]) :
+                android_sdk_root = self.context["android_sdk_root"]
+            else :
                 android_sdk_root = os.environ.get("ANDROID_SDK_ROOT")
-                if None == android_sdk_root :
-                    raise Exception("ANDROID_SDK_ROOT not found.")
-                android_build_tool = os.path.join(android_sdk_root, "build-tools")
-                android_build_ver = {}
-                for path, dirs, files in os.walk(android_build_tool) :
-                    for build_ver_dir in dirs :
-                        ver = int("".join([(max(0, 6-len(v))*"0")+v for v in build_ver_dir.split(".")]))
-                        android_build_ver[ver] = build_ver_dir
-                    break
-                android_build_dir = os.path.join(android_build_tool, android_build_ver[max(android_build_ver.keys())])
-                find_path = self.which(tool, android_build_dir)
+            if None == android_sdk_root :
+                raise Exception("ANDROID_SDK_ROOT not found.")
+            android_build_tool = os.path.join(android_sdk_root, "build-tools")
+            android_build_ver = {}
+            for path, dirs, files in os.walk(android_build_tool) :
+                for build_ver_dir in dirs :
+                    ver = int("".join([(max(0, 6-len(v))*"0")+v for v in build_ver_dir.split(".")]))
+                    android_build_ver[ver] = build_ver_dir
+                break
+            android_build_dir = os.path.join(android_build_tool, android_build_ver[max(android_build_ver.keys())])
+            find_path = self.which(tool, android_build_dir)
             if None == find_path :
                 raise Exception("Android SDK not found.")
             break
@@ -94,6 +98,15 @@ class WorkSpace(object) :
         self.context["android_sdk_root"] = os.path.abspath(os.path.join(find_dir, os.pardir, os.pardir))
         for tool in tools :
             self.context[tool] = os.path.abspath(os.path.join(find_dir, tool))
+
+
+    def init_android_platform(self, platform) :
+        if isinstance(platform, str) and platform.isdigit() :
+            platform = "android-" + platform
+        platform_path = os.path.join(self.context["android_sdk_root"], "platforms", platform)
+        if not os.path.exists(platform_path) :
+            raise Exception("Android platform %s not found."  %(platform))
+        self.context["android_platform"] = platform
 
 
     def init_java_sdk(self) :
@@ -156,6 +169,16 @@ class WorkSpace(object) :
         self.context["sdk_search_path"] = sdk_search_paths
 
 
+    def init_keystore(self, keystore, storepass, alias, keypass = None) :
+        if keystore and os.path.isfile(keystore) :
+            self.context["keystore"] = os.path.abspath(keystore)
+            self.context["storepass"] = storepass
+            self.context["alias"] = alias
+            if None == keypass :
+                keypass = storepass
+            self.context["keypass"] = keypass
+
+
     def get_context(self) :
         return self.context
 
@@ -173,11 +196,20 @@ class WorkSpace(object) :
             "sdk_id_list" : [sdk.get_config("id") for sdk in self.context["sdk_list"]],
             "sdk_search_path" : list(set(self.context["sdk_search_path"])),
             "apk_path" : self.context["apk_path"],
+            "android_platform" : self.context["android_platform"],
         }
+
+        if self.context.has_key("keystore") :
+            out["keystore"] = self.context["keystore"]
+            out["storepass"] = self.context["storepass"]
+            out["alias"] = self.context["alias"]
+            out["keypass"] = self.context["keypass"]
+
         if None == save_path :
             save_path = (os.path.join(self.context["work_dir"], "workspace.json"))
+
         fp = open(save_path, "w")
-        json.dump(out, fp)
+        json.dump(out, fp, indent = 4)
         fp.close()
 
 

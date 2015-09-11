@@ -35,7 +35,7 @@ if __name__ == '__main__' :
     sdk_path_help = 'SDK search dirs'
     parser.add_argument("--sdk-path", dest = "sdk_path", nargs = "*", help = sdk_path_help)
 
-    work_space_help = 'work space path'
+    work_space_help = 'Work space path'
     parser.add_argument("--work-space", dest = "work_space", default = os.getcwd(), help = work_space_help)
 
     apk_path_help = 'Android APK file path'
@@ -43,6 +43,21 @@ if __name__ == '__main__' :
 
     output_help = 'Output Android APK file path'
     parser.add_argument("--output", help = output_help)
+
+    android_platform_help = 'Android platform'
+    parser.add_argument("--platform", help = android_platform_help)
+
+    keystore_help = 'Android Keystore file path'
+    parser.add_argument("--keystore", help = keystore_help)
+
+    storepass_help = 'Android Keystore store password'
+    parser.add_argument("--storepass", help = storepass_help)
+
+    storealias_help = 'Android Keystore alias'
+    parser.add_argument("--alias", help = storealias_help)
+
+    keypass_help = "Android Keystore private password"
+    parser.add_argument("--keypass", help = keypass_help)
 
     name_help = 'Project name'
     parser.add_argument("--name", help = name_help)
@@ -63,6 +78,11 @@ if __name__ == '__main__' :
     work_space.init_apk(args.apk_path)
 
     work_space.init_sdk(args.sdk_list, args.sdk_path)
+
+    if args.platform :
+        work_space.init_android_platform(args.platform)
+
+    work_space.init_keystore(args.keystore, args.storepass, args.alias, args.keypass)
 
     apk_builder = APKBuilder(work_space)
     apk_builder.build()
