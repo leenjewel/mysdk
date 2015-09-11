@@ -59,8 +59,7 @@ class APKBuilder :
         for sdk_config in context.sdk_list :
             context = self.sdk_manifest(context, sdk_config)
             context = self.sdk_permission(context, sdk_config)
-            context = self.sdk_assets(context, sdk_config)
-            context = self.sdk_res(context, sdk_config)
+            context = self.sdk_libs(context, sdk_config)
             context = self.sdk_setup(context, sdk_config)
 
         context = self.finish_manifest(context)
@@ -74,6 +73,7 @@ class APKBuilder :
         context = self.javac_R(context)
         context = self.jar_class(context, context.apk_dir, "bin")
         context = self.dex_jar(context, context.apk_dir)
+        context = self.aapt_res_assets(context)
         context = self.rebuild_apk(context)
         context = self.sign_apk(context, "/Users/leenjewel/workspaces/MySDK/example/MySDKAPPExample/keystore", "com.leenjewel.mysdk", "mysdk")
         context = self.align_apk(context)
@@ -150,53 +150,26 @@ class APKBuilder :
         return context
 
 
-    def sdk_assets(self, context, sdk_config) :
+    def sdk_libs(self, context, sdk_config) :
+        apk_lib = os.path.join(context.apk_dir, "lib")
+        if not os.path.exists(apk_lib) :
+            os.mkdir(apk_lib)
         sdk_path = sdk_config.sdk_path
-        sdk_assets = os.path.join(sdk_path, "assets")
-        apk_assets = os.path.join(context.apk_dir, "assets")
-        if not os.path.exists(apk_assets) :
-            os.mkdir(apk_assets)
-        if os.path.exists(sdk_assets) :
-            for path, dirs, files in os.walk(sdk_assets) :
-                for asset_dir in dirs :
-                    mkdir = os.path.join(apk_assets, asset_dir)
+        lib_find_paths = ["lib", "libs"]
+        for lib_find_path in lib_find_paths :
+            sdk_lib = os.path.join(sdk_path, lib_find_path)
+            if not os.path.exists(sdk_lib) :
+                continue
+            for path, dirs, files in os.walk(sdk_lib) :
+                for lib_dir in dirs :
+                    mkdir = os.path.join(apk_lib, lib_dir)
                     if not os.path.exists(mkdir) :
                         os.mkdir(mkdir)
-                for asset_file in files :
-                    mkfile = os.path.join(apk_assets, path.replace(sdk_assets, "."), asset_file)
-                    if not os.path.isfile(mkfile) :
-                        shutil.copy(os.path.join(path, asset_file), mkfile)
-        return context
-
-
-    def sdk_res(self, context, sdk_config) :
-        sdk_path = sdk_config.sdk_path
-        sdk_res = os.path.join(sdk_path, "res")
-        apk_res = os.path.join(context.apk_dir, "res")
-        if not os.path.exists(apk_res) :
-            os.mkdir(apk_res)
-        if os.path.exists(sdk_res) :
-            for path, dirs, files in os.walk(sdk_res) :
-                for res_dir in dirs :
-                    mkdir = os.path.join(apk_res, res_dir)
-                    if not os.path.exists(mkdir) :
-                        os.mkdir(mkdir)
-                for res_file in files :
-                    if "ic_launcher.png" == res_file :
-                        continue
-                    mkfile = os.path.join(apk_res, path.replace(sdk_res, "."), res_file)
-                    if not os.path.isfile(mkfile) :
-                        shutil.copy(os.path.join(path, res_file), mkfile)
-                    elif ".xml" == mkfile[-4:].lower() :
-                        a_root = XMLUtil.parse_xml(mkfile)
-                        b_root = XMLUtil.parse_xml(os.path.join(path, res_file))
-                        for b_child in b_root :
-                            a_child = a_root.find("%s[@name='%s']"  %(b_child.tag, b_child.get("name")))
-                            if None == a_child :
-                                a_root.append(b_child)
-                        fp = open(mkfile, "w")
-                        fp.write(XMLUtil.pretty_xml(a_root))
-                        fp.close()
+                for lib_file in files :
+                    if ".so" == lib_file[-3:] :
+                        mkfile = os.path.join(apk_lib, path.replace(sdk_lib, "."), lib_file)
+                        if not os.path.isfile(mkfile) :
+                            shutil.copy(os.path.join(path, lib_file), mkfile)
         return context
 
 
@@ -266,14 +239,58 @@ class APKBuilder :
         if os.path.exists(res_dir) :
             commands.append("-S")
             commands.append(res_dir)
-        assets_dir = os.path.join(project_path, "assets")
-        if os.path.exists(assets_dir) :
-            commands.append("-A")
-            commands.append(assets_dir)
 
         error = CommandUtil.run(*commands)
         if error :
             raise Exception("APKBuilder aapt_package(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
+        return context
+
+
+    def aapt_res_assets(self, context) :
+        resources_apk = os.path.join(context.apk_dir, "resources._ap")
+        commands = [
+            context.aapt,
+            "package",
+            "-f",
+            "--auto-add-overlay",
+            "-M", os.path.join(context.apk_dir, "AndroidManifest.xml"),
+            "-I", os.path.join(context.android_sdk_root, "platforms", context.android_platform, "android.jar"),
+            "-F", resources_apk,
+            "-S", os.path.join(context.apk_dir, "res"),
+            "-A", os.path.join(context.apk_dir, "assets"),
+        ]
+        for sdk in context.sdk_list :
+            sdk_res_path = os.path.join(sdk.sdk_path, "res")
+            if os.path.exists(sdk_res_path) :
+                commands.append("-S")
+                commands.append(sdk_res_path)
+            sdk_assets_path = os.path.join(sdk.sdk_path, "assets")
+            if os.path.exists(sdk_assets_path) :
+                commands.append("-A")
+                commands.append(sdk_assets_path)
+
+        error = CommandUtil.run(*commands)
+        if error :
+            raise Exception("APKBuilder aapt_res_assets ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        context.resources_apk = resources_apk
+
+        resources_out = os.path.join(context.apk_dir, "resources_out")
+        commands = [
+            context.java, "-jar",
+            context.apktool,
+            "-f",
+            "d", context.resources_apk,
+            "-o", resources_out
+        ]
+        error = CommandUtil.run(*commands)
+        if error :
+            raise Exception("APKBuilder aapt_res_assets ERROR:\n%s\n%s"  %(" ".join(commands), error))
+        if os.path.exists(os.path.join(resources_out, "assets")) :
+            shutil.rmtree(os.path.join(context.apk_dir, "assets"))
+            shutil.copytree(os.path.join(resources_out, "assets"), os.path.join(context.apk_dir, "assets"))
+        if os.path.exists(os.path.join(resources_out, "res")) :
+            shutil.rmtree(os.path.join(context.apk_dir, "res"))
+            shutil.copytree(os.path.join(resources_out, "res"), os.path.join(context.apk_dir, "res"))
         return context
 
 

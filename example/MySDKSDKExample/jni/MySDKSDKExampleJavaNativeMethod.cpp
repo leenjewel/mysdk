@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.leenjewel.mysdk.appexample;
+#include <stdio.h>
+#include <jni.h>
 
-import com.leenjewel.mysdk.sdk.MySDK;
-
-import android.app.Application;
-
-public class MySDKAPPExampleApplication extends Application {
-
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		MySDK.onCreate(this);
-		System.loadLibrary("mysdkappexample");
-	}
-	
+extern "C"
+{
+    jstring Java_com_leenjewel_mysdk_sdk_AexamplesdkMySDK_sayHello(JNIEnv* env, jobject thisz)
+    {
+        return env->NewStringUTF("Hi I say Hello!");
+    }
 }
+
