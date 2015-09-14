@@ -1,7 +1,24 @@
+/**
+ * Copyright 2015 leenjewel
+
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.leenjewel.mysdk.sdk;
 
 import com.leenjewel.mysdk.callback.IMySDKCallback;
 import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
+import com.leenjewel.mysdk.sdkexample.SDKExampleCallbackActivity;
 
 import android.app.Activity;
 import android.app.Application;
@@ -10,12 +27,19 @@ import android.os.Bundle;
 
 public class AexamplesdkMySDK implements IMySDK {
 	
+	final static private int REQUEST_CODE = 55555;
+	final static public int RETURN_SUCCESS = 0;
+	final static public int RETURN_FAIL = 1;
+	final static public int RETURN_CANCEL = 2;
+	
 	private Activity _activity = null;
+	private IMySDKCallback _callback = null;
 
 	@Override
 	public void applicationOnCreate(Application application) {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "applicationOnCreate");
+		System.loadLibrary("mysdksdkexample");
 	}
 
 	@Override
@@ -77,6 +101,25 @@ public class AexamplesdkMySDK implements IMySDK {
 	public void activityOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "activityOnActivityResult");
+		if (REQUEST_CODE == requestCode) {
+			if (null == _callback) {
+				return;
+			}
+			switch (resultCode) {
+			case RETURN_SUCCESS:
+				_callback.onSuccess("aexamplesdk", "activityOnActivityResult", "");
+				break;
+			case RETURN_FAIL:
+				_callback.onFail("aexamplesdk", "activityOnActivityResult", 1, "fail", "");
+				break;
+			case RETURN_CANCEL:
+				_callback.onCancel("aexamplesdk", "activityOnActivityResult", "");
+				break;
+			default:
+				_callback.onFail("aexamplesdk", "activityOnActivityResult", 2, "unknow resultCode", String.valueOf(resultCode));
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -118,14 +161,17 @@ public class AexamplesdkMySDK implements IMySDK {
 	public String applySDKMethodAndReturnString(String methodName, String params) throws MySDKDoNotImplementMethod {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "applySDKMethodAndReturnString");
-		return "World";
+		return sayHello();
 	}
 
 	@Override
 	public void applySDKMethodWithCallback(String methodName, String params, IMySDKCallback callback) {
 		// TODO Auto-generated method stub
 		android.util.Log.d("AexamplesdkMySDK", "applySDKMethodWithCallback");
-		callback.onSuccess("aexamplesdk", methodName, "aexamplesdk-"+methodName+"-"+params);
+		// callback.onSuccess("aexamplesdk", methodName, "aexamplesdk-"+methodName+"-"+params);
+		_callback = callback;
+		Intent intent = new Intent(_activity, SDKExampleCallbackActivity.class);
+		_activity.startActivityForResult(intent, REQUEST_CODE);
 	}
 
 	@Override
@@ -134,5 +180,7 @@ public class AexamplesdkMySDK implements IMySDK {
 		android.util.Log.d("AexamplesdkMySDK", "applySDKPay");
 		callback.onPayResult(false, 0, "", "aexamplesdk", productID, orderID, "pay-callback-result");
 	}
+	
+	public native String sayHello();
 
 }
