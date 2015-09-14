@@ -30,6 +30,7 @@ class WorkSpace(object) :
         self.context = {
                 "sdk_search_path" : [],
                 "sdk_id_list" : [],
+                "meta_data" : {},
         }
         self.init_work_space(name, root)
         self.init_android_sdk()
@@ -179,6 +180,12 @@ class WorkSpace(object) :
             self.context["keypass"] = keypass
 
 
+    def init_metadata(self, key_or_dct, value = None) :
+        if not isinstance(key_or_dct, dict) :
+            key_or_dct = {key_or_dct : value}
+        self.context["meta_data"].update(key_or_dct)
+
+
     def get_context(self) :
         return self.context
 
@@ -197,6 +204,7 @@ class WorkSpace(object) :
             "sdk_search_path" : list(set(self.context["sdk_search_path"])),
             "apk_path" : self.context["apk_path"],
             "android_platform" : self.context["android_platform"],
+            "meta_data" : self.context["meta_data"],
         }
 
         if self.context.has_key("keystore") :

@@ -87,7 +87,6 @@ class APKBuilder :
         if None == context.android_platform or \
             not os.path.exists(os.path.join(android_platforms, context.android_platform)) :
                 raise Exception("Android platform %s not found."  %(str(context.android_platform)))
-        context.env = {}
         context.sdk_config_list = []
         context.mysdk_config = {
             "sdk_list" : [],
@@ -124,9 +123,11 @@ class APKBuilder :
         context.apk_activity_main_filter = XMLUtil.find_element(context.apk_activity_main, "intent-filter/action[@android:name='android.intent.action.MAIN']/..")
         context.apk_activity_main.remove(context.apk_activity_main_filter)
 
-        context.env["{{LAUNCH_ACTIVITY}}"] = XMLUtil.get_element_attr(context.apk_activity_main, "name")
-        context.env["{{PACKAGE}}"] = context.apk_manifest.get_package_name()
-
+        context.meta_data["{{LAUNCH_ACTIVITY}}"] = XMLUtil.get_element_attr(context.apk_activity_main, "name")
+        if (not context.meta_data.has_key("{{PACKAGE}}")) :
+            context.meta_data["{{PACKAGE}}"] = context.apk_manifest.get_package_name()
+        else :
+            context.apk_manifest.set_package_name(context.meta_data["{{PACKAGE}}"])
         return context
 
 
@@ -137,7 +138,7 @@ class APKBuilder :
             fp = open(sdk_android_manifest, "r")
             sdk_android_manifest_data = fp.read()
             fp.close()
-            for key, val in context.env.items() :
+            for key, val in context.meta_data.items() :
                 sdk_android_manifest_data = sdk_android_manifest_data.replace(key, val)
             context.apk_manifest.merge(sdk_android_manifest_data)
         return context
@@ -150,7 +151,7 @@ class APKBuilder :
             fp = open(sdk_uses_permission, "r")
             sdk_uses_permission_data = fp.read()
             fp.close()
-            for key, val in context.env.items() :
+            for key, val in context.meta_data.items() :
                 sdk_uses_permission_data = sdk_uses_permission_data.replace(key, val)
             context.apk_manifest.merge(sdk_uses_permission_data)
         return context

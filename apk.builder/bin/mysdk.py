@@ -62,6 +62,12 @@ if __name__ == '__main__' :
     name_help = 'Project name'
     parser.add_argument("--name", help = name_help)
 
+    meta_data_help = 'Meta data'
+    parser.add_argument("--meta-data", nargs = "*", dest = "meta_data", help = meta_data_help)
+
+    package_name_help = 'Android application package name'
+    parser.add_argument("--package", help = package_name_help)
+
     args = parser.parse_args()
 
     if not os.path.exists(args.work_space) :
@@ -81,6 +87,22 @@ if __name__ == '__main__' :
 
     if args.platform :
         work_space.init_android_platform(args.platform)
+
+    if args.meta_data and len(args.meta_data) > 0 :
+        for meta_data_str in args.meta_data :
+            if "&" in meta_data_str :
+                meta_data_list = meta_data_str.split("&")
+            else :
+                meta_data_list = [meta_data_str]
+            for meta_data_kv in meta_data_list :
+                meta_data_kv = meta_data_kv.split("=")
+                if len(meta_data_kv) > 1 :
+                    work_space.init_metadata(meta_data_kv[0], meta_data_kv[1])
+                else :
+                    work_space.init_metadata(meta_data_kv[0])
+
+    if args.package :
+        work_space.init_metadata("{{PACKAGE}}", args.package)
 
     work_space.init_keystore(args.keystore, args.storepass, args.alias, args.keypass)
 
