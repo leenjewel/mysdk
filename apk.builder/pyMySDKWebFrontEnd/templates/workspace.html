@@ -1,0 +1,27 @@
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li class="active">{{ workspace_name }}</li>
+</ol>
+<div class="container">
+    <div class="row">
+        {% for entry in project_entry_list %}
+        <div class="col-md-4">
+        {% module ProjectEntry(entry) %}
+        </div>
+        {% end %}
+        <div class="col-md-4">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">New Project</h3>
+                </div>
+                <div class="panel-body">
+                    <a class="btn btn-default btn-lg" href="/new/{{ workspace_name }}">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    <span>New Project</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

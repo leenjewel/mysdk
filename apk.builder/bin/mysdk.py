@@ -81,7 +81,8 @@ if __name__ == '__main__' :
             break
     work_space = WorkSpace(name, args.work_space)
 
-    work_space.init_apk(args.apk_path)
+    if args.apk_path :
+        work_space.init_apk(args.apk_path)
 
     work_space.init_sdk(args.sdk_list, args.sdk_path)
 

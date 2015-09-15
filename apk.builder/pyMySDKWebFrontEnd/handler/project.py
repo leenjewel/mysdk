@@ -1,0 +1,131 @@
+#
+# Copyright 2015 leenjewel
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+import os,sys
+from ahandler import AHandler
+try :
+    import pyMySDKAPKBuilder.workspace
+except ImportError :
+    pwd = os.path.split(os.path.realpath(__file__))[0]
+    sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
+    import pyMySDKAPKBuilder.workspace
+
+class ProjectHandler(AHandler) :
+
+    layout = "default.html"
+
+    def get(self, workspace_name, project_name) :
+        workspace_project = None
+        for workspace in self.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
+            workspace_project.init_sdk()
+        self.render("project.html", **{
+            "workspace_name" : workspace_name,
+            "project_name" : project_name,
+            "workspace_project" : workspace_project,
+        })
+
+
+class NewHandler(AHandler) :
+
+    layout = "default.html"
+
+    def get(self, workspace_name) :
+        workspace_project = None
+        settings = self.app.settings
+        sdk_search_paths = settings.get("sdk_search_paths")
+        for workspace in self.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace("", workspace)
+            sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
+            break
+        self.render("new.html", **{
+            "workspace_name" : workspace_name,
+            "workspace_project" : workspace_project,
+            "workspace_sdks" : workspace_sdks,
+        })
+
+
+    def post(self, workspace_name) :
+        new_project_id = self.get_body_argument("new_project_id")
+        new_project_platform = self.get_body_argument("new_project_platform")
+        new_project_storepass = self.get_body_argument("new_project_storepass")
+        new_project_alias = self.get_body_argument("new_project_alias")
+        new_project_keypass = self.get_body_argument("new_project_keypass")
+
+        workspace_project = None
+        settings = self.app.settings
+        sdk_search_paths = settings.get("sdk_search_paths")
+        for workspace in self.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            if os.path.exists(os.path.join(workspace, new_project_id)) :
+                return self.redirect("/project/%s/%s"  %(workspace_name, new_project_id))
+            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(new_project_id, workspace)
+            break
+
+        workspace_project.init_android_platform(new_project_platform)
+
+        apk_file_list = self.request.files.get("new_project_apk")
+        if apk_file_list :
+            for apk_file_dict in apk_file_list :
+                apk_file_name = apk_file_dict["filename"]
+                apk_file_path = os.path.join(workspace_project.context["work_dir"], apk_file_name)
+                fp = open(apk_file_path, "wb")
+                fp.write(apk_file_dict["body"])
+                fp.close()
+                workspace_project.init_apk(apk_file_path)
+                break
+
+        keystore_file_list = self.request.files.get("new_project_keystore")
+        if keystore_file_list :
+            for keystore_file_dict in keystore_file_list :
+                keystore_file_name = keystore_file_dict["filename"]
+                keystore_file_path = os.path.join(workspace_project.context["work_dir"], keystore_file_name)
+                fp = open(keystore_file_path, "wb")
+                fp.write(keystore_file_dict["body"])
+                fp.close()
+                workspace_project.init_keystore(keystore_file_path, new_project_storepass, new_project_alias, new_project_keypass)
+                break
+
+        sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
+        sdk_id_list = []
+        sdk_index = 0
+        sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
+        while sdk_id :
+            sdk_id_list.append(sdk_id)
+            sdk_index += 1
+            sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
+        workspace_project.init_sdk(sdk_id_list, sdk_search_paths)
+
+        metadata_dict = {}
+        for sdk_id in sdk_id_list :
+            sdk_config = workspace_sdks[sdk_id]
+            sdk_metadata = sdk_config.get_config("metadata")
+            for meta_key, meta_conf in sdk_metadata.items() :
+                metadata_key = "sdk_config[%s][metadata][%s]"  %(sdk_id, meta_key)
+                metadata_val = self.get_body_argument(metadata_key, None)
+                if metadata_val :
+                    metadata_dict[meta_key] = metadata_val
+        workspace_project.init_metadata(metadata_dict)
+
+        workspace_project.save()
+        return self.redirect("/workspace/%s"  %(workspace_name))
+
+

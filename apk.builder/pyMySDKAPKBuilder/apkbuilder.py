@@ -57,6 +57,7 @@ class APKBuilder :
         context = self.parse_manifest(context)
 
         for sdk_config in context.sdk_list :
+            context = self.sdk_check(context, sdk_config)
             context = self.sdk_manifest(context, sdk_config)
             context = self.sdk_permission(context, sdk_config)
             context = self.sdk_libs(context, sdk_config)
@@ -128,6 +129,14 @@ class APKBuilder :
             context.meta_data["{{PACKAGE}}"] = context.apk_manifest.get_package_name()
         else :
             context.apk_manifest.set_package_name(context.meta_data["{{PACKAGE}}"])
+        return context
+
+
+    def sdk_check(self, context, sdk_config) :
+        meta_data, error_key = sdk_config.check_metadata(context.meta_data)
+        if False == meta_data :
+            raise Exception("APKBulder sdk_check:\n%s meta_data %s check fail."  %(sdk_config.get_config("id"), str(error_key)))
+        context.meta_data = meta_data
         return context
 
 

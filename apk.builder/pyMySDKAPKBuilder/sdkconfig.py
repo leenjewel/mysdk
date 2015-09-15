@@ -31,6 +31,13 @@ import os
 #      site        : "sdk-site-url",
 #      icon        : "sdk-icon-file",
 #      src         : ["src"],
+#      metadata    : {
+#                        "meta-key" : {
+#                            "require" : False,
+#                            "default" : "",
+#                            "isnumeric" : False,
+#                        },
+#                    },
 #  }
 #-------------------------------------------
 class SDKConfig :
@@ -48,6 +55,24 @@ class SDKConfig :
 
     def get_config(self, name, default = None) :
         return self.config.get(name, default)
+
+
+    def check_metadata(self, metadata) :
+        metadata_dict = self.get_config("metadata")
+        if not isinstance(metadata_dict, dict) :
+            return metadata, None
+        if not isinstance(metadata, dict) :
+            return False, "__all__"
+        for meta_key, meta_conf in metadata_dict.items() :
+            if not metadata.has_key(meta_key) :
+                if meta_conf.get("require", False) :
+                    return False, meta_key
+                metadata[meta_key] = meta_conf.get("default", "")
+                if meta_conf.get("isnumeric", False) \
+                        and isinstance(metadata[meta_key], str) \
+                        and not metadata[meta_key].isdigit() :
+                    metadata[meta_key] = "\\" + metadata[meta_key]
+        return metadata, None
 
 
     def get_sdk_class_path(self) :

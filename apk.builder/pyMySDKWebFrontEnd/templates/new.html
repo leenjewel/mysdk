@@ -1,0 +1,102 @@
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    <li class="active">New Project</li>
+</ol>
+<div class="container">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">New Project</span></h3>
+    </div>
+    <form class="panel-body" id="mysdk-create-project-form" method="post" action="" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="newProjectID">Project ID:</label>
+            <input type="text" class="form-control" name="new_project_id" id="new-project-id" placeholder="Project ID" />
+        </div>
+        <div class="form-group">
+            <label for="androidPlatform">Android Platform:</label>
+            <select class="form-control" name="new_project_platform">
+                {% for android_platform in workspace_project.context["android_platform_list"] %}
+                <option value="{{ android_platform }}">{{ android_platform }}</option>
+                {% end %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="apkUpload">APK File:</label>
+            <input type="file" class="form-control" name="new_project_apk" id="new-project-apk" placeholder="APK File" />
+        </div>
+        <div class="form-group">
+            <label for="keystore">Keystore File:</label>
+            <input type="file" class="form-control" name="new_project_keystore" id="new-project-keystore" placeholder="Keystore File" />
+        </div>
+        <div class="form-group">
+            <label for="storepass">Store Password:</label>
+            <input type="password" class="form-control" name="new_project_storepass" id="new-project-storepass" placeholder="Store password" />
+        </div>
+        <div class="form-group">
+            <label for="alias">Alias:</label>
+            <input type="text" class="form-control" name="new_project_alias" id="new-project-alias" placeholder="Alias" />
+        </div>
+        <div class="form-group">
+            <label for="keypass">Key Password:</label>
+            <input type="password" class="form-control" name="new_project_keypass" id="new-project-keypass" placeholder="Key password" />
+        </div>
+        <div class="container">
+            <div class="row">
+                {% for sdk_id, sdk_config in workspace_sdks.items() %}
+                <div class="col-md-4">
+                {% module SDKConfigEntry(sdk_config, show_add = True) %}
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="btn btn-primary btn-lg" onclick="mysdkCreateProject()">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                <span class="btn-text">Create Project</span>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<script type="text/javascript">
+function mysdkCreateProject() {
+    var createProjectForm = $("#mysdk-create-project-form");
+    createProjectForm.find("#mysdk-sdk-config-list").remove();
+    var sdkConfigInput = $('<div></div>');
+    sdkConfigInput.attr("id", "mysdk-sdk-config-list");
+    var sdkIndex = 0;
+    $(".mysdk-sdk-config").each(function(i, e){
+        var sdkConfigDiv = $(e);
+        var sdkConfigID = sdkConfigDiv.attr("id");
+        if (sdkConfigDiv.attr("class").indexOf("panel-success") >= 0) {
+            sdkConfigInput.append($('<input type="hidden" name="sdk_list['+sdkIndex+']" value="'+sdkConfigID+'"/>'));
+            sdkIndex += 1;
+        }
+    });
+    createProjectForm.append(sdkConfigInput);
+    createProjectForm.submit();
+}
+
+$(function(){
+    $(".mysdk-sdk-config").each(function(i, e){
+        $(e).find(".btn-add-sdk").bind("click", {sdkConfigDiv : $(e)}, function(evt){
+            var sdkConfigDiv = evt.data.sdkConfigDiv;
+            var btnAddSdk = sdkConfigDiv.find(".btn-add-sdk");
+            var btnIcon = btnAddSdk.find(".glyphicon");
+            var btnText = btnAddSdk.find(".btn-text");
+            if (btnIcon.attr("class").indexOf("glyphicon-plus") >= 0) {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-success");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-success btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-ok");
+                btnText.text("Remove SDK");
+            } else {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-default");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-default btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-plus");
+                btnText.text("Add SDK");
+            }
+        });
+    });
+});
+</script>

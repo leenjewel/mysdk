@@ -1,0 +1,25 @@
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    <li class="active">{{ project_name }}</li>
+</ol>
+<div class="container">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ project_name }}        <span class="badge">{{ workspace_project.context["android_platform"] }}</span></h3>
+    </div>
+    <div class="panel-body">
+        <h4><span class="label label-default">Android SDK</span>{{ workspace_project.context["android_sdk_root"] }}</h4>
+        <h4><span class="label label-default">APK: </span>{{ workspace_project.context["apk_path"] }}</h4>
+        <div class="container">
+            <div class="row">
+                {% for sdk_config in workspace_project.context["sdk_list"] %}
+                <div class="col-md-4">
+                {% module SDKConfigEntry(sdk_config, meta_data = workspace_project.context["meta_data"]) %}
+                </div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
