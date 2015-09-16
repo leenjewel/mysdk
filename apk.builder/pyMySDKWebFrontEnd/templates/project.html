@@ -20,6 +20,16 @@
         </div>
         {% end %}
         <div class="form-group">
+            <label for="projectName">Project Name:</label>
+            <input type="text" class="form-control" name="project_name" id="project-name" placeholder="Project Name" value="{{ workspace_project.context['project_name'] }}" />
+        </div>
+        <div class="form-group">
+            <label for="projectDesc">Description:</label>
+            <textarea class="form-control" name="project_desc" id="project-desc">
+                {{ workspace_project.context['project_name'] }}
+            </textarea>
+        </div>
+        <div class="form-group">
             <label for="androidPlatform">Android Platform:</label>
             <select class="form-control" name="new_project_platform">
                 {% for android_platform in workspace_project.context["android_platform_list"] %}

@@ -18,6 +18,10 @@
 """
 context = {
 
+    ####--------  Project  --------####
+    project_name : "",
+    project_desc : "",
+
     ####----------  SDK  ----------####
     sdk_search_path : [],
     sdk_id_list : [],
@@ -55,6 +59,7 @@ class WorkSpace(object) :
                 "meta_data" : {},
         }
         self.init_work_space(name, root)
+        self.init_project_info()
         self.init_android_sdk()
         self.init_java_sdk()
         self.init_apktool()
@@ -97,6 +102,15 @@ class WorkSpace(object) :
                 if self.is_exe(exe_file) :
                     return exe_file
         return None
+
+
+    def init_project_info(self, name = None, desc = None) :
+        if name is None :
+            name = self.name
+        self.context["project_name"] = name
+        if desc is None :
+            desc = name
+        self.context["project_desc"] = desc
 
 
     def init_android_sdk(self) :
@@ -236,6 +250,8 @@ class WorkSpace(object) :
 
     def save(self, save_path = None) :
         out = {
+            "project_name" : self.context["project_name"],
+            "project_desc" : self.context["project_desc"],
             "sdk_id_list" : [sdk.get_config("id") for sdk in self.context["sdk_list"]],
             "sdk_search_path" : list(set(self.context["sdk_search_path"])),
             "apk_path" : self.context["apk_path"],

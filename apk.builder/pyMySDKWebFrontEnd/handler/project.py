@@ -33,6 +33,10 @@ class ProjectHandler(AHandler) :
         new_project_alias = self.get_body_argument("new_project_alias")
         new_project_keypass = self.get_body_argument("new_project_keypass")
 
+        project_name = self.get_body_argument("project_name")
+        project_desc = self.get_body_argument("project_desc")
+        workspace_project.init_project_info(project_name, project_desc)
+
         workspace_project.init_android_platform(new_project_platform)
 
         apk_file_list = self.request.files.get("new_project_apk")
