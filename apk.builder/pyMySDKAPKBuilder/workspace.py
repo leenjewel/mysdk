@@ -106,10 +106,16 @@ class WorkSpace(object) :
 
     def init_project_info(self, name = None, desc = None) :
         if name is None :
-            name = self.name
+            if self.context.has_key("project_name") :
+                name = self.context["project_name"]
+            else :
+                name = self.name
         self.context["project_name"] = name
         if desc is None :
-            desc = name
+            if self.context.has_key("project_desc") :
+                desc = self.context["project_desc"]
+            else :
+                desc = name
         self.context["project_desc"] = desc
 
 
