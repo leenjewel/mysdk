@@ -14,7 +14,14 @@
 # limitations under the License.
 #
 
+import os, sys
 import tornado.web
+try :
+    import pyMySDKAPKBuilder.workspace
+except ImportError :
+    pwd = os.path.split(os.path.realpath(__file__))[0]
+    sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
+    import pyMySDKAPKBuilder.workspace
 
 class AHandler(tornado.web.RequestHandler) :
 
@@ -23,6 +30,15 @@ class AHandler(tornado.web.RequestHandler) :
 
     def initialize(self, app) :
         self.app = app
+
+
+    def get_workspace(self, workspace_name, project_name = "") :
+        for workspace in self.app.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            return pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
+        return None
+
 
     def render(self, template_name, **kwargs) :
         if None == self.layout :

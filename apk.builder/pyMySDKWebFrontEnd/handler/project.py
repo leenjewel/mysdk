@@ -89,15 +89,10 @@ class ProjectHandler(AHandler) :
         return workspace_project
 
     def get(self, workspace_name, project_name) :
-        workspace_project = None
+        workspace_project = self.get_workspace(workspace_name, project_name)
+        workspace_project.init_sdk()
         settings = self.app.settings
         sdk_search_paths = settings.get("sdk_search_paths")
-        for workspace in self.settings["workspace"] :
-            if workspace_name != os.path.split(workspace)[1] :
-                continue
-            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
-            workspace_project.init_sdk()
-            break
 
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
@@ -110,14 +105,7 @@ class ProjectHandler(AHandler) :
 
 
     def post(self, workspace_name, project_name) :
-        workspace_project = None
-        settings = self.app.settings
-        sdk_search_paths = settings.get("sdk_search_paths")
-        for workspace in self.settings["workspace"] :
-            if workspace_name != os.path.split(workspace)[1] :
-                continue
-            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
-            break
+        workspace_project = self.get_workspace(workspace_name, project_name)
         workspace_project = self.update_project(workspace_project)
         return self.redirect("/workspace/%s"  %(workspace_name))
 
@@ -128,15 +116,10 @@ class NewHandler(ProjectHandler) :
     layout = "default.html"
 
     def get(self, workspace_name) :
-        workspace_project = None
+        workspace_project = self.get_workspace(workspace_name)
         settings = self.app.settings
         sdk_search_paths = settings.get("sdk_search_paths")
-        for workspace in self.settings["workspace"] :
-            if workspace_name != os.path.split(workspace)[1] :
-                continue
-            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace("", workspace)
-            sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
-            break
+        sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
             "is_create_project" : True,
             "workspace_name" : workspace_name,
