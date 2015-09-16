@@ -27,21 +27,99 @@ class ProjectHandler(AHandler) :
 
     layout = "default.html"
 
+    def update_project(self, workspace_project) :
+        new_project_platform = self.get_body_argument("new_project_platform")
+        new_project_storepass = self.get_body_argument("new_project_storepass")
+        new_project_alias = self.get_body_argument("new_project_alias")
+        new_project_keypass = self.get_body_argument("new_project_keypass")
+
+        workspace_project.init_android_platform(new_project_platform)
+
+        apk_file_list = self.request.files.get("new_project_apk")
+        if apk_file_list :
+            for apk_file_dict in apk_file_list :
+                apk_file_path = os.path.join(workspace_project.context["work_dir"], workspace_project.name+".apk")
+                fp = open(apk_file_path, "wb")
+                fp.write(apk_file_dict["body"])
+                fp.close()
+                workspace_project.init_apk(apk_file_path)
+                break
+
+        keystore_file_list = self.request.files.get("new_project_keystore")
+        if keystore_file_list :
+            for keystore_file_dict in keystore_file_list :
+                keystore_file_path = os.path.join(workspace_project.context["work_dir"], workspace_project.name+".keystore")
+                fp = open(keystore_file_path, "wb")
+                fp.write(keystore_file_dict["body"])
+                fp.close()
+                workspace_project.init_keystore(keystore_file_path, new_project_storepass, new_project_alias, new_project_keypass)
+                break
+
+        settings = self.app.settings
+        sdk_search_paths = settings.get("sdk_search_paths")
+        sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
+        sdk_id_list = []
+        sdk_index = 0
+        sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
+        while sdk_id :
+            sdk_id_list.append(sdk_id)
+            sdk_index += 1
+            sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
+        workspace_project.context["sdk_list"] = []
+        workspace_project.context["sdk_id_list"] = []
+        workspace_project.init_sdk(sdk_id_list, sdk_search_paths)
+
+        metadata_dict = {}
+        for sdk_id in sdk_id_list :
+            sdk_config = workspace_sdks[sdk_id]
+            sdk_metadata = sdk_config.get_config("metadata")
+            for meta_key, meta_conf in sdk_metadata.items() :
+                metadata_key = "sdk_config[%s][metadata][%s]"  %(sdk_id, meta_key)
+                metadata_val = self.get_body_argument(metadata_key, None)
+                if metadata_val :
+                    metadata_dict[meta_key] = metadata_val
+        workspace_project.context["meta_data"] = {}
+        workspace_project.init_metadata(metadata_dict)
+
+        workspace_project.save()
+        return workspace_project
+
     def get(self, workspace_name, project_name) :
         workspace_project = None
+        settings = self.app.settings
+        sdk_search_paths = settings.get("sdk_search_paths")
         for workspace in self.settings["workspace"] :
             if workspace_name != os.path.split(workspace)[1] :
                 continue
             workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
             workspace_project.init_sdk()
+            break
+
+        sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
+            "is_create_project" : False,
             "workspace_name" : workspace_name,
             "project_name" : project_name,
             "workspace_project" : workspace_project,
+            "workspace_sdks" : workspace_sdks,
         })
 
 
-class NewHandler(AHandler) :
+    def post(self, workspace_name, project_name) :
+        workspace_project = None
+        settings = self.app.settings
+        sdk_search_paths = settings.get("sdk_search_paths")
+        for workspace in self.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)
+            break
+        workspace_project = self.update_project(workspace_project)
+        return self.redirect("/workspace/%s"  %(workspace_name))
+
+
+
+class NewHandler(ProjectHandler) :
 
     layout = "default.html"
 
@@ -55,8 +133,10 @@ class NewHandler(AHandler) :
             workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace("", workspace)
             sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
             break
-        self.render("new.html", **{
+        self.render("project.html", **{
+            "is_create_project" : True,
             "workspace_name" : workspace_name,
+            "project_name" : "",
             "workspace_project" : workspace_project,
             "workspace_sdks" : workspace_sdks,
         })
@@ -64,10 +144,6 @@ class NewHandler(AHandler) :
 
     def post(self, workspace_name) :
         new_project_id = self.get_body_argument("new_project_id")
-        new_project_platform = self.get_body_argument("new_project_platform")
-        new_project_storepass = self.get_body_argument("new_project_storepass")
-        new_project_alias = self.get_body_argument("new_project_alias")
-        new_project_keypass = self.get_body_argument("new_project_keypass")
 
         workspace_project = None
         settings = self.app.settings
@@ -79,53 +155,7 @@ class NewHandler(AHandler) :
                 return self.redirect("/project/%s/%s"  %(workspace_name, new_project_id))
             workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(new_project_id, workspace)
             break
-
-        workspace_project.init_android_platform(new_project_platform)
-
-        apk_file_list = self.request.files.get("new_project_apk")
-        if apk_file_list :
-            for apk_file_dict in apk_file_list :
-                apk_file_name = apk_file_dict["filename"]
-                apk_file_path = os.path.join(workspace_project.context["work_dir"], apk_file_name)
-                fp = open(apk_file_path, "wb")
-                fp.write(apk_file_dict["body"])
-                fp.close()
-                workspace_project.init_apk(apk_file_path)
-                break
-
-        keystore_file_list = self.request.files.get("new_project_keystore")
-        if keystore_file_list :
-            for keystore_file_dict in keystore_file_list :
-                keystore_file_name = keystore_file_dict["filename"]
-                keystore_file_path = os.path.join(workspace_project.context["work_dir"], keystore_file_name)
-                fp = open(keystore_file_path, "wb")
-                fp.write(keystore_file_dict["body"])
-                fp.close()
-                workspace_project.init_keystore(keystore_file_path, new_project_storepass, new_project_alias, new_project_keypass)
-                break
-
-        sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
-        sdk_id_list = []
-        sdk_index = 0
-        sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
-        while sdk_id :
-            sdk_id_list.append(sdk_id)
-            sdk_index += 1
-            sdk_id = self.get_body_argument("sdk_list["+str(sdk_index)+"]", None)
-        workspace_project.init_sdk(sdk_id_list, sdk_search_paths)
-
-        metadata_dict = {}
-        for sdk_id in sdk_id_list :
-            sdk_config = workspace_sdks[sdk_id]
-            sdk_metadata = sdk_config.get_config("metadata")
-            for meta_key, meta_conf in sdk_metadata.items() :
-                metadata_key = "sdk_config[%s][metadata][%s]"  %(sdk_id, meta_key)
-                metadata_val = self.get_body_argument(metadata_key, None)
-                if metadata_val :
-                    metadata_dict[meta_key] = metadata_val
-        workspace_project.init_metadata(metadata_dict)
-
-        workspace_project.save()
+        workspace_project = self.update_project(workspace_project)
         return self.redirect("/workspace/%s"  %(workspace_name))
 
 

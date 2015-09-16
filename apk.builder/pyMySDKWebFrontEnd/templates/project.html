@@ -6,20 +6,124 @@
 <div class="container">
 <div class="panel panel-default">
     <div class="panel-heading">
+        {% if is_create_project %}
+        <h3 class="panel-title">New Project</span></h3>
+        {% else %}
         <h3 class="panel-title">{{ project_name }}        <span class="badge">{{ workspace_project.context["android_platform"] }}</span></h3>
+        {% end %}
     </div>
-    <div class="panel-body">
-        <h4><span class="label label-default">Android SDK</span>{{ workspace_project.context["android_sdk_root"] }}</h4>
-        <h4><span class="label label-default">APK: </span>{{ workspace_project.context["apk_path"] }}</h4>
+    <form class="panel-body" id="mysdk-project-form" method="post" action="" enctype="multipart/form-data">
+        {% if is_create_project %}
+        <div class="form-group">
+            <label for="newProjectID">Project ID:</label>
+            <input type="text" class="form-control" name="new_project_id" id="new-project-id" placeholder="Project ID" />
+        </div>
+        {% end %}
+        <div class="form-group">
+            <label for="androidPlatform">Android Platform:</label>
+            <select class="form-control" name="new_project_platform">
+                {% for android_platform in workspace_project.context["android_platform_list"] %}
+                {% if android_platform == workspace_project.context.get("android_platform") %}
+                <option selected="true" value="{{ android_platform }}">{{ android_platform }}</option>
+                {% else %}
+                <option value="{{ android_platform }}">{{ android_platform }}</option>
+                {% end %}
+                {% end %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="apkUpload">APK File:</label>
+            {% if workspace_project.context.get("apk_path") %}
+            <h4 class="label label-info form-control">{{ workspace_project.context["apk_path"] }}</h4>
+            {% end %}
+            <input type="file" class="form-control" name="new_project_apk" id="new-project-apk" placeholder="APK File" />
+        </div>
+        <div class="form-group">
+            <label for="keystore">Keystore File:</label>
+            {% if workspace_project.context.get("keystore") %}
+            <h4 class="label label-info form-control">{{ workspace_project.context["keystore"] }}</h4>
+            {% end %}
+            <input type="file" class="form-control" name="new_project_keystore" id="new-project-keystore" placeholder="Keystore File" />
+        </div>
+        <div class="form-group">
+            <label for="storepass">Store Password:</label>
+            <input type="password" class="form-control" name="new_project_storepass" id="new-project-storepass" placeholder="Store password" value="{{ workspace_project.context.get('storepass','') }}" />
+        </div>
+        <div class="form-group">
+            <label for="alias">Alias:</label>
+            <input type="text" class="form-control" name="new_project_alias" id="new-project-alias" placeholder="Alias" value="{{ workspace_project.context.get('alias', '') }}" />
+        </div>
+        <div class="form-group">
+            <label for="keypass">Key Password:</label>
+            <input type="password" class="form-control" name="new_project_keypass" id="new-project-keypass" placeholder="Key password" value="{{ workspace_project.context.get('keypass', '') }}" />
+        </div>
         <div class="container">
             <div class="row">
-                {% for sdk_config in workspace_project.context["sdk_list"] %}
+                {% for sdk_id, sdk_config in workspace_sdks.items() %}
                 <div class="col-md-4">
-                {% module SDKConfigEntry(sdk_config, meta_data = workspace_project.context["meta_data"]) %}
+                {% if sdk_id in workspace_project.context.get("sdk_id_list", []) %}
+                {% module SDKConfigEntry(sdk_config, show_add = True, has_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% else %}
+                {% module SDKConfigEntry(sdk_config, show_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% end %}
                 </div>
                 {% end %}
             </div>
         </div>
-    </div>
+        <div class="form-group">
+            {% if is_create_project %}
+            <div class="btn btn-primary btn-lg" onclick="mysdkProject()">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                <span class="btn-text">Create Project</span>
+            </div>
+            {% else %}
+            <div class="btn btn-primary btn-lg" onclick="mysdkProject()">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                <span class="btn-text">Save Project</span>
+            </div>
+            {% end %}
+        </div>
+    </form>
 </div>
 </div>
+<script type="text/javascript">
+function mysdkProject() {
+    var projectForm = $("#mysdk-project-form");
+    projectForm.find("#mysdk-sdk-config-list").remove();
+    var sdkConfigInput = $('<div></div>');
+    sdkConfigInput.attr("id", "mysdk-sdk-config-list");
+    var sdkIndex = 0;
+    $(".mysdk-sdk-config").each(function(i, e){
+        var sdkConfigDiv = $(e);
+        var sdkConfigID = sdkConfigDiv.attr("id");
+        if (sdkConfigDiv.attr("class").indexOf("panel-success") >= 0) {
+            sdkConfigInput.append($('<input type="hidden" name="sdk_list['+sdkIndex+']" value="'+sdkConfigID+'"/>'));
+            sdkIndex += 1;
+        }
+    });
+    projectForm.append(sdkConfigInput);
+    projectForm.submit();
+}
+
+$(function(){
+    $(".mysdk-sdk-config").each(function(i, e){
+        $(e).find(".btn-add-sdk").bind("click", {sdkConfigDiv : $(e)}, function(evt){
+            var sdkConfigDiv = evt.data.sdkConfigDiv;
+            var btnAddSdk = sdkConfigDiv.find(".btn-add-sdk");
+            var btnIcon = btnAddSdk.find(".glyphicon");
+            var btnText = btnAddSdk.find(".btn-text");
+            if (btnIcon.attr("class").indexOf("glyphicon-plus") >= 0) {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-success");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-success btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-ok");
+                btnText.text("Remove SDK");
+            } else {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-default");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-default btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-plus");
+                btnText.text("Add SDK");
+            }
+        });
+    });
+});
+</script>

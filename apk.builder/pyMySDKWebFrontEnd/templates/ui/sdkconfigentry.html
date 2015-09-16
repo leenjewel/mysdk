@@ -1,4 +1,8 @@
+{% if has_add %}
+<div class="mysdk-sdk-config panel panel-success" id="{{ entry.get_config('id') }}">
+{% else %}
 <div class="mysdk-sdk-config panel panel-default" id="{{ entry.get_config('id') }}">
+{% end %}
     <div class="panel-heading">
         <h4 class="panel-title">{{ entry.get_config("id") }}</h4>
     </div>
@@ -23,10 +27,17 @@
             {% end %}
         </div>
         {% if show_add %}
+        {% if has_add %}
+        <a class="btn-add-sdk btn btn-success btn-lg">
+            <span class="glyphicon glyphicon-ok"></span>
+            <span class="btn-text">Remove SDK</span>
+        </a>
+        {% else %}
         <a class="btn-add-sdk btn btn-default btn-lg">
             <span class="glyphicon glyphicon-plus"></span>
             <span class="btn-text">Add SDK</span>
         </a>
+        {% end %}
         {% end %}
     </div>
 </div>

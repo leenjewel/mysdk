@@ -35,6 +35,8 @@ class SDKConfigEntry(AUIModule) :
     def render(self, entry, **kwargs) :
         if not kwargs.has_key("show_add") :
             kwargs["show_add"] = False
+        if not kwargs.has_key("has_add") :
+            kwargs["has_add"] = False
         if not kwargs.has_key("meta_data") :
             kwargs["meta_data"] = {}
         return AUIModule.render(self, entry, **kwargs)
