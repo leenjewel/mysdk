@@ -18,7 +18,11 @@
             <div class="form-group">
                 <label for="metadata{{ meta_key }}" class="col-sm-6 control-label">{{ meta_key }}</label>
                 <div class="col-sm-6">
+                    {% if is_build %}
+                    <input type="text" class="mysdk-sdk-config-input form-control" name="sdk_config[{{ entry.get_config('id') }}][metadata][{{ meta_key }}]" value="{{ meta_data.get(meta_key, meta_conf.get('default','')) }}" disabled />
+                    {% else %}
                     <input type="text" class="mysdk-sdk-config-input form-control" name="sdk_config[{{ entry.get_config('id') }}][metadata][{{ meta_key }}]" value="{{ meta_data.get(meta_key, meta_conf.get('default','')) }}" />
+                    {% end %}
                     {% if meta_conf.get("require", False) %}
                     <span class="label label-danger">require!</span>
                     {% end %}

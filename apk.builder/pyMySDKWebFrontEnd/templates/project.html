@@ -26,17 +26,29 @@
         {% end %}
         <div class="form-group">
             <label for="projectName">Project Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_name" id="project-name" placeholder="Project Name" value="{{ workspace_project.context['project_name'] }}" readonly />
+            {% else %}
             <input type="text" class="form-control" name="project_name" id="project-name" placeholder="Project Name" value="{{ workspace_project.context['project_name'] }}" />
+            {% end %}
         </div>
         <div class="form-group">
             <label for="projectDesc">Description:</label>
+            {% if is_build_project %}
+            <textarea class="form-control" name="project_desc" id="project-desc" readonly>
+            {% else %}
             <textarea class="form-control" name="project_desc" id="project-desc">
+            {% end %}
                 {{ workspace_project.context['project_desc'] }}
             </textarea>
         </div>
         <div class="form-group">
             <label for="androidPlatform">Android Platform:</label>
+            {% if is_build_project %}
+            <select class="form-control" name="new_project_platform" disabled>
+            {% else %}
             <select class="form-control" name="new_project_platform">
+            {% end %}
                 {% for android_platform in workspace_project.context["android_platform_list"] %}
                 {% if android_platform == workspace_project.context.get("android_platform") %}
                 <option selected="true" value="{{ android_platform }}">{{ android_platform }}</option>
@@ -64,6 +76,7 @@
             <input type="file" class="form-control" name="new_project_keystore" id="new-project-keystore" placeholder="Keystore File" />
             {% end %}
         </div>
+        {% if not is_build_project %}
         <div class="form-group">
             <label for="storepass">Store Password:</label>
             <input type="password" class="form-control" name="new_project_storepass" id="new-project-storepass" placeholder="Store password" value="{{ workspace_project.context.get('storepass','') }}" />
@@ -76,37 +89,61 @@
             <label for="keypass">Key Password:</label>
             <input type="password" class="form-control" name="new_project_keypass" id="new-project-keypass" placeholder="Key password" value="{{ workspace_project.context.get('keypass', '') }}" />
         </div>
+        {% end %}
         <div class="container">
             <div class="row">
                 {% for sdk_id, sdk_config in workspace_sdks.items() %}
                 <div class="col-md-4">
                 {% if sdk_id in workspace_project.context.get("sdk_id_list", []) %}
-                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), has_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), has_add = True, meta_data = workspace_project.context.get("meta_data", {}), is_build = is_build_project) %}
                 {% else %}
-                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), meta_data = workspace_project.context.get("meta_data", {}), is_build = is_build_project) %}
                 {% end %}
                 </div>
                 {% end %}
             </div>
         </div>
         <div class="form-group">
+            {% if is_build_project %}
+            <div class="btn btn-primary btn-lg" onclick="mysdkBuildProject()">
+                <span class="glyphicon glyphicon-fire"></span>
+                <span class="btn-text">Build Project</span>
+            </div>
+            {% else %}
             {% if is_create_project %}
-            <div class="btn btn-primary btn-lg" onclick="mysdkProject()">
+            <div class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
                 <span class="glyphicon glyphicon-floppy-save"></span>
                 <span class="btn-text">Create Project</span>
             </div>
             {% else %}
-            <div class="btn btn-primary btn-lg" onclick="mysdkProject()">
+            <div class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
                 <span class="glyphicon glyphicon-floppy-save"></span>
                 <span class="btn-text">Save Project</span>
             </div>
+            {% end %}
             {% end %}
         </div>
     </form>
 </div>
 </div>
+<!-- Build Modal Begin -->
+<div class="modal fade" id="mysdk-build-modal" tabindex="-1" role="dialog" aria-labelledby="mysdk-build-modal-label">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mysdk-build-modal-label">Build Project</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Build Modal End -->
 <script type="text/javascript">
-function mysdkProject() {
+function mysdkUpdateProject() {
     var projectForm = $("#mysdk-project-form");
     projectForm.find("#mysdk-sdk-config-list").remove();
     var sdkConfigInput = $('<div></div>');
@@ -122,6 +159,12 @@ function mysdkProject() {
     });
     projectForm.append(sdkConfigInput);
     projectForm.submit();
+}
+
+function mysdkBuildProject() {
+    $("#mysdk-build-modal").modal({
+        backdrop : "static"
+    });
 }
 
 $(function(){
@@ -143,6 +186,9 @@ $(function(){
                 btnText.text("Add SDK");
             }
         });
+    });
+    $("#mysdk-build-modal").on("shown.bs.modal", function(e){
+        console.dir(e);
     });
 });
 </script>
