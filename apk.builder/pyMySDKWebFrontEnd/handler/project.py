@@ -97,6 +97,7 @@ class ProjectHandler(AHandler) :
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
             "is_create_project" : False,
+            "is_build_project" : False,
             "workspace_name" : workspace_name,
             "project_name" : project_name,
             "workspace_project" : workspace_project,
@@ -122,6 +123,7 @@ class NewHandler(ProjectHandler) :
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
             "is_create_project" : True,
+            "is_build_project" : False,
             "workspace_name" : workspace_name,
             "project_name" : "",
             "workspace_project" : workspace_project,

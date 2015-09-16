@@ -1,7 +1,12 @@
 <ol class="breadcrumb">
     <li><a href="/index">Workspace</a></li>
     <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    {% if is_build_project %}
+    <li><a href="/project/{{ workspace_name }}/{{ project_name }}">{{ project_name }}</a></li>
+    <li class="active">build</li>
+    {% else %}
     <li class="active">{{ project_name }}</li>
+    {% end %}
 </ol>
 <div class="container">
 <div class="panel panel-default">
@@ -46,14 +51,18 @@
             {% if workspace_project.context.get("apk_path") %}
             <h4 class="label label-info form-control">{{ workspace_project.context["apk_path"] }}</h4>
             {% end %}
+            {% if not is_build_project %}
             <input type="file" class="form-control" name="new_project_apk" id="new-project-apk" placeholder="APK File" />
+            {% end %}
         </div>
         <div class="form-group">
             <label for="keystore">Keystore File:</label>
             {% if workspace_project.context.get("keystore") %}
             <h4 class="label label-info form-control">{{ workspace_project.context["keystore"] }}</h4>
             {% end %}
+            {% if not is_build_project %}
             <input type="file" class="form-control" name="new_project_keystore" id="new-project-keystore" placeholder="Keystore File" />
+            {% end %}
         </div>
         <div class="form-group">
             <label for="storepass">Store Password:</label>
@@ -72,9 +81,9 @@
                 {% for sdk_id, sdk_config in workspace_sdks.items() %}
                 <div class="col-md-4">
                 {% if sdk_id in workspace_project.context.get("sdk_id_list", []) %}
-                {% module SDKConfigEntry(sdk_config, show_add = True, has_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), has_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
                 {% else %}
-                {% module SDKConfigEntry(sdk_config, show_add = True, meta_data = workspace_project.context.get("meta_data", {})) %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), meta_data = workspace_project.context.get("meta_data", {})) %}
                 {% end %}
                 </div>
                 {% end %}

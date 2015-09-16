@@ -21,6 +21,7 @@ import tornado.httpserver
 from handler import index
 from handler import workspace
 from handler import project
+from handler import build
 import module.ui
 
 handlers = [
@@ -28,6 +29,7 @@ handlers = [
     (r"/workspace/([^/]*)", workspace.WorkspaceHandler),
     (r"/project/([^/]*)/([^/]*)", project.ProjectHandler),
     (r"/new/([^/]*)", project.NewHandler),
+    (r"/build/([^/]*)/([^/]*)", build.BuildHandler),
 ]
 
 pwd = os.path.split(os.path.realpath(__file__))[0]
