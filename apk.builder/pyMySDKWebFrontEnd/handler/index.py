@@ -23,7 +23,7 @@ class IndexHandler(AHandler) :
 
     def get(self) :
         workspace_entry_list = []
-        settings = self.app.settings
+        settings = self.application.settings
         if settings.has_key("workspace") :
             for workspace in settings["workspace"] :
                 if not os.path.exists(workspace) :

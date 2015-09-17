@@ -15,13 +15,18 @@
 #
 
 import os,sys
+import threading,subprocess
+import tornado.websocket
+import tornado.web
 from ahandler import AHandler
 try :
     import pyMySDKAPKBuilder.workspace
+    import pyMySDKAPKBuilder.command
 except ImportError :
     pwd = os.path.split(os.path.realpath(__file__))[0]
     sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
     import pyMySDKAPKBuilder.workspace
+    import pyMySDKAPKBuilder.command
 
 class BuildHandler(AHandler) :
 
@@ -38,4 +43,54 @@ class BuildHandler(AHandler) :
             "workspace_project" : workspace_project,
             "workspace_sdks" : {sdk_config.get_config("id") : sdk_config for sdk_config in workspace_project.context["sdk_list"]},
         })
+
+
+class BuildProgressHandler(tornado.websocket.WebSocketHandler) :
+
+    def build_workspace_project(self, workspace_name, project_id) :
+        self.workspace_project = None
+        for workspace in self.application.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            self.workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_id, workspace)
+        pwd = os.path.split(os.path.realpath(__file__))[0]
+        mysdk_bin = os.path.join(pwd, os.pardir, os.pardir, "bin", "mysdk.py")
+        work_dir = self.workspace_project.context["work_dir"]
+        commands = [
+            "python",
+            mysdk_bin,
+            "--work-space", work_dir,
+            "--name", self.workspace_project.name,
+        ]
+        self.write_message(" ".join(commands) + "\n")
+        self.subprocess = subprocess.Popen(
+            commands,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+            bufsize = 1
+        )
+        self.write_message("Building...\n")
+        while True :
+            out = self.subprocess.stdout.readline()
+            if out :
+                self.write_message(out)
+            else :
+                break;
+        err = self.subprocess.stderr.read().strip()
+        if err and len(err) > 0 :
+            self.write_message(err)
+
+
+    def open(self, workspace_name, project_id) :
+        self.write_message("Start build...\n")
+        threading.Thread(target = self.build_workspace_project, args = (workspace_name, project_id)).start()
+        self.write_message("Please wait...\n")
+
+
+    def on_message(self, message) :
+        pass
+
+
+    def on_close(self) :
+        pass
 

@@ -28,12 +28,8 @@ class AHandler(tornado.web.RequestHandler) :
     layout = None
 
 
-    def initialize(self, app) :
-        self.app = app
-
-
     def get_workspace(self, workspace_name, project_name = "") :
-        for workspace in self.app.settings["workspace"] :
+        for workspace in self.application.settings["workspace"] :
             if workspace_name != os.path.split(workspace)[1] :
                 continue
             return pyMySDKAPKBuilder.workspace.WorkSpace(project_name, workspace)

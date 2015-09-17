@@ -59,7 +59,7 @@ class ProjectHandler(AHandler) :
                 workspace_project.init_keystore(keystore_file_path, new_project_storepass, new_project_alias, new_project_keypass)
                 break
 
-        settings = self.app.settings
+        settings = self.application.settings
         sdk_search_paths = settings.get("sdk_search_paths")
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         sdk_id_list = []
@@ -91,7 +91,7 @@ class ProjectHandler(AHandler) :
     def get(self, workspace_name, project_name) :
         workspace_project = self.get_workspace(workspace_name, project_name)
         workspace_project.init_sdk()
-        settings = self.app.settings
+        settings = self.application.settings
         sdk_search_paths = settings.get("sdk_search_paths")
 
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
@@ -118,7 +118,7 @@ class NewHandler(ProjectHandler) :
 
     def get(self, workspace_name) :
         workspace_project = self.get_workspace(workspace_name)
-        settings = self.app.settings
+        settings = self.application.settings
         sdk_search_paths = settings.get("sdk_search_paths")
         sdk_search_paths, workspace_sdks = workspace_project.all_sdk(sdk_search_paths)
         self.render("project.html", **{
@@ -135,7 +135,7 @@ class NewHandler(ProjectHandler) :
         new_project_id = self.get_body_argument("new_project_id")
 
         workspace_project = None
-        settings = self.app.settings
+        settings = self.application.settings
         sdk_search_paths = settings.get("sdk_search_paths")
         for workspace in self.settings["workspace"] :
             if workspace_name != os.path.split(workspace)[1] :

@@ -134,6 +134,10 @@
                 <h4 class="modal-title" id="mysdk-build-modal-label">Build Project</h4>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <textarea id="mysdk-build-log" class="form-control" rows="24" readonly>
+                    </textarea>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Close</button>
@@ -188,7 +192,16 @@ $(function(){
         });
     });
     $("#mysdk-build-modal").on("shown.bs.modal", function(e){
-        console.dir(e);
+        var hostAndPort = window.location.host;
+        var ws = new WebSocket("ws://"+hostAndPort+"/build/progress/{{ workspace_name }}/{{ project_name }}");
+        ws.onopen = function(evt) {
+        };
+        ws.onmessage = function(evt) {
+            var mysdkBuildLog = $("#mysdk-build-log");
+            var logText = mysdkBuildLog.text() + evt.data;
+            mysdkBuildLog.text(logText);
+            mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
+        };
     });
 });
 </script>

@@ -30,6 +30,7 @@ handlers = [
     (r"/project/([^/]*)/([^/]*)", project.ProjectHandler),
     (r"/new/([^/]*)", project.NewHandler),
     (r"/build/([^/]*)/([^/]*)", build.BuildHandler),
+    (r"/build/progress/([^/]*)/([^/]*)", build.BuildProgressHandler),
 ]
 
 pwd = os.path.split(os.path.realpath(__file__))[0]
@@ -49,18 +50,7 @@ class Application(tornado.web.Application) :
         self.settings.update(default_settings)
         self.settings.update(user_settings)
         self.settings.update(app_settings)
-        init_dict = {
-            "app" : self,
-        }
-        handler_list = []
-        for handler in handlers :
-            handler = list(handler)
-            if len(handler) > 2 :
-                handler[2].update(init_dict)
-            else :
-                handler.append(init_dict)
-            handler_list.append(handler)
-        tornado.web.Application.__init__(self, handler_list, **self.settings)
+        tornado.web.Application.__init__(self, handlers, **self.settings)
 
 
     def run(self, port = 8080) :

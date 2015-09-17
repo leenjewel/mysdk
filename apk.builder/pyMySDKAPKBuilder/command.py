@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import sys
 import subprocess
 
 class CommandUtil:
@@ -26,7 +27,8 @@ class CommandUtil:
             py_out_line = pipe.stdout.readline()
             if py_out_line == '':
                 break
-            print options.get("out_prefix", "") + py_out_line.strip()
+            sys.stdout.write(options.get("out_prefix", "") + py_out_line)
+            sys.stdout.flush()
         error = pipe.stderr.read().strip()
         if len(error) :
             return error
