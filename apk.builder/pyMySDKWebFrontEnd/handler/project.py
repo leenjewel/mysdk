@@ -37,6 +37,9 @@ class ProjectHandler(AHandler) :
         project_desc = self.get_body_argument("project_desc")
         workspace_project.init_project_info(project_name, project_desc)
 
+        project_output_apk = self.get_body_argument("project_output_apk")
+        workspace_project.init_output_apk(project_output_apk)
+
         workspace_project.init_android_platform(new_project_platform)
 
         apk_file_list = self.request.files.get("new_project_apk")
@@ -84,6 +87,10 @@ class ProjectHandler(AHandler) :
                     metadata_dict[meta_key] = metadata_val
         workspace_project.context["meta_data"] = {}
         workspace_project.init_metadata(metadata_dict)
+
+        project_package_name = self.get_body_argument("project_package_name")
+        if project_package_name :
+            workspace_project.init_metadata("PACKAGE", project_package_name)
 
         workspace_project.save()
         return workspace_project

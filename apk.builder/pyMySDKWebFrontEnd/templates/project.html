@@ -68,6 +68,22 @@
             {% end %}
         </div>
         <div class="form-group">
+            <label for="apkPackageName">APK Package Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_package_name" id="project-package-name" placeholder="APK Package Name" value="{{ workspace_project.context.get('meta_data',{}).get('PACKAGE', '') }}" readonly />
+            {% else %}
+            <input type="text" class="form-control" name="project_package_name" id="project-package-name" placeholder="APK Package Name" value="{{ workspace_project.context.get('meta_data',{}).get('PACKAGE', '') }}" />
+            {% end %}
+        </div>
+        <div class="form-group">
+            <label for="outputAPK">Output APK Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.context['output_apk'] }}" readonly />
+            {% else %}
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.context['output_apk'] }}" />
+            {% end %}
+        </div>
+        <div class="form-group">
             <label for="keystore">Keystore File:</label>
             {% if workspace_project.context.get("keystore") %}
             <h4 class="label label-info form-control">{{ workspace_project.context["keystore"] }}</h4>
@@ -166,9 +182,16 @@ function mysdkUpdateProject() {
 }
 
 function mysdkBuildProject() {
-    $("#mysdk-build-modal").modal({
-        backdrop : "static"
-    });
+    $.post(
+        "/build/{{ workspace_name }}/{{ project_name }}",
+        {},
+        function(){
+            $("#mysdk-build-modal").modal({
+                backdrop : "static"
+            });
+        },
+        "json"
+    );
 }
 
 $(function(){
@@ -192,16 +215,71 @@ $(function(){
         });
     });
     $("#mysdk-build-modal").on("shown.bs.modal", function(e){
-        var hostAndPort = window.location.host;
-        var ws = new WebSocket("ws://"+hostAndPort+"/build/progress/{{ workspace_name }}/{{ project_name }}");
-        ws.onopen = function(evt) {
-        };
-        ws.onmessage = function(evt) {
-            var mysdkBuildLog = $("#mysdk-build-log");
-            var logText = mysdkBuildLog.text() + evt.data;
-            mysdkBuildLog.text(logText);
-            mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
-        };
+        if (window.WebSocket) {
+            var hostAndPort = window.location.host;
+            if (window.__mysdkBuildProgressWS) {
+                window.__mysdkBuildProgressWS.close();
+                window.__mysdkBuildProgressWS = undefined;
+            }
+            window.__mysdkBuildProgressWS = new WebSocket("ws://"+hostAndPort+"/build/progress/{{ workspace_name }}/{{ project_name }}");
+            window.__mysdkBuildProgressWS.onopen = function(evt) {
+                var data = {
+                    workspace_name : "{{ workspace_name }}",
+                    project_id : "{{ project_name }}",
+                    seek : (window.__mysdkBuildProgressSeek || 0)
+                };
+                window.__mysdkBuildProgressWS.send(JSON.stringify(data));
+            };
+            window.__mysdkBuildProgressWS.onmessage = function(evt) {
+                var data = JSON.parse(evt.data);
+                var mysdkBuildLog = $("#mysdk-build-log");
+                var logText = mysdkBuildLog.text() + data.data;
+                mysdkBuildLog.text(logText);
+                mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
+                if (0 <= data.seek) {
+                    window.__mysdkBuildProgressSeek = data.seek;
+                } else {
+                    window.__mysdkBuildProgressSeek = 0;
+                    if (window.__mysdkBuildProgressWS) {
+                        window.__mysdkBuildProgressWS.close()
+                    }
+                }
+            };
+        } else {
+            var mysdkBuildProgressPS = function(seek) {
+                if (window.__mysdkBuildProgressModalClose) {
+                    return;
+                }
+                $.post(
+                    "/build/progress/{{ workspace_name }}/{{ project_name }}",
+                    {
+                        seek : seek
+                    },
+                    function(data){
+                        var mysdkBuildLog = $("#mysdk-build-log");
+                        var logText = mysdkBuildLog.text() + data.data;
+                        mysdkBuildLog.text(logText);
+                        mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
+                        if (0 <= data.seek) {
+                            window.__mysdkBuildProgressSeek = data.seek;
+                            mysdkBuildProgressPS(data.seek);
+                        } else {
+                            window.__mysdkBuildProgressSeek = 0;
+                        }
+                    },
+                    "json"
+                );
+            };
+            window.__mysdkBuildProgressModalClose = false;
+            mysdkBuildProgressPS((window.__mysdkBuildProgressSeek || 0))
+        }
+    });
+    $("#mysdk-build-modal").on("hide.bs.modal", function(e){
+        if (window.__mysdkBuildProgressWS) {
+            window.__mysdkBuildProgressWS.close();
+            window.__mysdkBuildProgressWS = undefined;
+        }
+        window.__mysdkBuildProgressModalClose = true;
     });
 });
 </script>

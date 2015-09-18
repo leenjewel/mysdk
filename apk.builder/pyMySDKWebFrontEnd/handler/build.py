@@ -15,6 +15,7 @@
 #
 
 import os,sys
+import json
 import threading,subprocess
 import tornado.websocket
 import tornado.web
@@ -22,15 +23,53 @@ from ahandler import AHandler
 try :
     import pyMySDKAPKBuilder.workspace
     import pyMySDKAPKBuilder.command
+    import pyMySDKAPKBuilder.lock
 except ImportError :
     pwd = os.path.split(os.path.realpath(__file__))[0]
     sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
     import pyMySDKAPKBuilder.workspace
     import pyMySDKAPKBuilder.command
+    import pyMySDKAPKBuilder.lock
 
 class BuildHandler(AHandler) :
 
     layout = "default.html"
+
+
+    def build_workspace_project(self, workspace_name, project_id) :
+        self.workspace_project = None
+        for workspace in self.application.settings["workspace"] :
+            if workspace_name != os.path.split(workspace)[1] :
+                continue
+            self.workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_id, workspace)
+        pwd = os.path.split(os.path.realpath(__file__))[0]
+        mysdk_bin = os.path.join(pwd, os.pardir, os.pardir, "bin", "mysdk.py")
+        work_dir = self.workspace_project.context["work_dir"]
+        build_lock_file = os.path.join(work_dir, "build.lock")
+        build_lock = pyMySDKAPKBuilder.lock.FileLock(build_lock_file)
+        if not build_lock.lock(True) :
+            return
+        commands = [
+            "python",
+            mysdk_bin,
+            "--work-space", os.path.join(work_dir, os.pardir),
+            "--name", self.workspace_project.name,
+        ]
+        self.build_out = open(os.path.join(work_dir, "build.out"), "w")
+        self.build_err = open(os.path.join(work_dir, "build.err"), "w")
+        self.subprocess = subprocess.Popen(
+            commands,
+            stdout = self.build_out.fileno(),
+            stderr = self.build_err.fileno(),
+            bufsize = 1
+        )
+        while self.subprocess.poll() is None :
+            pass
+        self.build_out.close()
+        self.build_err.close()
+        build_lock.unlock()
+        os.remove(build_lock_file)
+
 
     def get(self, workspace_name, project_id) :
         workspace_project = self.get_workspace(workspace_name, project_id)
@@ -45,52 +84,82 @@ class BuildHandler(AHandler) :
         })
 
 
+    def post(self, workspace_name, project_id) :
+        threading.Thread(target = self.build_workspace_project, args = (workspace_name, project_id)).start()
+        self.write(json.dumps({"ret" : 0}))
+
+
 class BuildProgressHandler(tornado.websocket.WebSocketHandler) :
 
-    def build_workspace_project(self, workspace_name, project_id) :
-        self.workspace_project = None
+    def progress_workspace_project(self, workspace_name, project_id, seek = 0, is_websocket = True) :
+        out = ""
+        workspace_project = None
         for workspace in self.application.settings["workspace"] :
             if workspace_name != os.path.split(workspace)[1] :
                 continue
-            self.workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_id, workspace)
-        pwd = os.path.split(os.path.realpath(__file__))[0]
-        mysdk_bin = os.path.join(pwd, os.pardir, os.pardir, "bin", "mysdk.py")
-        work_dir = self.workspace_project.context["work_dir"]
-        commands = [
-            "python",
-            mysdk_bin,
-            "--work-space", work_dir,
-            "--name", self.workspace_project.name,
-        ]
-        self.write_message(" ".join(commands) + "\n")
-        self.subprocess = subprocess.Popen(
-            commands,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE,
-            bufsize = 1
-        )
-        self.write_message("Building...\n")
-        while True :
-            out = self.subprocess.stdout.readline()
-            if out :
-                self.write_message(out)
+            workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_id, workspace)
+        work_dir = workspace_project.context["work_dir"]
+        build_lock_file = os.path.join(work_dir, "build.lock")
+        build_out = open(os.path.join(work_dir, "build.out"), "r")
+        build_out.seek(seek)
+        try :
+            if not os.path.isfile(build_lock_file) :
+                out = build_out.read()
+                seek = -1
+                if is_websocket :
+                    self.write_message(json.dumps({"seek" : seek, "data" : out}))
             else :
-                break;
-        err = self.subprocess.stderr.read().strip()
-        if err and len(err) > 0 :
-            self.write_message(err)
+                while os.path.isfile(build_lock_file) :
+                    out = build_out.readline()
+                    if not out :
+                        if not is_websocket :
+                            out = ""
+                            break;
+                        continue
+                    seek += len(out)
+                    if is_websocket :
+                        self.write_message(json.dumps({"seek" : seek, "data" : out}))
+                    else :
+                        break;
+        except tornado.websocket.WebSocketClosedError :
+            pass
+        finally :
+            build_out.close();
+        try :
+            build_err = open(os.path.join(work_dir, "build.err"), "r")
+            error = build_err.read()
+            if error :
+                if is_websocket :
+                    self.write_message(json.dumps({"seek" : seek, "data" : error}))
+                else :
+                    out += error
+        except tornado.websocket.WebSocketClosedError :
+            pass
+        finally :
+            build_err.close()
+        if is_websocket :
+            self.write_message(json.dumps({"seek" : -1, "data" : ""}))
+        else :
+            self.write(json.dumps({"seek" : seek, "data" : out.decode('string_escape')}))
 
 
     def open(self, workspace_name, project_id) :
-        self.write_message("Start build...\n")
-        threading.Thread(target = self.build_workspace_project, args = (workspace_name, project_id)).start()
-        self.write_message("Please wait...\n")
+        pass
 
 
     def on_message(self, message) :
-        pass
+        data = json.loads(message)
+        workspace_name = data["workspace_name"]
+        project_id = data["project_id"]
+        seek = data.get("seek", 0)
+        threading.Thread(target = self.progress_workspace_project, args = (workspace_name, project_id, seek)).start()
 
 
     def on_close(self) :
         pass
+
+
+    def post(self, workspace_name, project_id) :
+        seek = self.get_body_argument("seek", 0)
+        self.progress_workspace_project(workspace_name, project_id, int(seek), False)
 

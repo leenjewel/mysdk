@@ -124,11 +124,11 @@ class APKBuilder :
         context.apk_activity_main_filter = XMLUtil.find_element(context.apk_activity_main, "intent-filter/action[@android:name='android.intent.action.MAIN']/..")
         context.apk_activity_main.remove(context.apk_activity_main_filter)
 
-        context.meta_data["{{LAUNCH_ACTIVITY}}"] = XMLUtil.get_element_attr(context.apk_activity_main, "name")
-        if (not context.meta_data.has_key("{{PACKAGE}}")) :
-            context.meta_data["{{PACKAGE}}"] = context.apk_manifest.get_package_name()
+        context.meta_data["LAUNCH_ACTIVITY"] = XMLUtil.get_element_attr(context.apk_activity_main, "name")
+        if (not context.meta_data.has_key("PACKAGE")) :
+            context.meta_data["PACKAGE"] = context.apk_manifest.get_package_name()
         else :
-            context.apk_manifest.set_package_name(context.meta_data["{{PACKAGE}}"])
+            context.apk_manifest.set_package_name(context.meta_data["PACKAGE"])
         return context
 
 
@@ -148,7 +148,7 @@ class APKBuilder :
             sdk_android_manifest_data = fp.read()
             fp.close()
             for key, val in context.meta_data.items() :
-                sdk_android_manifest_data = sdk_android_manifest_data.replace(key, val)
+                sdk_android_manifest_data = sdk_android_manifest_data.replace("{{"+key+"}}", val)
             context.apk_manifest.merge(sdk_android_manifest_data)
         return context
 
@@ -161,7 +161,7 @@ class APKBuilder :
             sdk_uses_permission_data = fp.read()
             fp.close()
             for key, val in context.meta_data.items() :
-                sdk_uses_permission_data = sdk_uses_permission_data.replace(key, val)
+                sdk_uses_permission_data = sdk_uses_permission_data.replace("{{"+key+"}}", val)
             context.apk_manifest.merge(sdk_uses_permission_data)
         return context
 
@@ -443,23 +443,18 @@ class APKBuilder :
     def clean(self, context) :
         if context.apk_dir and os.path.exists(context.apk_dir) :
             shutil.rmtree(context.apk_dir)
+        output_apk = context.output_apk
         if context.align_apk_path and os.path.isfile(context.align_apk_path) :
             if context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
                 os.remove(context.unsigned_apk_path)
             if context.signed_apk_path and os.path.isfile(context.signed_apk_path) :
                 os.remove(context.signed_apk_path)
-            output_apk = os.path.join(os.path.split(context.align_apk_path)[0], "out.apk")
             os.rename(context.align_apk_path, output_apk)
-            context.output_apk = os.path.abspath(output_apk)
         elif context.signed_apk_path and os.path.isfile(context.signed_apk_path) :
             if context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
                 os.remove(context.unsigned_apk_path)
-            output_apk = os.path.join(os.path.split(context.signed_apk_path)[0], "out.apk")
             os.rename(context.signed_apk_path, output_apk)
-            context.output_apk = os.path.abspath(output_apk)
         elif context.unsigned_apk_path and os.path.isfile(context.unsigned_apk_path) :
-            output_apk = os.path.join(os.path.split(context.unsigned_apk_path)[0], "out.apk")
             os.rename(context.unsigned_apk_path, output_apk)
-            context.output_apk = os.path.abspath(output_apk)
         return context
 

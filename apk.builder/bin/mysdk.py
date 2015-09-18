@@ -84,6 +84,9 @@ if __name__ == '__main__' :
     if args.apk_path :
         work_space.init_apk(args.apk_path)
 
+    if args.output :
+        work_space.init_output_apk(args.output)
+
     work_space.init_sdk(args.sdk_list, args.sdk_path)
 
     if args.platform :
@@ -103,7 +106,7 @@ if __name__ == '__main__' :
                     work_space.init_metadata(meta_data_kv[0])
 
     if args.package :
-        work_space.init_metadata("{{PACKAGE}}", args.package)
+        work_space.init_metadata("PACKAGE", args.package)
 
     work_space.init_keystore(args.keystore, args.storepass, args.alias, args.keypass)
 

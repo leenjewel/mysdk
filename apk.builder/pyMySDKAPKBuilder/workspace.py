@@ -37,6 +37,7 @@ context = {
     java, javac, jar, jarsigner,
     apktool, baksmali,
     apk_path : "",
+    output_apk : "",
     keystore, storepass, alias, keypass,
 }
 """
@@ -60,6 +61,7 @@ class WorkSpace(object) :
         }
         self.init_work_space(name, root)
         self.init_project_info()
+        self.init_output_apk()
         self.init_android_sdk()
         self.init_java_sdk()
         self.init_apktool()
@@ -117,6 +119,20 @@ class WorkSpace(object) :
             else :
                 desc = name
         self.context["project_desc"] = desc
+
+
+    def init_output_apk(self, output_name = None) :
+        if output_name is None :
+            if self.context.has_key("output_apk") :
+                output_name = self.context["output_apk"]
+            else :
+                output_name = self.name + ".output.apk"
+        if ".apk" != output_name[-4:] :
+            output_name += ".apk"
+        output_path, output_name = os.path.split(output_name)
+        if not output_path :
+            output_path = self.context["work_dir"]
+        self.context["output_apk"] = os.path.abspath(os.path.join(output_path, output_name))
 
 
     def init_android_sdk(self) :
@@ -261,6 +277,7 @@ class WorkSpace(object) :
             "sdk_id_list" : [sdk.get_config("id") for sdk in self.context["sdk_list"]],
             "sdk_search_path" : list(set(self.context["sdk_search_path"])),
             "apk_path" : self.context["apk_path"],
+            "output_apk" : self.context["output_apk"],
             "android_platform" : self.context["android_platform"],
             "meta_data" : self.context["meta_data"],
         }
