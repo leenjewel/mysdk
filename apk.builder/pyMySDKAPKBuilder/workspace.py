@@ -135,6 +135,10 @@ class WorkSpace(object) :
         self.context["output_apk"] = os.path.abspath(os.path.join(output_path, output_name))
 
 
+    def get_output_name(self) :
+        return os.path.split(self.context["output_apk"])[1]
+
+
     def init_android_sdk(self) :
         tools = ["aapt", "dx", "zipalign"]
         for tool in tools :

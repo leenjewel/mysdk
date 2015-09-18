@@ -78,9 +78,9 @@
         <div class="form-group">
             <label for="outputAPK">Output APK Name:</label>
             {% if is_build_project %}
-            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.context['output_apk'] }}" readonly />
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.get_output_name() }}" readonly />
             {% else %}
-            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.context['output_apk'] }}" />
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.get_output_name() }}" />
             {% end %}
         </div>
         <div class="form-group">
@@ -121,18 +121,18 @@
         </div>
         <div class="form-group">
             {% if is_build_project %}
-            <div class="btn btn-primary btn-lg" onclick="mysdkBuildProject()">
+            <div id="mysdk-build-btn" class="btn btn-primary btn-lg" onclick="mysdkBuildProject()">
                 <span class="glyphicon glyphicon-fire"></span>
                 <span class="btn-text">Build Project</span>
             </div>
             {% else %}
             {% if is_create_project %}
-            <div class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
+            <div id="mysdk-project-btn" class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
                 <span class="glyphicon glyphicon-floppy-save"></span>
                 <span class="btn-text">Create Project</span>
             </div>
             {% else %}
-            <div class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
+            <div id="mysdk-project-btn" class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
                 <span class="glyphicon glyphicon-floppy-save"></span>
                 <span class="btn-text">Save Project</span>
             </div>
@@ -151,17 +151,21 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <textarea id="mysdk-build-log" class="form-control" rows="24" readonly>
+                    <textarea id="mysdk-build-log" class="form-control" rows="16" readonly>
                     </textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Close</button>
+                <button id="mysdk-build-modal-btn" type="button" class="btn btn-primary btn-lg">Get APK</button>
             </div>
         </div>
     </div>
 </div>
 <!-- Build Modal End -->
+<!-- Build Download Begin -->
+<iframe id="mysdk-build-download-iframe" src="#" width="1" height="1" frameborder="0">
+</iframe>
+<!-- Build Download End -->
 <script type="text/javascript">
 function mysdkUpdateProject() {
     var projectForm = $("#mysdk-project-form");
@@ -215,6 +219,12 @@ $(function(){
         });
     });
     $("#mysdk-build-modal").on("shown.bs.modal", function(e){
+        if (!window.__mysdkBuildProgressSeek) {
+            var mysdkBuildLog = $("#mysdk-build-log");
+            mysdkBuildLog.text("");
+            mysdkBuildLog.scrollTop(0);
+        }
+        $("#mysdk-build-modal-btn").button("loading");
         if (window.WebSocket) {
             var hostAndPort = window.location.host;
             if (window.__mysdkBuildProgressWS) {
@@ -243,6 +253,7 @@ $(function(){
                     if (window.__mysdkBuildProgressWS) {
                         window.__mysdkBuildProgressWS.close()
                     }
+                    $("#mysdk-build-modal-btn").button("reset");
                 }
             };
         } else {
@@ -265,6 +276,7 @@ $(function(){
                             mysdkBuildProgressPS(data.seek);
                         } else {
                             window.__mysdkBuildProgressSeek = 0;
+                            $("#mysdk-build-modal-btn").button("reset");
                         }
                     },
                     "json"
@@ -280,6 +292,21 @@ $(function(){
             window.__mysdkBuildProgressWS = undefined;
         }
         window.__mysdkBuildProgressModalClose = true;
+        $("#mysdk-build-modal-btn").button("reset");
+    });
+    $("#mysdk-build-modal-btn").on("click", function(e){
+        var iframeDoc = (document.getElementById('mysdk-build-download-iframe').contentWindow.document);
+        var mysdkBuildDownloadForm = iframeDoc.getElementById("mysdk-build-download-form");
+        if (mysdkBuildDownloadForm) {
+            iframeDoc.removeChild(mysdkBuildDownloadForm);
+        }
+        mysdkBuildDownloadForm = iframeDoc.createElement("form");
+        mysdkBuildDownloadForm.setAttribute("id", "mysdk-build-download-form");
+        mysdkBuildDownloadForm.setAttribute("method", "get");
+        mysdkBuildDownloadForm.setAttribute("action", "/download/{{ workspace_name }}/{{ project_name }}");
+        iframeDoc.body.appendChild(mysdkBuildDownloadForm);
+        mysdkBuildDownloadForm.submit();
+        $("#mysdk-build-modal").modal("hide");
     });
 });
 </script>
