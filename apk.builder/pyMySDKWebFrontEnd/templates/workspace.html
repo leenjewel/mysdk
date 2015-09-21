@@ -26,6 +26,10 @@
         </div>
     </div>
 </div>
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li class="active">{{ workspace_name }}</li>
+</ol>
 <script type="text/javascript">
 function mysdkDeleteProject(workspaceName, projectID) {
     if (true === confirm("Do you want to delete project ["+projectID+"] ?")) {

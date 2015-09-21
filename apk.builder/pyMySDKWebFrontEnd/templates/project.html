@@ -142,6 +142,16 @@
     </form>
 </div>
 </div>
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    {% if is_build_project %}
+    <li><a href="/project/{{ workspace_name }}/{{ project_name }}">{{ project_name }}</a></li>
+    <li class="active">build</li>
+    {% else %}
+    <li class="active">{{ project_name }}</li>
+    {% end %}
+</ol>
 <!-- Build Modal Begin -->
 <div class="modal fade" id="mysdk-build-modal" tabindex="-1" role="dialog" aria-labelledby="mysdk-build-modal-label">
     <div class="modal-dialog modal-lg">
