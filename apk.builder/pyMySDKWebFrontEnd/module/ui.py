@@ -23,7 +23,10 @@ class AUIModule(tornado.web.UIModule) :
         return self.render_string("ui/" + self.__class__.__name__.lower() + ".html", **kwargs)
 
 class WorkSpaceEntry(AUIModule) :
-    pass
+    def render(self, entry, **kwargs) :
+        if not kwargs.has_key("is_create_workspace") :
+            kwargs["is_create_workspace"] = False
+        return AUIModule.render(self, entry, **kwargs)
 
 
 class ProjectEntry(AUIModule) :

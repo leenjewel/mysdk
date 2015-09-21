@@ -52,6 +52,7 @@ class Application(tornado.web.Application) :
         self.settings.update(default_settings)
         self.settings.update(user_settings)
         self.settings.update(app_settings)
+        self.init_workspace()
         tornado.web.Application.__init__(self, handlers, **self.settings)
 
 
@@ -59,6 +60,33 @@ class Application(tornado.web.Application) :
         http_server = tornado.httpserver.HTTPServer(self)
         http_server.listen(port)
         tornado.ioloop.IOLoop.current().start()
+
+
+    def init_workspace(self) :
+        if not self.settings.has_key("workspace") or not isinstance(self.settings["workspace"], list) :
+            self.settings["workspace"] = []
+        else :
+            self.settings["workspace"] = [workspace_root for workspace_root in self.settings["workspace"] if os.path.exists(workspace_root)]
+        for path, dirs, files in os.walk(os.getcwd()) :
+            for workspace_dir in dirs :
+                self.add_workspace(os.path.join(path, workspace_dir))
+
+
+    def has_workspace(self, workspace_path) :
+        for workspace_root in self.settings["workspace"] :
+            if os.path.samefile(workspace_root, workspace_path) :
+                return True
+        return False
+
+
+    def add_workspace(self, workspace_path) :
+        if not self.has_workspace(workspace_path) :
+            self.settings["workspace"].append(workspace_path)
+
+
+    def del_workspace(self, workspace_path) :
+        self.settings["workspace"] = [workspace_root for workspace_root in self.settings["workspace"] if os.path.exists(workspace_root)]
+
 
 
 if __name__ == "__main__" :

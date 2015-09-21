@@ -14,8 +14,14 @@
 # limitations under the License.
 #
 
-import os,sys
+import os,sys,shutil
 from ahandler import AHandler
+try :
+    import pyMySDKAPKBuilder.workspace
+except ImportError :
+    pwd = os.path.split(os.path.realpath(__file__))[0]
+    sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
+    import pyMySDKAPKBuilder.workspace
 
 class IndexHandler(AHandler) :
 
@@ -25,15 +31,48 @@ class IndexHandler(AHandler) :
         workspace_entry_list = []
         settings = self.application.settings
         if settings.has_key("workspace") :
-            for workspace in settings["workspace"] :
-                if not os.path.exists(workspace) :
+            for workspace_path in settings["workspace"] :
+                if not os.path.exists(workspace_path) :
                     continue
                 workspace_entry = {
-                    "name" : os.path.split(workspace)[1],
+                    "name" : os.path.split(workspace_path)[1],
+                    "workspace" : pyMySDKAPKBuilder.workspace.WorkSpace("./", workspace_path)
                 }
-                for path, dirs, files in os.walk(workspace) :
+                for path, dirs, files in os.walk(workspace_path) :
                     workspace_entry["count"] = len(dirs)
                     break
                 workspace_entry_list.append(workspace_entry)
-        self.render("index.html", workspace_entry_list = workspace_entry_list)
+        self.render("index.html",
+            workspace_entry_list = workspace_entry_list
+        )
+
+
+    def post(self) :
+        workspace_path = self.get_body_argument("delete_workspace_path", None)
+        if workspace_path :
+            return self.delete()
+        workspace_id = self.get_body_argument("new_workspace_id")
+        workspace_name = self.get_body_argument("new_workspace_name")
+        workspace_desc = self.get_body_argument("new_workspace_desc")
+        cwd = os.getcwd()
+        workspace_root = os.path.join(cwd, workspace_id)
+        is_create_workspace = False
+        if not os.path.exists(workspace_root) :
+            is_create_workspace = True
+            os.mkdir(workspace_root)
+        workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace("./", workspace_root)
+        workspace_project.init_project_info(workspace_name, workspace_desc)
+        if is_create_workspace :
+            workspace_project.context["sdk_search_path"] = self.application.settings.get("sdk_search_paths", [])
+        workspace_project.save()
+        self.application.add_workspace(workspace_root)
+        return self.get()
+
+
+    def delete(self) :
+        workspace_path = os.path.abspath(self.get_body_argument("delete_workspace_path"))
+        if os.path.exists(workspace_path) :
+            shutil.rmtree(workspace_path)
+        self.application.del_workspace(workspace_path)
+        return self.get()
 
