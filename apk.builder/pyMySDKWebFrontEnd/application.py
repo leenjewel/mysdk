@@ -30,6 +30,7 @@ handlers = [
     (r"/workspace/([^/]*)/?", workspace.WorkspaceHandler),
     (r"/project/([^/]*)/([^/]*)/?", project.ProjectHandler),
     (r"/new/([^/]*)/?", project.NewHandler),
+    (r"/del/([^/]*)/([^/]*)/?", project.DelHandler),
     (r"/build/([^/]*)/([^/]*)/?", build.BuildHandler),
     (r"/build/progress/([^/]*)/([^/]*)/?", build.BuildProgressHandler),
     (r"/download/([^/]*)/([^/]*)/?", download.DownloadHandler),

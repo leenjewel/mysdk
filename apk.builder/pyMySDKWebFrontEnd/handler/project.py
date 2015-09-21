@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-import os,sys
+import os,sys,shutil
 from ahandler import AHandler
 try :
     import pyMySDKAPKBuilder.workspace
@@ -152,6 +152,21 @@ class NewHandler(ProjectHandler) :
             workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(new_project_id, workspace)
             break
         workspace_project = self.update_project(workspace_project)
+        return self.redirect("/workspace/%s"  %(workspace_name))
+
+
+class DelHandler(AHandler) :
+
+    def get(self, workspace_name, project_id) :
+        return self.post(workspace_name, project_id)
+
+
+    def post(self, workspace_name, project_id) :
+        workspace_project = self.get_workspace(workspace_name, project_id)
+        if workspace_project and os.path.exists(workspace_project.context["work_dir"]):
+            if os.path.samefile(workspace_project.context["work_dir"], workspace_project.root) :
+                self.application.del_workspace(workspace_project.root)
+            shutil.rmtree(workspace_project.context["work_dir"])
         return self.redirect("/workspace/%s"  %(workspace_name))
 
 

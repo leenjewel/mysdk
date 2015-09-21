@@ -15,13 +15,21 @@
                     <h3 class="panel-title">New Project</h3>
                 </div>
                 <div class="panel-body">
-                    <a class="btn btn-default btn-lg" href="/new/{{ workspace_name }}">
-                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                    <span>New Project</span>
-                    </a>
+                    <div class="form-group">
+                        <a class="btn btn-default btn-lg form-control" style="height:auto;" href="/new/{{ workspace_name }}">
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                            <span>New Project</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<script type="text/javascript">
+function mysdkDeleteProject(workspaceName, projectID) {
+    if (true === confirm("Do you want to delete project ["+projectID+"] ?")) {
+        window.location.href = "/del/" + workspaceName + "/" + projectID;
+    }
+}
+</script>
