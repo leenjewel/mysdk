@@ -27,11 +27,24 @@ setup(
     author = "leenjewel",
     author_email = "leenjewel@gmail.com",
 
-    packages = ["pyMySDKAPKBuilder"],
+    packages = [
+        "pyMySDKAPKBuilder",
+        "pyMySDKWebFrontEnd",
+        "pyMySDKWebFrontEnd.handler",
+        "pyMySDKWebFrontEnd.module",
+    ],
     package_data = {
         "pyMySDKAPKBuilder" : [
             "jar/baksmali.jar",
             "jar/apktool.jar",
+        ],
+        "pyMySDKWebFrontEnd" : [
+            "templates/*.html",
+            "templates/layouts/*",
+            "templates/ui/*",
+            "resources/css/*",
+            "resources/js/*",
+            "resources/fonts/*",
         ],
     },
     include_package_data = True,
