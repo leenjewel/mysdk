@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B1923A11BB19B18004BB7ED /* MySDKKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B1923A01BB19B18004BB7ED /* MySDKKit.m */; settings = {ASSET_TAGS = (); }; };
 		2BAFAAAA1BB16281002B93B0 /* MySDKCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAA31BB16281002B93B0 /* MySDKCallback.cpp */; settings = {ASSET_TAGS = (); }; };
 		2BAFAAAB1BB16281002B93B0 /* MySDKListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAA51BB16281002B93B0 /* MySDKListener.cpp */; settings = {ASSET_TAGS = (); }; };
 		2BAFAAAD1BB1631A002B93B0 /* MySDK-iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */; settings = {ASSET_TAGS = (); }; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B1923991BB197D8004BB7ED /* MySDKKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MySDKKit.h; path = ../src/MySDKKit.h; sourceTree = "<group>"; };
+		2B1923A01BB19B18004BB7ED /* MySDKKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MySDKKit.m; path = ../src/MySDKKit.m; sourceTree = "<group>"; };
 		2BAFAA951BB160CC002B93B0 /* libmysdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmysdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BAFAAA21BB16281002B93B0 /* MySDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDK.h; path = ../src/MySDK.h; sourceTree = "<group>"; };
 		2BAFAAA31BB16281002B93B0 /* MySDKCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MySDKCallback.cpp; path = ../src/MySDKCallback.cpp; sourceTree = "<group>"; };
@@ -76,6 +79,8 @@
 				2BAFAAA81BB16281002B93B0 /* MySDKLuaBind.h */,
 				2BAFAAA91BB16281002B93B0 /* MySDKLuaCallback.h */,
 				2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */,
+				2B1923991BB197D8004BB7ED /* MySDKKit.h */,
+				2B1923A01BB19B18004BB7ED /* MySDKKit.m */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BAFAAAB1BB16281002B93B0 /* MySDKListener.cpp in Sources */,
+				2B1923A11BB19B18004BB7ED /* MySDKKit.m in Sources */,
 				2BAFAAAA1BB16281002B93B0 /* MySDKCallback.cpp in Sources */,
 				2BAFAAAD1BB1631A002B93B0 /* MySDK-iOS.mm in Sources */,
 			);
