@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>MySDK</title>
+        <link rel="stylesheet" href="{{ static_url('css/bootstrap.min.css', include_version = False) }}" />
+        <link rel="stylesheet" href="{{ static_url('css/bootstrap-theme.min.css', include_version = False) }}" />
+        <script type="text/javascript" src="{{ static_url('js/jquery.min.js', include_version = False) }}"></script>
+        <script type="text/javascript" src="{{ static_url('js/bootstrap.min.js', include_version = False) }}"></script>
+    <head>
+    <body>
+    <nav class="navbar navbar-default navbar-static-top navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <p class="navbar-brand">MySDK</p>
+            </div>
+        </div>
+    </nav>
+    {% raw content %}
+    </body>
+</html>

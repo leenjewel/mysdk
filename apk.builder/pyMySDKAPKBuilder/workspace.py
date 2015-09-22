@@ -15,6 +15,33 @@
 # limitations under the License.
 #
 
+"""
+context = {
+
+    ####--------  Project  --------####
+    project_name : "",
+    project_desc : "",
+
+    ####----------  SDK  ----------####
+    sdk_search_path : [],
+    sdk_id_list : [],
+    sdk_list : [],
+    meta_data : {},
+    work_dir : "",
+
+    ####------  Android ENV  ------####
+    android_sdk_root : "",
+    android_platform_list : [],
+    android_platform,
+    aapt, dx, zipalign,
+    java, javac, jar, jarsigner,
+    apktool, baksmali,
+    apk_path : "",
+    output_apk : "",
+    keystore, storepass, alias, keypass,
+}
+"""
+
 import os
 import json
 import shutil
@@ -33,9 +60,15 @@ class WorkSpace(object) :
                 "meta_data" : {},
         }
         self.init_work_space(name, root)
+        self.init_project_info()
+        self.init_output_apk()
         self.init_android_sdk()
         self.init_java_sdk()
         self.init_apktool()
+
+
+    def rootname(self) :
+        return os.path.split(os.path.abspath(self.root))[1]
 
 
     def init_work_space(self, name, root) :
@@ -73,6 +106,41 @@ class WorkSpace(object) :
         return None
 
 
+    def init_project_info(self, name = None, desc = None) :
+        if name is None or len(name) == 0 :
+            if self.context.has_key("project_name") :
+                name = self.context["project_name"]
+            elif os.path.samefile(self.root, self.context["work_dir"]) :
+                name = self.rootname()
+            else :
+                name = self.name
+        self.context["project_name"] = name
+        if desc is None or len(desc) == 0 :
+            if self.context.has_key("project_desc") :
+                desc = self.context["project_desc"]
+            else :
+                desc = name
+        self.context["project_desc"] = desc
+
+
+    def init_output_apk(self, output_name = None) :
+        if output_name is None :
+            if self.context.has_key("output_apk") :
+                output_name = self.context["output_apk"]
+            else :
+                output_name = self.name + ".output.apk"
+        if ".apk" != output_name[-4:] :
+            output_name += ".apk"
+        output_path, output_name = os.path.split(output_name)
+        if not output_path :
+            output_path = self.context["work_dir"]
+        self.context["output_apk"] = os.path.abspath(os.path.join(output_path, output_name))
+
+
+    def get_output_name(self) :
+        return os.path.split(self.context["output_apk"])[1]
+
+
     def init_android_sdk(self) :
         tools = ["aapt", "dx", "zipalign"]
         for tool in tools :
@@ -99,6 +167,11 @@ class WorkSpace(object) :
         self.context["android_sdk_root"] = os.path.abspath(os.path.join(find_dir, os.pardir, os.pardir))
         for tool in tools :
             self.context[tool] = os.path.abspath(os.path.join(find_dir, tool))
+        self.context["android_platform_list"] = []
+        for path, dirs, files in os.walk(os.path.join(self.context["android_sdk_root"], "platforms")) :
+            for platform_dir in dirs :
+                self.context["android_platform_list"].append(platform_dir)
+            break
 
 
     def init_android_platform(self, platform) :
@@ -126,11 +199,11 @@ class WorkSpace(object) :
 
 
     def init_apk(self, apk_file = None) :
-        if not isinstance(apk_file, str) or not os.path.isfile(apk_file) :
+        if (not os.path.isfile(apk_file)) :
             if self.context.has_key("apk_path") and os.path.isfile(self.context["apk_path"]) :
                 apk_file = self.context["apk_path"]
             else :
-                raise Exception("Android APK file not found.")
+                raise Exception("Android APK file %s not found."  %(str(apk_file)))
         apk_file_path, apk_file_name = os.path.split(apk_file)
         work_apk_file = os.path.join(self.context["work_dir"], apk_file_name)
         if not os.path.isfile(work_apk_file) :
@@ -138,31 +211,36 @@ class WorkSpace(object) :
         self.context["apk_path"] = os.path.abspath(work_apk_file)
 
 
-    def init_sdk(self, sdk_list = None, sdk_path_list = None) :
-        self.context["sdk_list"] = []
+    def all_sdk(self, sdk_path_list = None) :
         sdks = {}
-
         sdk_search_paths = self.context["sdk_search_path"]
         if isinstance(sdk_path_list, list) :
             sdk_search_paths += sdk_path_list
+        elif isinstance(sdk_path_list, str) and os.path.exists(sdk_path_list) :
+            sdk_search_paths.append(sdk_path_list)
         sdk_search_paths = list(set(sdk_search_paths))
-
-        if not isinstance(sdk_list, list) or len(sdk_list) == 0:
-            sdk_list = self.context["sdk_id_list"]
-
         for sdk_search_path in sdk_search_paths :
-            self.context["sdk_search_path"].append(sdk_search_path)
             for path, dirs, files in os.walk(sdk_search_path) :
                 for sdk_dir in dirs :
                     sdk_path = os.path.join(path, sdk_dir)
                     try :
                         sdk = SDKConfig(sdk_path)
                         sdk_id = sdk.get_config("id")
-                        if not sdks.has_key(sdk_id) and sdk_id in sdk_list :
+                        if not sdks.has_key(sdk_id) :
                             sdks[sdk_id] = sdk
                     except :
                         continue
                 break
+        return sdk_search_paths, sdks
+
+
+    def init_sdk(self, sdk_list = None, sdk_path_list = None) :
+        self.context["sdk_list"] = []
+
+        if not isinstance(sdk_list, list) or len(sdk_list) == 0:
+            sdk_list = self.context["sdk_id_list"]
+
+        sdk_search_paths, sdks = self.all_sdk(sdk_path_list)
         for sdk_id in sdk_list :
             if not sdks.has_key(sdk_id) :
                 raise Exception("SDK %s not found."  %(sdk_id))
@@ -175,7 +253,7 @@ class WorkSpace(object) :
             self.context["keystore"] = os.path.abspath(keystore)
             self.context["storepass"] = storepass
             self.context["alias"] = alias
-            if None == keypass :
+            if None == keypass or len(keypass) == 0 :
                 keypass = storepass
             self.context["keypass"] = keypass
 
@@ -200,12 +278,17 @@ class WorkSpace(object) :
 
     def save(self, save_path = None) :
         out = {
-            "sdk_id_list" : [sdk.get_config("id") for sdk in self.context["sdk_list"]],
+            "project_name" : self.context["project_name"],
+            "project_desc" : self.context["project_desc"],
             "sdk_search_path" : list(set(self.context["sdk_search_path"])),
-            "apk_path" : self.context["apk_path"],
-            "android_platform" : self.context["android_platform"],
-            "meta_data" : self.context["meta_data"],
         }
+
+        if not os.path.samefile(self.root, self.context["work_dir"]) :
+            out["sdk_id_list"] = [sdk.get_config("id") for sdk in self.context["sdk_list"]]
+            out["apk_path"] = self.context["apk_path"]
+            out["output_apk"] = self.context["output_apk"]
+            out["android_platform"] = self.context["android_platform"]
+            out["meta_data"] = self.context["meta_data"]
 
         if self.context.has_key("keystore") :
             out["keystore"] = self.context["keystore"]

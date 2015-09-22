@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        {% for entry in workspace_entry_list %}
+        {% module WorkSpaceEntry(entry) %}
+        {% end %}
+        {% module WorkSpaceEntry(None, is_create_workspace = True) %}
+    </div>
+</div>
+<script type="text/javascript">
+    function mysdkCreateWorkSpace() {
+        $("#mysdk-create-workspace-form").submit();
+    }
+    function mysdkUpdateWorkSpace(workspaceID) {
+        $("#mysdk-update-workspace-form-"+workspaceID).submit();
+    }
+    function mysdkDeleteWorkSpace(workspaceID) {
+        if (true === confirm("Do you want to delete workspace ["+workspaceID+"] ?")) {
+            $("#mysdk-delete-workspace-form-"+workspaceID).submit();
+        }
+    }
+</script>

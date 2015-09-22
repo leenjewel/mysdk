@@ -15,34 +15,30 @@
 # limitations under the License.
 #
 
+import sys
 import subprocess
 
 class CommandUtil:
 
     @staticmethod
     def run(*command_list, **options) :
+        stdout = options.get("stdout")
+        if not stdout :
+            stdout = sys.stdout
+        stderr = options.get("stderr")
+        if not stderr :
+            stderr = sys.stderr
         pipe = subprocess.Popen(command_list, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         while True:
             py_out_line = pipe.stdout.readline()
             if py_out_line == '':
                 break
-            print options.get("out_prefix", "") + py_out_line.strip()
+            stdout.write(options.get("out_prefix", "") + py_out_line)
+            stdout.flush()
         error = pipe.stderr.read().strip()
         if len(error) :
+            stderr.write(error)
+            stderr.flush()
             return error
         return None
-
-
-    @staticmethod
-    def runYield(*command_list, **options) :
-        pipe = subprocess.Popen(command_list, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        while True:
-            py_out_line = pipe.stdout.readline()
-            if py_out_line == '':
-                break
-            yield options.get("out_prefix", "") + py_out_line
-
-        error = pipe.stderr.read().strip()
-        if len(error) > 0 :
-            yield error
 
