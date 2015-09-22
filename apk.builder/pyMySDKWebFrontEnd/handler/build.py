@@ -52,9 +52,11 @@ class BuildHandler(AHandler) :
         commands = [
             "python",
             mysdk_bin,
+            "build",
             "--work-space", os.path.join(work_dir, os.pardir),
             "--name", self.workspace_project.name,
         ]
+        print " ".join(commands)
         self.build_out = open(os.path.join(work_dir, "build.out"), "w")
         self.build_err = open(os.path.join(work_dir, "build.err"), "w")
         self.subprocess = subprocess.Popen(

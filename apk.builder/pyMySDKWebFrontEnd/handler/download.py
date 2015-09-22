@@ -29,12 +29,10 @@ class DownloadHandler(tornado.web.StaticFileHandler) :
         pass
 
     def head(self, workspace_name, project_id) :
-        print "download head"
         return self.get(workspace_name, project_id, False)
 
 
     def get(self, workspace_name, project_id, include_body = True) :
-        print "download get"
         workspace_project = None
         for workspace in self.application.settings["workspace"] :
             if workspace_name != os.path.split(workspace)[1] :
