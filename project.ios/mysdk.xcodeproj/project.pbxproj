@@ -1,0 +1,277 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2BAFAAAA1BB16281002B93B0 /* MySDKCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAA31BB16281002B93B0 /* MySDKCallback.cpp */; settings = {ASSET_TAGS = (); }; };
+		2BAFAAAB1BB16281002B93B0 /* MySDKListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAA51BB16281002B93B0 /* MySDKListener.cpp */; settings = {ASSET_TAGS = (); }; };
+		2BAFAAAD1BB1631A002B93B0 /* MySDK-iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */; settings = {ASSET_TAGS = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2BAFAA931BB160CC002B93B0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2BAFAA951BB160CC002B93B0 /* libmysdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmysdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BAFAAA21BB16281002B93B0 /* MySDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDK.h; path = ../src/MySDK.h; sourceTree = "<group>"; };
+		2BAFAAA31BB16281002B93B0 /* MySDKCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MySDKCallback.cpp; path = ../src/MySDKCallback.cpp; sourceTree = "<group>"; };
+		2BAFAAA41BB16281002B93B0 /* MySDKCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDKCallback.h; path = ../src/MySDKCallback.h; sourceTree = "<group>"; };
+		2BAFAAA51BB16281002B93B0 /* MySDKListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MySDKListener.cpp; path = ../src/MySDKListener.cpp; sourceTree = "<group>"; };
+		2BAFAAA61BB16281002B93B0 /* MySDKListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDKListener.h; path = ../src/MySDKListener.h; sourceTree = "<group>"; };
+		2BAFAAA71BB16281002B93B0 /* MySDKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDKLog.h; path = ../src/MySDKLog.h; sourceTree = "<group>"; };
+		2BAFAAA81BB16281002B93B0 /* MySDKLuaBind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDKLuaBind.h; path = ../src/MySDKLuaBind.h; sourceTree = "<group>"; };
+		2BAFAAA91BB16281002B93B0 /* MySDKLuaCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySDKLuaCallback.h; path = ../src/MySDKLuaCallback.h; sourceTree = "<group>"; };
+		2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "MySDK-iOS.mm"; path = "../src/MySDK-iOS.mm"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2BAFAA921BB160CC002B93B0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2BAFAA8C1BB160CC002B93B0 = {
+			isa = PBXGroup;
+			children = (
+				2BAFAAA11BB1612C002B93B0 /* src */,
+				2BAFAA961BB160CC002B93B0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2BAFAA961BB160CC002B93B0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAA951BB160CC002B93B0 /* libmysdk.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BAFAAA11BB1612C002B93B0 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAAA21BB16281002B93B0 /* MySDK.h */,
+				2BAFAAA31BB16281002B93B0 /* MySDKCallback.cpp */,
+				2BAFAAA41BB16281002B93B0 /* MySDKCallback.h */,
+				2BAFAAA51BB16281002B93B0 /* MySDKListener.cpp */,
+				2BAFAAA61BB16281002B93B0 /* MySDKListener.h */,
+				2BAFAAA71BB16281002B93B0 /* MySDKLog.h */,
+				2BAFAAA81BB16281002B93B0 /* MySDKLuaBind.h */,
+				2BAFAAA91BB16281002B93B0 /* MySDKLuaCallback.h */,
+				2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2BAFAA941BB160CC002B93B0 /* mysdk */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BAFAA9E1BB160CC002B93B0 /* Build configuration list for PBXNativeTarget "mysdk" */;
+			buildPhases = (
+				2BAFAA911BB160CC002B93B0 /* Sources */,
+				2BAFAA921BB160CC002B93B0 /* Frameworks */,
+				2BAFAA931BB160CC002B93B0 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mysdk;
+			productName = mysdk;
+			productReference = 2BAFAA951BB160CC002B93B0 /* libmysdk.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2BAFAA8D1BB160CC002B93B0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = leenjewel;
+				TargetAttributes = {
+					2BAFAA941BB160CC002B93B0 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+				};
+			};
+			buildConfigurationList = 2BAFAA901BB160CC002B93B0 /* Build configuration list for PBXProject "mysdk" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2BAFAA8C1BB160CC002B93B0;
+			productRefGroup = 2BAFAA961BB160CC002B93B0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2BAFAA941BB160CC002B93B0 /* mysdk */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2BAFAA911BB160CC002B93B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BAFAAAB1BB16281002B93B0 /* MySDKListener.cpp in Sources */,
+				2BAFAAAA1BB16281002B93B0 /* MySDKCallback.cpp in Sources */,
+				2BAFAAAD1BB1631A002B93B0 /* MySDK-iOS.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2BAFAA9C1BB160CC002B93B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"MYSDK_FOR_IOS=1",
+					"MYSDK_DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		2BAFAA9D1BB160CC002B93B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "MYSDK_FOR_IOS=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2BAFAA9F1BB160CC002B93B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"MYSDK_FOR_IOS=1",
+					"MYSDK_DEBUG=1",
+				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2BAFAAA01BB160CC002B93B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2BAFAA901BB160CC002B93B0 /* Build configuration list for PBXProject "mysdk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BAFAA9C1BB160CC002B93B0 /* Debug */,
+				2BAFAA9D1BB160CC002B93B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2BAFAA9E1BB160CC002B93B0 /* Build configuration list for PBXNativeTarget "mysdk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BAFAA9F1BB160CC002B93B0 /* Debug */,
+				2BAFAAA01BB160CC002B93B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2BAFAA8D1BB160CC002B93B0 /* Project object */;
+}

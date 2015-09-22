@@ -17,6 +17,7 @@
 #ifndef __MYSDK_LOG_H__
 #define __MYSDK_LOG_H__
 
+#if MYSDK_FOR_ANDROID
 #include <android/log.h>
 
 #define LOG_TAG    "MySDK"
@@ -26,6 +27,18 @@
 #define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 #else
 #define LOGD(...)  do{}while(0);
+#endif
+#endif
+
+#if MYSDK_FOR_IOS
+#define LOG_TAG    @"MySDK"
+#define LOGW(...)  do{}while(0);
+#define LOGE(...)  do{}while(0);
+#if MYSDK_DEBUG
+#define LOGD(...)  do{}while(0);
+#else
+#define LOGD(...)  do{}while(0);
+#endif
 #endif
 
 #endif
