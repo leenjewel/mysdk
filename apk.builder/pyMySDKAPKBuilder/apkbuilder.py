@@ -52,7 +52,9 @@ class APKBuilder :
         self.check(self.context)
 
 
-    def build(self) :
+    def build(self, stdout = None, stderr = None) :
+        self.build_stdout = stdout
+        self.build_stderr = stderr
         context = self.decode_apk(self.context)
         context = self.parse_manifest(context)
 
@@ -108,7 +110,9 @@ class APKBuilder :
             "--output", out_dir,
             "d", context.apk_path,
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error != None :
             exception = "APKBuilder decode apk %s ERROR:\n%s\n%s"  %(context.apk_path, " ".join(commands), error)
             raise Exception(exception)
@@ -256,7 +260,9 @@ class APKBuilder :
             commands.append("-S")
             commands.append(res_dir)
 
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder aapt_package(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
         return context
@@ -285,7 +291,9 @@ class APKBuilder :
                 commands.append("-A")
                 commands.append(sdk_assets_path)
 
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder aapt_res_assets ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.resources_apk = resources_apk
@@ -298,7 +306,9 @@ class APKBuilder :
             "d", context.resources_apk,
             "-o", resources_out
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder aapt_res_assets ERROR:\n%s\n%s"  %(" ".join(commands), error))
         if os.path.exists(os.path.join(resources_out, "assets")) :
@@ -338,7 +348,9 @@ class APKBuilder :
                         if ".java" == java_file[-5:] :
                             commands.append(os.path.join(path, java_file))
 
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder javac_class(%s) ERROR:\n%s\n%s"  %(src_dir, " ".join(commands), error))
         return context
@@ -356,7 +368,9 @@ class APKBuilder :
             os.path.join(project_path, "bin", "classes.jar"),
             "-C", os.path.join(project_path, class_path), "."
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder jar_class(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
         return context
@@ -369,7 +383,9 @@ class APKBuilder :
             "--output", os.path.join(project_path, "bin", "classes.dex"),
             os.path.join(project_path, "bin", "classes.jar")
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder dex_jar(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
         return context
@@ -384,7 +400,9 @@ class APKBuilder :
             "-o", smali_dir,
             dex_dir,
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error:
             raise Exception("APKBuilder rebuild_apk baksmali ERROR:\n%s\n%s"  %(" ".join(commands), error))
         unsigned_apk_path = os.path.join(os.path.split(os.path.realpath(context.apk_path))[0], "out.unsigned.apk")
@@ -395,7 +413,9 @@ class APKBuilder :
             "--output", unsigned_apk_path,
             "b", context.apk_dir,
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error:
             raise Exception("APKBuilder rebuild_apk rebuild ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.unsigned_apk_path = unsigned_apk_path
@@ -417,7 +437,9 @@ class APKBuilder :
             "-signedjar", signed_apk_path,
             context.unsigned_apk_path, alias,
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error:
             raise Exception("APKBuilder sign_apk ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.signed_apk_path = signed_apk_path
@@ -433,7 +455,9 @@ class APKBuilder :
             context.signed_apk_path,
             align_apk_path,
         ]
-        error = CommandUtil.run(*commands)
+        error = CommandUtil.run(*commands,
+                stdout = self.build_stdout,
+                stderr = self.build_stderr)
         if error :
             raise Exception("APKBuilder zipalign ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.align_apk_path = align_apk_path

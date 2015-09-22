@@ -16,7 +16,7 @@
 
 import os,sys
 import json
-import threading,subprocess
+import threading
 import tornado.websocket
 import tornado.web
 from ahandler import AHandler
@@ -24,12 +24,14 @@ try :
     import pyMySDKAPKBuilder.workspace
     import pyMySDKAPKBuilder.command
     import pyMySDKAPKBuilder.lock
+    import pyMySDKAPKBuilder.apkbuilder
 except ImportError :
     pwd = os.path.split(os.path.realpath(__file__))[0]
     sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir, os.pardir)))
     import pyMySDKAPKBuilder.workspace
     import pyMySDKAPKBuilder.command
     import pyMySDKAPKBuilder.lock
+    import pyMySDKAPKBuilder.apkbuilder
 
 class BuildHandler(AHandler) :
 
@@ -37,36 +39,17 @@ class BuildHandler(AHandler) :
 
 
     def build_workspace_project(self, workspace_name, project_id) :
-        self.workspace_project = None
-        for workspace in self.application.settings["workspace"] :
-            if workspace_name != os.path.split(workspace)[1] :
-                continue
-            self.workspace_project = pyMySDKAPKBuilder.workspace.WorkSpace(project_id, workspace)
-        pwd = os.path.split(os.path.realpath(__file__))[0]
-        mysdk_bin = os.path.join(pwd, os.pardir, os.pardir, "bin", "mysdk.py")
-        work_dir = self.workspace_project.context["work_dir"]
+        workspace_project = self.get_workspace(workspace_name, project_id)
+        work_dir = workspace_project.context["work_dir"]
         build_lock_file = os.path.join(work_dir, "build.lock")
         build_lock = pyMySDKAPKBuilder.lock.FileLock(build_lock_file)
         if not build_lock.lock(True) :
             return
-        commands = [
-            "python",
-            mysdk_bin,
-            "build",
-            "--work-space", os.path.join(work_dir, os.pardir),
-            "--name", self.workspace_project.name,
-        ]
-        print " ".join(commands)
         self.build_out = open(os.path.join(work_dir, "build.out"), "w")
         self.build_err = open(os.path.join(work_dir, "build.err"), "w")
-        self.subprocess = subprocess.Popen(
-            commands,
-            stdout = self.build_out.fileno(),
-            stderr = self.build_err.fileno(),
-            bufsize = 1
-        )
-        while self.subprocess.poll() is None :
-            pass
+        workspace_project.init_sdk()
+        apk_builder = pyMySDKAPKBuilder.apkbuilder.APKBuilder(workspace_project)
+        apk_builder.build(stdout = self.build_out, stderr = self.build_err)
         self.build_out.close()
         self.build_err.close()
         build_lock.unlock()
