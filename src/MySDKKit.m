@@ -36,7 +36,20 @@ static id _instance = nil;
 - (id) init {
     self = [super init];
     _sdkMap = [[NSMutableDictionary alloc] init];
+    [self setupSDK];
     return self;
+}
+
+
+- (void) setupSDK
+{
+    
+}
+
+
+- (void) registerSDK:(id<MySDKiOSDelegate>)sdk ByName:(NSString *)sdkname
+{
+    [_sdkMap setObject:sdk forKeyedSubscript:sdkname];
 }
 
 
