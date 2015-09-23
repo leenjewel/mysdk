@@ -19,6 +19,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "MySDKiOSCallback.h"
 
 @protocol MySDKDelegate <UIApplicationDelegate>
 
@@ -35,7 +36,12 @@
 
 - (NSString*) applySDKMethod:(NSString*)methodname AndReturnString:(NSString*)params;
 
+- (void) applySDKMethod:(NSString*)methodname WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback;
+
+- (void) applySDKPay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback;
+
 @end
+
 
 @interface MySDKKit : NSObject<UIApplicationDelegate>
 {
@@ -62,6 +68,11 @@
 - (BOOL) applySDK:(NSString*)sdkname Method:(NSString*)methodname AndReturnBoolean:(NSString*)params;
 
 - (NSString*) applySDK:(NSString*)sdkname Method:(NSString*)methodname AndReturnString:(NSString*)params;
+
+
+- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback;
+
+- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback;
 
 @end
 
