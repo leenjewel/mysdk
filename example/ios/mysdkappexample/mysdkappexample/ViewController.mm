@@ -73,10 +73,24 @@ using namespace mysdk;
     [[self textViewTestResult] setText:[NSString stringWithFormat:@"%@ applySDKMethodAndReturnString return %@", SDKID, ret]];
 }
 - (IBAction)onBtnApplySDKMethodWithCallback:(id)sender {
-    MySDKListener* listener = new MySDKListener();
-    
+    MySDKiOSListener* listener = [[MySDKiOSListener alloc] init];
+    [listener onSuccess:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        [[self textViewTestResult] setText:[NSString stringWithFormat:@"%@ applySDKMethodWithCallback callback SUCCESS %@", SDKID, result]];
+    }];
+    [listener onCancel:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        [[self textViewTestResult] setText:[NSString stringWithFormat:@"%@ applySDKMethodWithCallback callback CANCEL %@", SDKID, result]];
+    }];
+    [listener onFail:^(NSString *sdkname, NSString *methodname, int errorcode, NSString* error, NSString *result) {
+        [[self textViewTestResult] setText:[NSString stringWithFormat:@"%@ applySDKMethodWithCallback callback FAIL %d %@ %@", SDKID, errorcode, error, result]];
+    }];
+    [[MySDKKit getInstance] applySDK:SDKID Method:@"test" WithParams:@"" AndCallback:listener];
 }
 - (IBAction)onBtnApplySDKPay:(id)sender {
+    MySDKiOSListener* listener = [[MySDKiOSListener alloc] init];
+    [listener onPayResult:^(BOOL iserror, int errorcode, NSString *error, NSString *sdkname, NSString *productid, NSString *orderid, NSString *result) {
+        [[self textViewTestResult] setText:[NSString stringWithFormat:@"%@ applySDKPay callback %@ %d %@ %@ %@ %@", SDKID, (iserror?@"ERROR":@"SUCCESS"), errorcode, error, productid, orderid, result]];
+    }];
+    [[MySDKKit getInstance] applySDK:SDKID Pay:@"testPorductID" Order:@"testOrderID" WithParams:@"" AndCallback:listener];
 }
 
 @end

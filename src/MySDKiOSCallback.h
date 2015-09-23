@@ -18,14 +18,19 @@
 #define MySDKiOSCallback_h
 
 #import <Foundation/Foundation.h>
+#import "MySDKKit.h"
 #import "MySDKiOSDelegate.h"
 
 @interface MySDKiOSCallback : NSObject<MySDKiOSCallbackDelegate>
 {
-    int _handler;
+    MySDKiOSListener* _listener;
 }
 
-- (id) init:(int)handler;
+- (id) init;
+
+- (id) init:(MySDKiOSListener*)listener;
+
+- (id) initWithHandler:(int)handler;
 
 - (void) onApplySDK:(NSString*)sdkname Method:(NSString*)methodname Success:(NSString*)result;
 

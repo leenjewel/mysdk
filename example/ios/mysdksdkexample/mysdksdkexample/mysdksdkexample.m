@@ -55,6 +55,22 @@
     return @"Hi I am mysdksdkexample";
 }
 
+- (void) applySDKMethod:(NSString *)methodname WithParams:(NSString *)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
+{
+    if (params && [params length] > 0) {
+        [callback onApplySDK:@"mysdksdkexample" Method:@"test" Success:[NSString stringWithFormat:@"params : %@", params]];
+    } else {
+        [callback onApplySDK:@"mysdksdkexample" Method:@"test" Fail:1 WithError:@"params is empty" AndResult:@""];
+    }
+}
 
+- (void) applySDKPay:(NSString *)productid Order:(NSString *)orderid WithParams:(NSString *)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
+{
+    if (params && [params length] > 0) {
+        [callback onApplySDK:@"mysdksdkexample" Pay:productid Order:orderid Success:[NSString stringWithFormat:@"params : %@", params]];
+    } else {
+        [callback onApplySDK:@"mysdksdkexample" Pay:productid Order:orderid Fail:1 WithError:@"params is empty" AndResult:@""];
+    }
+}
 
 @end

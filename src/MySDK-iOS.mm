@@ -83,11 +83,23 @@ std::string MySDK::applySDKMethodAndReturnString(std::string sdkName, std::strin
 
 void MySDK::applySDKMethodWithCallback(std::string sdkName, std::string methodName, std::string params, int callbackHandle)
 {
-    MySDKiOSCallback* callback = [[MySDKiOSCallback alloc] init:callbackHandle];
+    MySDKiOSListener* listener = [[MySDKiOSListener alloc] init];
+    [listener onSuccess:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(callbackHandle);
+        callback->onSuccess(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), NSString2CString(result, ""));
+    }];
+    [listener onCancel:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(callbackHandle);
+        callback->onCancel(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), NSString2CString(result, ""));
+    }];
+    [listener onFail:^(NSString *sdkname, NSString *methodname, int errorcode, NSString *error, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(callbackHandle);
+        callback->onFail(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), errorcode, NSString2CString(error, ""), NSString2CString(result, ""));
+    }];
     [[MySDKKit getInstance] applySDK:CString2NSString(sdkName)
                               Method:CString2NSString(methodName)
                           WithParams:CString2NSString(params)
-                         AndCallback:callback];
+                         AndCallback:listener];
 }
 
 
@@ -101,12 +113,16 @@ void MySDK::applySDKMethodWithCallback(std::string sdkName, std::string methodNa
 
 void MySDK::applySDKPay(std::string sdkName, std::string productID, std::string orderID, std::string params, int callbackHandle)
 {
-    MySDKiOSCallback* callback = [[MySDKiOSCallback alloc] init:callbackHandle];
+    MySDKiOSListener* listener = [[MySDKiOSListener alloc] init];
+    [listener onPayResult:^(BOOL iserror, int errorcode, NSString *error, NSString *sdkname, NSString *productid, NSString *orderid, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(callbackHandle);
+        callback->onPayResult(iserror, errorcode, NSString2CString(error, ""), NSString2CString(sdkname, ""), NSString2CString(productid, ""), NSString2CString(orderid, ""), NSString2CString(result, ""));
+    }];
     [[MySDKKit getInstance] applySDK:CString2NSString(sdkName)
                                  Pay:CString2NSString(productID)
                                Order:CString2NSString(orderID)
                           WithParams:CString2NSString(params)
-                         AndCallback:callback];
+                         AndCallback:listener];
 }
 
 

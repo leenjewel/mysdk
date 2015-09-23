@@ -15,6 +15,63 @@
  */
 
 #import "MySDKKit.h"
+#import "MySDKiOSCallback.h"
+
+@implementation MySDKiOSListener
+
+- (id) init
+{
+    self = [super init];
+    onSuccessBlock = nil;
+    onFailBlock = nil;
+    onCancelBlock = nil;
+    onPayResultBlock = nil;
+    return self;
+}
+
+
+- (void) onSuccess:(MySDKiOSOnSuccessCallback)blcok
+{
+    onSuccessBlock = blcok;
+}
+
+- (void) onFail:(MySDKiOSOnFailCallback)block
+{
+    onFailBlock = block;
+}
+
+- (void) onCancel:(MySDKiOSOnCancelCallback)block
+{
+    onCancelBlock = block;
+}
+
+- (void) onPayResult:(MySDKiOSOnPayCallback)block
+{
+    onPayResultBlock = block;
+}
+
+- (MySDKiOSOnSuccessCallback) getSuccessBlock
+{
+    return onSuccessBlock;
+}
+
+- (MySDKiOSOnFailCallback) getFailBlock
+{
+    return onFailBlock;
+}
+
+- (MySDKiOSOnCancelCallback) getCancelBlock
+{
+    return onCancelBlock;
+}
+
+- (MySDKiOSOnPayCallback) getPayResultBlock
+{
+    return onPayResultBlock;
+}
+
+
+@end
 
 @implementation MySDKKit
 
@@ -132,21 +189,21 @@ static id _instance = nil;
 }
 
 
-- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
+- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(MySDKiOSListener*)listener
 {
     MYSDK_APPLY_SDK_METHOD_BEGIN(sdkname, applySDK:Method:WithParams:AndCallback:)
     dispatch_async(dispatch_get_main_queue(), ^{
-        [sdk applySDKMethod:methodname WithParams:params AndCallback:callback];
+        [sdk applySDKMethod:methodname WithParams:params AndCallback:[[MySDKiOSCallback alloc] init:listener]];
     });
     MYSDK_APPLY_SDK_METHOD_END
 }
 
 
-- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
+- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(MySDKiOSListener*)listener
 {
     MYSDK_APPLY_SDK_METHOD_BEGIN(sdkname, applySDKPay:Order:WithParams:AndCallback:)
     dispatch_async(dispatch_get_main_queue(), ^{
-        [sdk applySDKPay:productid Order:orderid WithParams:params AndCallback:callback];
+        [sdk applySDKPay:productid Order:orderid WithParams:params AndCallback:[[MySDKiOSCallback alloc] init:listener]];
     });
     MYSDK_APPLY_SDK_METHOD_END
 }

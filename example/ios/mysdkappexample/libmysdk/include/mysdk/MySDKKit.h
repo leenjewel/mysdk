@@ -19,6 +19,39 @@
 
 #import "MySDKiOSDelegate.h"
 
+typedef void(^MySDKiOSOnSuccessCallback)(NSString* sdkname, NSString* methodname, NSString* result);
+typedef void(^MySDKiOSOnCancelCallback)(NSString* sdkname, NSString* methodname, NSString* result);
+typedef void(^MySDKiOSOnFailCallback)(NSString* sdkname, NSString* methodname, int errorcode, NSString* error, NSString* result);
+typedef void(^MySDKiOSOnPayCallback)(BOOL iserror, int errorcode, NSString* error, NSString* sdkname, NSString* productid, NSString* orderid, NSString* result);
+
+@interface MySDKiOSListener : NSObject
+{
+    MySDKiOSOnSuccessCallback onSuccessBlock;
+    MySDKiOSOnFailCallback    onFailBlock;
+    MySDKiOSOnCancelCallback  onCancelBlock;
+    MySDKiOSOnPayCallback     onPayResultBlock;
+}
+
+- (id) init;
+
+- (void) onSuccess:(MySDKiOSOnSuccessCallback)blcok;
+
+- (void) onFail:(MySDKiOSOnFailCallback)block;
+
+- (void) onCancel:(MySDKiOSOnCancelCallback)block;
+
+- (void) onPayResult:(MySDKiOSOnPayCallback)block;
+
+- (MySDKiOSOnSuccessCallback) getSuccessBlock;
+
+- (MySDKiOSOnFailCallback) getFailBlock;
+
+- (MySDKiOSOnCancelCallback) getCancelBlock;
+
+- (MySDKiOSOnPayCallback) getPayResultBlock;
+
+@end
+
 @interface MySDKKit : NSObject<UIApplicationDelegate>
 {
     UIViewController* _controller;
@@ -50,9 +83,9 @@
 - (NSString*) applySDK:(NSString*)sdkname Method:(NSString*)methodname AndReturnString:(NSString*)params;
 
 
-- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback;
+- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(MySDKiOSListener*)callback;
 
-- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback;
+- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(MySDKiOSListener*)callback;
 
 @end
 

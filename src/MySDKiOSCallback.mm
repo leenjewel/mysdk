@@ -21,36 +21,70 @@ using namespace mysdk;
 
 @implementation MySDKiOSCallback
 
-- (id) init:(int)handler
+- (id) init
 {
     self = [super init];
-    _handler = handler;
+    _listener = nil;
+    return self;
+}
+
+- (id) init:(MySDKiOSListener*)listener
+{
+    self = [super init];
+    _listener = listener;
+    return self;
+}
+
+- (id) initWithHandler:(int)handler
+{
+    self = [super init];
+    _listener = [[MySDKiOSListener alloc] init];
+    [_listener onSuccess:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(handler);
+        callback->onSuccess(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), NSString2CString(result, ""));
+    }];
+    [_listener onCancel:^(NSString *sdkname, NSString *methodname, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(handler);
+        callback->onCancel(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), NSString2CString(result, ""));
+    }];
+    [_listener onFail:^(NSString *sdkname, NSString *methodname, int errorcode, NSString *error, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(handler);
+        callback->onFail(NSString2CString(sdkname, ""), NSString2CString(methodname, ""), errorcode, NSString2CString(error, ""), NSString2CString(result, ""));
+    }];
+    [_listener onPayResult:^(BOOL iserror, int errorcode, NSString *error, NSString *sdkname, NSString *productid, NSString *orderid, NSString *result) {
+        MySDKCallback* callback = MySDKCallback::getCallback(handler);
+        callback->onPayResult(iserror, errorcode, NSString2CString(error, ""), NSString2CString(sdkname, ""), NSString2CString(productid, ""), NSString2CString(orderid, ""), NSString2CString(result, ""));
+    }];
     return self;
 }
 
 
 - (void) onApplySDK:(NSString*)sdkname Method:(NSString*)methodname Success:(NSString*)result
 {
+    if (nil == _listener) {
+        return;
+    }
+    MySDKiOSOnSuccessCallback block = [_listener getSuccessBlock];
+    if (nil == block) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
-        MySDKCallback* callback = MySDKCallback::getCallback(_handler);
-        std::string cSDKName = NSString2CString(sdkname, "");
-        std::string cMethodName = NSString2CString(methodname, "");
-        std::string cResult = NSString2CString(result, "");
-        callback->onSuccess(cSDKName, cMethodName, cResult);
-        MySDKCallback::cleanCallback(_handler);
+        block(sdkname, methodname, result);
     });
 }
 
 
 - (void) onApplySDK:(NSString*)sdkname Method:(NSString*)methodname Cancel:(NSString*)result
 {
+    if (nil == _listener) {
+        return;
+    }
+    MySDKiOSOnCancelCallback block = [_listener getCancelBlock];
+    if (nil == block) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
-        MySDKCallback* callback = MySDKCallback::getCallback(_handler);
-        std::string cSDKName = NSString2CString(sdkname, "");
-        std::string cMethodName = NSString2CString(methodname, "");
-        std::string cResult = NSString2CString(result, "");
-        callback->onCancel(cSDKName, cMethodName, cResult);
-        MySDKCallback::cleanCallback(_handler);
+        block(sdkname, methodname, result);
     });
 
 }
@@ -58,14 +92,15 @@ using namespace mysdk;
 
 - (void) onApplySDK:(NSString*)sdkname Method:(NSString*)methodname Fail:(int)errorcode WithError:(NSString*)error AndResult:(NSString*)result
 {
+    if (nil == _listener) {
+        return;
+    }
+    MySDKiOSOnFailCallback block = [_listener getFailBlock];
+    if (nil == block) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
-        MySDKCallback* callback = MySDKCallback::getCallback(_handler);
-        std::string cSDKName = NSString2CString(sdkname, "");
-        std::string cMethodName = NSString2CString(methodname, "");
-        std::string cResult = NSString2CString(result, "");
-        std::string cError = NSString2CString(error, "");
-        callback->onFail(cSDKName, cMethodName, errorcode, cError, cResult);
-        MySDKCallback::cleanCallback(_handler);
+        block(sdkname, methodname, errorcode, error, result);
     });
 
 }
@@ -73,29 +108,31 @@ using namespace mysdk;
 
 - (void) onApplySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid Fail:(int)errorcode WithError:(NSString*)error AndResult:(NSString*)result
 {
+    if (nil == _listener) {
+        return;
+    }
+    MySDKiOSOnPayCallback block = [_listener getPayResultBlock];
+    if (nil == block) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
-        MySDKCallback* callback = MySDKCallback::getCallback(_handler);
-        std::string cSDKName = NSString2CString(sdkname, "");
-        std::string cProductID = NSString2CString(productid, "");
-        std::string cOrderID = NSString2CString(orderid, "");
-        std::string cError = NSString2CString(error, "");
-        std::string cResult = NSString2CString(result, "");
-        callback->onPayResult(true, errorcode, cError, cSDKName, cProductID, cOrderID, cResult);
-        MySDKCallback::cleanCallback(_handler);
+        block(YES, errorcode, error, sdkname, productid, orderid, result);
     });
 }
 
 
 - (void) onApplySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid Success:(NSString*)result
 {
+    
+    if (nil == _listener) {
+        return;
+    }
+    MySDKiOSOnPayCallback block = [_listener getPayResultBlock];
+    if (nil == block) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
-        MySDKCallback* callback = MySDKCallback::getCallback(_handler);
-        std::string cSDKName = NSString2CString(sdkname, "");
-        std::string cProductID = NSString2CString(productid, "");
-        std::string cOrderID = NSString2CString(orderid, "");
-        std::string cResult = NSString2CString(result, "");
-        callback->onPayResult(false, 0, "", cSDKName, cProductID, cOrderID, cResult);
-        MySDKCallback::cleanCallback(_handler);
+        block(NO, 0, @"", sdkname, productid, orderid, result);
     });
 }
 
