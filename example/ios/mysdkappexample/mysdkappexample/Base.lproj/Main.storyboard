@@ -1,25 +1,101 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T1E-EA-7DC">
+                                <rect key="frame" x="20" y="66" width="231" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnLong"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnLong:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mHD-up-R7U"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Zi-y0-07b">
+                                <rect key="frame" x="20" y="104" width="231" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnFloat"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnFloat:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Dk0-Ut-Ixn"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nO7-7t-rXO">
+                                <rect key="frame" x="20" y="142" width="242" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnDouble"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnDouble:" destination="BYZ-38-t0r" eventType="touchUpInside" id="G8b-n8-7cF"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qGL-NT-yss">
+                                <rect key="frame" x="20" y="180" width="248" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnBoolean"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnBoolean:" destination="BYZ-38-t0r" eventType="touchUpInside" id="krm-7F-ytV"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c0N-6O-g9c">
+                                <rect key="frame" x="20" y="218" width="242" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnString"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnString:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cXe-76-fFN"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L65-1B-AMq">
+                                <rect key="frame" x="20" y="256" width="212" height="30"/>
+                                <state key="normal" title="applySDKMethodWithCallback"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodWithCallback:" destination="BYZ-38-t0r" eventType="touchUpInside" id="PEa-ia-WPc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sQ0-Dt-gyB">
+                                <rect key="frame" x="20" y="294" width="182" height="30"/>
+                                <state key="normal" title="applySDKPayWithCallback"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKPay:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lHj-0D-mHl"/>
+                                </connections>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="MySDK Test" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="C5W-Lv-iW0">
+                                <rect key="frame" x="20" y="360" width="240" height="128"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xQL-sC-CyM">
+                                <rect key="frame" x="20" y="28" width="218" height="30"/>
+                                <state key="normal" title="applySDKMethodAndReturnInt"/>
+                                <connections>
+                                    <action selector="onBtnApplySDKMethodAndReturnInt:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yfG-Yj-EcG"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
+                    <connections>
+                        <outlet property="btnApplySDKMethodAndReturnBoolean" destination="qGL-NT-yss" id="6uZ-wc-3MD"/>
+                        <outlet property="btnApplySDKMethodAndReturnDouble" destination="nO7-7t-rXO" id="enC-bz-npq"/>
+                        <outlet property="btnApplySDKMethodAndReturnFloat" destination="0Zi-y0-07b" id="Fpo-em-Aee"/>
+                        <outlet property="btnApplySDKMethodAndReturnInt" destination="xQL-sC-CyM" id="7t8-vD-vVv"/>
+                        <outlet property="btnApplySDKMethodAndReturnLong" destination="T1E-EA-7DC" id="IrB-gK-D9v"/>
+                        <outlet property="btnApplySDKMethodAndReturnString" destination="c0N-6O-g9c" id="CQl-Nx-stt"/>
+                        <outlet property="btnApplySDKMethodWithCallback" destination="L65-1B-AMq" id="fwT-H1-y2U"/>
+                        <outlet property="btnApplySDKPayWithCallback" destination="sQ0-Dt-gyB" id="KBi-B2-hPw"/>
+                        <outlet property="textViewTestResult" destination="C5W-Lv-iW0" id="mSB-Ou-SAx"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="433" y="317"/>
         </scene>
     </scenes>
 </document>

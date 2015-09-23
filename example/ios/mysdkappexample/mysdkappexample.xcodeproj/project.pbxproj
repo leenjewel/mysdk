@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2BAFAB011BB29EB6002B93B0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB001BB29EB6002B93B0 /* main.m */; };
 		2BAFAB041BB29EB6002B93B0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB031BB29EB6002B93B0 /* AppDelegate.m */; };
-		2BAFAB071BB29EB6002B93B0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB061BB29EB6002B93B0 /* ViewController.m */; };
+		2BAFAB071BB29EB6002B93B0 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB061BB29EB6002B93B0 /* ViewController.mm */; };
 		2BAFAB0A1BB29EB6002B93B0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2BAFAB081BB29EB6002B93B0 /* Main.storyboard */; };
 		2BAFAB0C1BB29EB6002B93B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BAFAB0B1BB29EB6002B93B0 /* Assets.xcassets */; };
 		2BAFAB0F1BB29EB6002B93B0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2BAFAB0D1BB29EB6002B93B0 /* LaunchScreen.storyboard */; };
@@ -24,13 +24,12 @@
 		2BAFAB021BB29EB6002B93B0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2BAFAB031BB29EB6002B93B0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2BAFAB051BB29EB6002B93B0 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		2BAFAB061BB29EB6002B93B0 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		2BAFAB061BB29EB6002B93B0 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		2BAFAB091BB29EB6002B93B0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2BAFAB0B1BB29EB6002B93B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2BAFAB0E1BB29EB6002B93B0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2BAFAB101BB29EB6002B93B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2BAFAB161BB29EF6002B93B0 /* libmysdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysdk.a; path = libmysdk/libmysdk.a; sourceTree = "<group>"; };
-		2BAFAB371BB2A8EA002B93B0 /* MySDKSetup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MySDKSetup.h; sourceTree = "<group>"; };
 		2BAFAB381BB2A8FE002B93B0 /* libmysdksdkexample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysdksdkexample.a; path = sdks/mysdksdkexample/libmysdksdkexample.a; sourceTree = "<group>"; };
 		2BAFAB3A1BB2A9F1002B93B0 /* MySDKSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MySDKSetup.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,13 +71,12 @@
 				2BAFAB021BB29EB6002B93B0 /* AppDelegate.h */,
 				2BAFAB031BB29EB6002B93B0 /* AppDelegate.m */,
 				2BAFAB051BB29EB6002B93B0 /* ViewController.h */,
-				2BAFAB061BB29EB6002B93B0 /* ViewController.m */,
+				2BAFAB061BB29EB6002B93B0 /* ViewController.mm */,
 				2BAFAB081BB29EB6002B93B0 /* Main.storyboard */,
 				2BAFAB0B1BB29EB6002B93B0 /* Assets.xcassets */,
 				2BAFAB0D1BB29EB6002B93B0 /* LaunchScreen.storyboard */,
 				2BAFAB101BB29EB6002B93B0 /* Info.plist */,
 				2BAFAAFF1BB29EB6002B93B0 /* Supporting Files */,
-				2BAFAB371BB2A8EA002B93B0 /* MySDKSetup.h */,
 				2BAFAB3A1BB2A9F1002B93B0 /* MySDKSetup.m */,
 			);
 			path = mysdkappexample;
@@ -187,7 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BAFAB3B1BB2A9F1002B93B0 /* MySDKSetup.m in Sources */,
-				2BAFAB071BB29EB6002B93B0 /* ViewController.m in Sources */,
+				2BAFAB071BB29EB6002B93B0 /* ViewController.mm in Sources */,
 				2BAFAB041BB29EB6002B93B0 /* AppDelegate.m in Sources */,
 				2BAFAB011BB29EB6002B93B0 /* main.m in Sources */,
 			);

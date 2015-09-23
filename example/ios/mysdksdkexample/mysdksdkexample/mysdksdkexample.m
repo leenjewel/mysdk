@@ -24,4 +24,37 @@
     return YES;
 }
 
+
+- (int) applySDKMethod:(NSString*)methodname AndReturnInt:(NSString*)params
+{
+    return 1;
+}
+
+- (long) applySDKMethod:(NSString*)methodname AndReturnLong:(NSString*)params
+{
+    return 2;
+}
+
+- (float) applySDKMethod:(NSString*)methodname AndReturnFloat:(NSString*)params
+{
+    return 3.33f;
+}
+
+- (double) applySDKMethod:(NSString*)methodname AndReturnDouble:(NSString*)params
+{
+    return 4.44;
+}
+
+- (BOOL) applySDKMethod:(NSString*)methodname AndReturnBoolean:(NSString*)params
+{
+    return ((params && [params length] > 0)?YES:false);
+}
+
+- (NSString*) applySDKMethod:(NSString*)methodname AndReturnString:(NSString*)params
+{
+    return @"Hi I am mysdksdkexample";
+}
+
+
+
 @end

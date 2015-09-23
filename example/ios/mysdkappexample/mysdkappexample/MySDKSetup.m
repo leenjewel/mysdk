@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-#import "MySDKSetup.h"
+
 #import "mysdksdkexample/mysdksdkexample.h"
+
+#import "MySDKKit.h"
+
+@interface MySDKKit(MySDKSetup)
+
+- (void) setupSDK;
+
+@end
 
 @implementation MySDKKit(MySDKSetup)
 
