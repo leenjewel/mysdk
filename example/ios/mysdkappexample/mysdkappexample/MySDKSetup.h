@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#ifndef MySDKSetup_h
+#define MySDKSetup_h
 
-@interface ViewController : UIViewController
+#import "MySDKKit.h"
 
+@interface MySDKKit(MySDKSetup)
+
+- (void) setupSDK;
 
 @end
 
+#endif /* MySDKSetup_h */

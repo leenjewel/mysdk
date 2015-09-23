@@ -27,6 +27,10 @@
 
 + (id) getInstance;
 
+- (void) setupSDK;
+
+- (void) registerSDK:(id<MySDKiOSDelegate>)sdk ByName:(NSString*)sdkname;
+
 - (UIViewController*) getController;
 
 - (void) setController:(UIViewController*)controller;

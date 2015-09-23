@@ -14,6 +14,8 @@
 		2BAFAB0C1BB29EB6002B93B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BAFAB0B1BB29EB6002B93B0 /* Assets.xcassets */; };
 		2BAFAB0F1BB29EB6002B93B0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2BAFAB0D1BB29EB6002B93B0 /* LaunchScreen.storyboard */; };
 		2BAFAB171BB29EF6002B93B0 /* libmysdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BAFAB161BB29EF6002B93B0 /* libmysdk.a */; };
+		2BAFAB391BB2A8FE002B93B0 /* libmysdksdkexample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BAFAB381BB2A8FE002B93B0 /* libmysdksdkexample.a */; };
+		2BAFAB3B1BB2A9F1002B93B0 /* MySDKSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB3A1BB2A9F1002B93B0 /* MySDKSetup.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,9 @@
 		2BAFAB0E1BB29EB6002B93B0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2BAFAB101BB29EB6002B93B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2BAFAB161BB29EF6002B93B0 /* libmysdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysdk.a; path = libmysdk/libmysdk.a; sourceTree = "<group>"; };
+		2BAFAB371BB2A8EA002B93B0 /* MySDKSetup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MySDKSetup.h; sourceTree = "<group>"; };
+		2BAFAB381BB2A8FE002B93B0 /* libmysdksdkexample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysdksdkexample.a; path = sdks/mysdksdkexample/libmysdksdkexample.a; sourceTree = "<group>"; };
+		2BAFAB3A1BB2A9F1002B93B0 /* MySDKSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MySDKSetup.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BAFAB391BB2A8FE002B93B0 /* libmysdksdkexample.a in Frameworks */,
 				2BAFAB171BB29EF6002B93B0 /* libmysdk.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,6 +51,7 @@
 		2BAFAAF31BB29EB6002B93B0 = {
 			isa = PBXGroup;
 			children = (
+				2BAFAB351BB2A861002B93B0 /* sdks */,
 				2BAFAB181BB29F06002B93B0 /* libmysdk */,
 				2BAFAAFE1BB29EB6002B93B0 /* mysdkappexample */,
 				2BAFAAFD1BB29EB6002B93B0 /* Products */,
@@ -71,6 +78,8 @@
 				2BAFAB0D1BB29EB6002B93B0 /* LaunchScreen.storyboard */,
 				2BAFAB101BB29EB6002B93B0 /* Info.plist */,
 				2BAFAAFF1BB29EB6002B93B0 /* Supporting Files */,
+				2BAFAB371BB2A8EA002B93B0 /* MySDKSetup.h */,
+				2BAFAB3A1BB2A9F1002B93B0 /* MySDKSetup.m */,
 			);
 			path = mysdkappexample;
 			sourceTree = "<group>";
@@ -89,6 +98,22 @@
 				2BAFAB161BB29EF6002B93B0 /* libmysdk.a */,
 			);
 			name = libmysdk;
+			sourceTree = "<group>";
+		};
+		2BAFAB351BB2A861002B93B0 /* sdks */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAB361BB2A86B002B93B0 /* mysdksdkexample */,
+			);
+			name = sdks;
+			sourceTree = "<group>";
+		};
+		2BAFAB361BB2A86B002B93B0 /* mysdksdkexample */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAB381BB2A8FE002B93B0 /* libmysdksdkexample.a */,
+			);
+			name = mysdksdkexample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,6 +186,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BAFAB3B1BB2A9F1002B93B0 /* MySDKSetup.m in Sources */,
 				2BAFAB071BB29EB6002B93B0 /* ViewController.m in Sources */,
 				2BAFAB041BB29EB6002B93B0 /* AppDelegate.m in Sources */,
 				2BAFAB011BB29EB6002B93B0 /* main.m in Sources */,
@@ -275,12 +301,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/libmysdk/include";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libmysdk/include/mysdk",
+					"$(PROJECT_DIR)/sdks",
+				);
 				INFOPLIST_FILE = mysdkappexample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libmysdk",
+					"$(PROJECT_DIR)/sdks/mysdksdkexample",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.leenjewel.mysdkappexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -291,12 +321,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/libmysdk/include";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/libmysdk/include/mysdk",
+					"$(PROJECT_DIR)/sdks",
+				);
 				INFOPLIST_FILE = mysdkappexample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/libmysdk",
+					"$(PROJECT_DIR)/sdks/mysdksdkexample",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.leenjewel.mysdkappexample;
 				PRODUCT_NAME = "$(TARGET_NAME)";

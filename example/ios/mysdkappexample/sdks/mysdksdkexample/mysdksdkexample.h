@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MySDKiOSDelegate.h"
 
-@interface ViewController : UIViewController
+@interface mysdksdkexample : NSObject<MySDKiOSDelegate>
 
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 
 @end
-

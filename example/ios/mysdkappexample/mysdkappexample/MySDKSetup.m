@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "MySDKSetup.h"
+#import "mysdksdkexample/mysdksdkexample.h"
 
-@interface ViewController : UIViewController
+@implementation MySDKKit(MySDKSetup)
 
+- (void) setupSDK
+{
+    id<MySDKiOSDelegate> sdk = [[mysdksdkexample alloc] init];
+    [self registerSDK:sdk ByName:@"mysdksdkexample"];
+}
 
 @end
 

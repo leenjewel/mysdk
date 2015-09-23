@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-#import <UIKit/UIKit.h>
+#import "mysdksdkexample.h"
 
-@interface ViewController : UIViewController
+@implementation mysdksdkexample
 
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    NSLog(@"mysdksdkexample application:didFinishLaunchingWithOptions:");
+    return YES;
+}
 
 @end
-
