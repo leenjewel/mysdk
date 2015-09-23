@@ -62,7 +62,7 @@ static id _instance = nil;
 
 #define MYSDK_APPLY_SDK_METHOD_BEGIN(sdkname, methodname)\
     do {\
-        id<MySDKDelegate> sdk = _sdkMap[sdkname];\
+        id<MySDKiOSDelegate> sdk = _sdkMap[sdkname];\
         NSAssert(sdk != nil, @"SDK %@ is nil", sdkname);\
         NSAssert(([sdk respondsToSelector:@selector(methodname)]),\
             @"SDK %@ do not implement method %@", sdkname, \
@@ -119,7 +119,7 @@ static id _instance = nil;
 }
 
 
-- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback
+- (void) applySDK:(NSString*)sdkname Method:(NSString*)methodname WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
 {
     MYSDK_APPLY_SDK_METHOD_BEGIN(sdkname, applySDK:Method:WithParams:AndCallback:)
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -129,7 +129,7 @@ static id _instance = nil;
 }
 
 
-- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(MySDKiOSCallback*)callback
+- (void) applySDK:(NSString*)sdkname Pay:(NSString*)productid Order:(NSString*)orderid WithParams:(NSString*)params AndCallback:(id<MySDKiOSCallbackDelegate>)callback
 {
     MYSDK_APPLY_SDK_METHOD_BEGIN(sdkname, applySDKPay:Order:WithParams:AndCallback:)
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -140,7 +140,7 @@ static id _instance = nil;
 
 
 #define MYSDK_ALL_SDK_CALL_BEGIN(methodname)\
-    for (id<MySDKDelegate>sdk in [_sdkMap allValues]) {\
+    for (id<MySDKiOSDelegate>sdk in [_sdkMap allValues]) {\
         if ([sdk respondsToSelector:@selector(methodname)]) {
 
 #define MYSDK_ALL_SDK_CALL_END    }}

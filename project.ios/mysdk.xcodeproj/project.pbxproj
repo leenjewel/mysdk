@@ -35,6 +35,8 @@
 		2BAFAAC41BB28325002B93B0 /* MySDKLog.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAAA71BB16281002B93B0 /* MySDKLog.h */; };
 		2BAFAAC51BB28325002B93B0 /* MySDKKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2B1923991BB197D8004BB7ED /* MySDKKit.h */; };
 		2BAFAAC61BB2832D002B93B0 /* MySDKListener.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAAA61BB16281002B93B0 /* MySDKListener.h */; };
+		2BAFAAF11BB29BB6002B93B0 /* MySDKiOSDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAAF01BB299A0002B93B0 /* MySDKiOSDelegate.h */; };
+		2BAFAAF21BB29BC3002B93B0 /* MySDKiOSDelegate.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAAF01BB299A0002B93B0 /* MySDKiOSDelegate.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +46,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				2BAFAAF11BB29BB6002B93B0 /* MySDKiOSDelegate.h in CopyFiles */,
 				2BAFAAC61BB2832D002B93B0 /* MySDKListener.h in CopyFiles */,
 				2BAFAAB71BB280B2002B93B0 /* MySDK.h in CopyFiles */,
 				2BAFAAB81BB280B2002B93B0 /* MySDKLog.h in CopyFiles */,
@@ -54,9 +57,10 @@
 		2BAFAAC11BB28306002B93B0 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = include/mysdk;
 			dstSubfolderSpec = 16;
 			files = (
+				2BAFAAF21BB29BC3002B93B0 /* MySDKiOSDelegate.h in CopyFiles */,
 				2BAFAAC21BB28325002B93B0 /* MySDK.h in CopyFiles */,
 				2BAFAAC31BB28325002B93B0 /* MySDKListener.h in CopyFiles */,
 				2BAFAAC41BB28325002B93B0 /* MySDKLog.h in CopyFiles */,
@@ -81,6 +85,7 @@
 		2BAFAAAC1BB1631A002B93B0 /* MySDK-iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "MySDK-iOS.mm"; path = "../src/MySDK-iOS.mm"; sourceTree = "<group>"; };
 		2BAFAAB41BB27413002B93B0 /* MySDKiOSCallback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MySDKiOSCallback.h; path = ../src/MySDKiOSCallback.h; sourceTree = "<group>"; };
 		2BAFAAB51BB27464002B93B0 /* MySDKiOSCallback.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MySDKiOSCallback.mm; path = ../src/MySDKiOSCallback.mm; sourceTree = "<group>"; };
+		2BAFAAF01BB299A0002B93B0 /* MySDKiOSDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MySDKiOSDelegate.h; path = ../src/MySDKiOSDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +131,7 @@
 				2B1923A01BB19B18004BB7ED /* MySDKKit.m */,
 				2BAFAAB41BB27413002B93B0 /* MySDKiOSCallback.h */,
 				2BAFAAB51BB27464002B93B0 /* MySDKiOSCallback.mm */,
+				2BAFAAF01BB299A0002B93B0 /* MySDKiOSDelegate.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -197,7 +203,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target mysdk ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\nxcodebuild -target mysdk -configuration ${CONFIGURATION} -sdk iphonesimulator -arch i386 BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 2. Create universal binary file using lipo\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\"\n\n# Last touch. copy the header files. Just for convenience\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/include\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n";
+			shellScript = "# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target mysdk ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\nxcodebuild -target mysdk -configuration ${CONFIGURATION} -sdk iphonesimulator -arch x86_64 BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 2. Create universal binary file using lipo\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\"\n\n# Last touch. copy the header files. Just for convenience\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/include\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -364,6 +370,7 @@
 				2BAFAABD1BB28107002B93B0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

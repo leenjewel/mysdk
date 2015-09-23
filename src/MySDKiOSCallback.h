@@ -18,13 +18,9 @@
 #define MySDKiOSCallback_h
 
 #import <Foundation/Foundation.h>
+#import "MySDKiOSDelegate.h"
 
-#define NSString2Char(ns,ds) (ns?[ns UTF8String]:ds)
-#define NSString2CString(ns,ds) (ns?(std::string([ns UTF8String])):ds)
-#define CString2NSString(cs) (cs.empty()?@"":[NSString stringWithCString:cs.c_str() encoding:NSUTF8StringEncoding])
-#define Char2NSString(cs) (cs?[NSString stringWithCString:cs encoding:NSUTF8StringEncoding]:@"")
-
-@interface MySDKiOSCallback : NSObject
+@interface MySDKiOSCallback : NSObject<MySDKiOSCallbackDelegate>
 {
     int _handler;
 }
