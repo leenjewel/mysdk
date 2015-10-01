@@ -110,7 +110,7 @@ __pycache__/
 *$py.class
 
 # C extensions
-*.so
+# *.so
 
 # Distribution / packaging
 .Python
@@ -176,7 +176,7 @@ target/
 *.pch
 
 # Compiled Dynamic libraries
-*.so
+# *.so
 *.dylib
 *.dll
 
@@ -202,7 +202,7 @@ target/
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.ear
 
@@ -229,8 +229,8 @@ hs_err_pid*
 
 # Shared objects (inc. Windows DLLs)
 *.dll
-*.so
-*.so.*
+# *.so
+# *.so.*
 *.dylib
 
 # Executables
@@ -244,4 +244,4 @@ hs_err_pid*
 # Debug files
 *.dSYM/
 
-project.android/obj
+obj/

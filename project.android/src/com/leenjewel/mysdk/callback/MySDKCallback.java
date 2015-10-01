@@ -1,3 +1,19 @@
+/**
+ * Copyright 2015 leenjewel
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.leenjewel.mysdk.callback;
 
 import android.app.Activity;
@@ -17,6 +33,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onSuccess : " + String.valueOf(_handle));
 			onSuccessByHandle(_handle, sdkName, methodName, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -24,6 +41,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onSuccess : " + String.valueOf(_handle));
 					onSuccessByHandle(_handle, sdkName, methodName, result);
 				}});
 		}
@@ -34,6 +52,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onFail : " + String.valueOf(_handle));
 			onFailByHandle(_handle, sdkName, methodName, errorCode, errorMessage, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -41,6 +60,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onFail : " + String.valueOf(_handle));
 					onFailByHandle(_handle, sdkName, methodName, errorCode, errorMessage, result);
 				}});
 		}
@@ -51,6 +71,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onCancel : " + String.valueOf(_handle));
 			onCancelByHandle(_handle, sdkName, methodName, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -58,6 +79,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onCancel : " + String.valueOf(_handle));
 					onCancelByHandle(_handle, sdkName, methodName, result);
 				}});
 		}
@@ -69,6 +91,7 @@ public class MySDKCallback implements IMySDKCallback {
 		// TODO Auto-generated method stub
 		Activity activity = MySDK.getActivity();
 		if (null == activity) {
+			MySDK.logDebug("MySDKCallback without activity onPayResult : " + String.valueOf(_handle));
 			onPayResultByHandle(_handle, isError, errorCode, errorMessage, sdkName, productID, orderID, result);
 		} else {
 			activity.runOnUiThread(new Runnable(){
@@ -76,6 +99,7 @@ public class MySDKCallback implements IMySDKCallback {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					MySDK.logDebug("MySDKCallback onPayResult : " + String.valueOf(_handle));
 					onPayResultByHandle(_handle, isError, errorCode, errorMessage, sdkName, productID, orderID, result);
 				}});
 		}

@@ -1,0 +1,322 @@
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    {% if is_build_project %}
+    <li><a href="/project/{{ workspace_name }}/{{ project_name }}">{{ project_name }}</a></li>
+    <li class="active">build</li>
+    {% else %}
+    <li class="active">{{ project_name }}</li>
+    {% end %}
+</ol>
+<div class="container">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {% if is_create_project %}
+        <h3 class="panel-title">New Project</span></h3>
+        {% else %}
+        <h3 class="panel-title">{{ project_name }}        <span class="badge">{{ workspace_project.context["android_platform"] }}</span></h3>
+        {% end %}
+    </div>
+    <form class="panel-body" id="mysdk-project-form" method="post" action="" enctype="multipart/form-data">
+        {% if is_create_project %}
+        <div class="form-group">
+            <label for="newProjectID">Project ID:</label>
+            <input type="text" class="form-control" name="new_project_id" id="new-project-id" placeholder="Project ID" />
+        </div>
+        {% end %}
+        <div class="form-group">
+            <label for="projectName">Project Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_name" id="project-name" placeholder="Project Name" value="{{ workspace_project.context['project_name'] }}" readonly />
+            {% else %}
+            <input type="text" class="form-control" name="project_name" id="project-name" placeholder="Project Name" value="{{ workspace_project.context['project_name'] }}" />
+            {% end %}
+        </div>
+        <div class="form-group">
+            <label for="projectDesc">Description:</label>
+            {% if is_build_project %}
+            <textarea class="form-control" name="project_desc" id="project-desc" readonly>
+            {% else %}
+            <textarea class="form-control" name="project_desc" id="project-desc">
+            {% end %}
+                {{ workspace_project.context['project_desc'] }}
+            </textarea>
+        </div>
+        <div class="form-group">
+            <label for="androidPlatform">Android Platform:</label>
+            {% if is_build_project %}
+            <select class="form-control" name="new_project_platform" disabled>
+            {% else %}
+            <select class="form-control" name="new_project_platform">
+            {% end %}
+                {% for android_platform in workspace_project.context["android_platform_list"] %}
+                {% if android_platform == workspace_project.context.get("android_platform") %}
+                <option selected="true" value="{{ android_platform }}">{{ android_platform }}</option>
+                {% else %}
+                <option value="{{ android_platform }}">{{ android_platform }}</option>
+                {% end %}
+                {% end %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="apkUpload">APK File:</label>
+            {% if workspace_project.context.get("apk_path") %}
+            <h4 class="label label-info form-control">{{ workspace_project.context["apk_path"] }}</h4>
+            {% end %}
+            {% if not is_build_project %}
+            <input type="file" class="form-control" name="new_project_apk" id="new-project-apk" placeholder="APK File" />
+            {% end %}
+        </div>
+        <div class="form-group">
+            <label for="apkPackageName">APK Package Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_package_name" id="project-package-name" placeholder="APK Package Name" value="{{ workspace_project.context.get('meta_data',{}).get('PACKAGE', '') }}" readonly />
+            {% else %}
+            <input type="text" class="form-control" name="project_package_name" id="project-package-name" placeholder="APK Package Name" value="{{ workspace_project.context.get('meta_data',{}).get('PACKAGE', '') }}" />
+            {% end %}
+        </div>
+        <div class="form-group">
+            <label for="outputAPK">Output APK Name:</label>
+            {% if is_build_project %}
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.get_output_name() }}" readonly />
+            {% else %}
+            <input type="text" class="form-control" name="project_output_apk" id="project-output-apk" placeholder="Output APK Name" value="{{ workspace_project.get_output_name() }}" />
+            {% end %}
+        </div>
+        <div class="form-group">
+            <label for="keystore">Keystore File:</label>
+            {% if workspace_project.context.get("keystore") %}
+            <h4 class="label label-info form-control">{{ workspace_project.context["keystore"] }}</h4>
+            {% end %}
+            {% if not is_build_project %}
+            <input type="file" class="form-control" name="new_project_keystore" id="new-project-keystore" placeholder="Keystore File" />
+            {% end %}
+        </div>
+        {% if not is_build_project %}
+        <div class="form-group">
+            <label for="storepass">Store Password:</label>
+            <input type="password" class="form-control" name="new_project_storepass" id="new-project-storepass" placeholder="Store password" value="{{ workspace_project.context.get('storepass','') }}" />
+        </div>
+        <div class="form-group">
+            <label for="alias">Alias:</label>
+            <input type="text" class="form-control" name="new_project_alias" id="new-project-alias" placeholder="Alias" value="{{ workspace_project.context.get('alias', '') }}" />
+        </div>
+        <div class="form-group">
+            <label for="keypass">Key Password:</label>
+            <input type="password" class="form-control" name="new_project_keypass" id="new-project-keypass" placeholder="Key password" value="{{ workspace_project.context.get('keypass', '') }}" />
+        </div>
+        {% end %}
+        <div class="container">
+            <div class="row">
+                {% for sdk_id, sdk_config in workspace_sdks.items() %}
+                <div class="col-md-4">
+                {% if sdk_id in workspace_project.context.get("sdk_id_list", []) %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), has_add = True, meta_data = workspace_project.context.get("meta_data", {}), is_build = is_build_project) %}
+                {% else %}
+                {% module SDKConfigEntry(sdk_config, show_add = (not is_build_project), meta_data = workspace_project.context.get("meta_data", {}), is_build = is_build_project) %}
+                {% end %}
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <div class="form-group">
+            {% if is_build_project %}
+            <div id="mysdk-build-btn" class="btn btn-primary btn-lg" onclick="mysdkBuildProject()">
+                <span class="glyphicon glyphicon-fire"></span>
+                <span class="btn-text">Build Project</span>
+            </div>
+            {% else %}
+            {% if is_create_project %}
+            <div id="mysdk-project-btn" class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                <span class="btn-text">Create Project</span>
+            </div>
+            {% else %}
+            <div id="mysdk-project-btn" class="btn btn-primary btn-lg" onclick="mysdkUpdateProject()">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                <span class="btn-text">Save Project</span>
+            </div>
+            {% end %}
+            {% end %}
+        </div>
+    </form>
+</div>
+</div>
+<ol class="breadcrumb">
+    <li><a href="/index">Workspace</a></li>
+    <li><a href="/workspace/{{ workspace_name }}">{{ workspace_name }}</a></li>
+    {% if is_build_project %}
+    <li><a href="/project/{{ workspace_name }}/{{ project_name }}">{{ project_name }}</a></li>
+    <li class="active">build</li>
+    {% else %}
+    <li class="active">{{ project_name }}</li>
+    {% end %}
+</ol>
+<!-- Build Modal Begin -->
+<div class="modal fade" id="mysdk-build-modal" tabindex="-1" role="dialog" aria-labelledby="mysdk-build-modal-label">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mysdk-build-modal-label">Build Project</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <textarea id="mysdk-build-log" class="form-control" rows="16" readonly>
+                    </textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="mysdk-build-modal-btn" type="button" class="btn btn-primary btn-lg">Get APK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Build Modal End -->
+<!-- Build Download Begin -->
+<iframe id="mysdk-build-download-iframe" src="#" width="1" height="1" frameborder="0">
+</iframe>
+<!-- Build Download End -->
+<script type="text/javascript">
+function mysdkUpdateProject() {
+    var projectForm = $("#mysdk-project-form");
+    projectForm.find("#mysdk-sdk-config-list").remove();
+    var sdkConfigInput = $('<div></div>');
+    sdkConfigInput.attr("id", "mysdk-sdk-config-list");
+    var sdkIndex = 0;
+    $(".mysdk-sdk-config").each(function(i, e){
+        var sdkConfigDiv = $(e);
+        var sdkConfigID = sdkConfigDiv.attr("id");
+        if (sdkConfigDiv.attr("class").indexOf("panel-success") >= 0) {
+            sdkConfigInput.append($('<input type="hidden" name="sdk_list['+sdkIndex+']" value="'+sdkConfigID+'"/>'));
+            sdkIndex += 1;
+        }
+    });
+    projectForm.append(sdkConfigInput);
+    projectForm.submit();
+}
+
+function mysdkBuildProject() {
+    $.post(
+        "/build/{{ workspace_name }}/{{ project_name }}",
+        {},
+        function(){
+            $("#mysdk-build-modal").modal({
+                backdrop : "static"
+            });
+        },
+        "json"
+    );
+}
+
+$(function(){
+    $(".mysdk-sdk-config").each(function(i, e){
+        $(e).find(".btn-add-sdk").bind("click", {sdkConfigDiv : $(e)}, function(evt){
+            var sdkConfigDiv = evt.data.sdkConfigDiv;
+            var btnAddSdk = sdkConfigDiv.find(".btn-add-sdk");
+            var btnIcon = btnAddSdk.find(".glyphicon");
+            var btnText = btnAddSdk.find(".btn-text");
+            if (btnIcon.attr("class").indexOf("glyphicon-plus") >= 0) {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-success");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-success btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-ok");
+                btnText.text("Remove SDK");
+            } else {
+                sdkConfigDiv.attr("class", "mysdk-sdk-config panel panel-default");
+                btnAddSdk.attr("class", "btn-add-sdk btn btn-default btn-lg");
+                btnIcon.attr("class", "glyphicon glyphicon-plus");
+                btnText.text("Add SDK");
+            }
+        });
+    });
+    $("#mysdk-build-modal").on("shown.bs.modal", function(e){
+        if (!window.__mysdkBuildProgressSeek) {
+            var mysdkBuildLog = $("#mysdk-build-log");
+            mysdkBuildLog.text("");
+            mysdkBuildLog.scrollTop(0);
+        }
+        $("#mysdk-build-modal-btn").button("loading");
+        if (window.WebSocket) {
+            var hostAndPort = window.location.host;
+            if (window.__mysdkBuildProgressWS) {
+                window.__mysdkBuildProgressWS.close();
+                window.__mysdkBuildProgressWS = undefined;
+            }
+            window.__mysdkBuildProgressWS = new WebSocket("ws://"+hostAndPort+"/build/progress/{{ workspace_name }}/{{ project_name }}");
+            window.__mysdkBuildProgressWS.onopen = function(evt) {
+                var data = {
+                    workspace_name : "{{ workspace_name }}",
+                    project_id : "{{ project_name }}",
+                    seek : (window.__mysdkBuildProgressSeek || 0)
+                };
+                window.__mysdkBuildProgressWS.send(JSON.stringify(data));
+            };
+            window.__mysdkBuildProgressWS.onmessage = function(evt) {
+                var data = JSON.parse(evt.data);
+                var mysdkBuildLog = $("#mysdk-build-log");
+                var logText = mysdkBuildLog.text() + data.data;
+                mysdkBuildLog.text(logText);
+                mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
+                if (0 <= data.seek) {
+                    window.__mysdkBuildProgressSeek = data.seek;
+                } else {
+                    window.__mysdkBuildProgressSeek = 0;
+                    if (window.__mysdkBuildProgressWS) {
+                        window.__mysdkBuildProgressWS.close()
+                    }
+                    $("#mysdk-build-modal-btn").button("reset");
+                }
+            };
+        } else {
+            var mysdkBuildProgressPS = function(seek) {
+                if (window.__mysdkBuildProgressModalClose) {
+                    return;
+                }
+                $.post(
+                    "/build/progress/{{ workspace_name }}/{{ project_name }}",
+                    {
+                        seek : seek
+                    },
+                    function(data){
+                        var mysdkBuildLog = $("#mysdk-build-log");
+                        var logText = mysdkBuildLog.text() + data.data;
+                        mysdkBuildLog.text(logText);
+                        mysdkBuildLog.scrollTop(mysdkBuildLog.prop("scrollHeight"));
+                        if (0 <= data.seek) {
+                            window.__mysdkBuildProgressSeek = data.seek;
+                            mysdkBuildProgressPS(data.seek);
+                        } else {
+                            window.__mysdkBuildProgressSeek = 0;
+                            $("#mysdk-build-modal-btn").button("reset");
+                        }
+                    },
+                    "json"
+                );
+            };
+            window.__mysdkBuildProgressModalClose = false;
+            mysdkBuildProgressPS((window.__mysdkBuildProgressSeek || 0))
+        }
+    });
+    $("#mysdk-build-modal").on("hide.bs.modal", function(e){
+        if (window.__mysdkBuildProgressWS) {
+            window.__mysdkBuildProgressWS.close();
+            window.__mysdkBuildProgressWS = undefined;
+        }
+        window.__mysdkBuildProgressModalClose = true;
+        $("#mysdk-build-modal-btn").button("reset");
+    });
+    $("#mysdk-build-modal-btn").on("click", function(e){
+        var iframeDoc = (document.getElementById('mysdk-build-download-iframe').contentWindow.document);
+        var mysdkBuildDownloadForm = iframeDoc.getElementById("mysdk-build-download-form");
+        if (mysdkBuildDownloadForm) {
+            iframeDoc.removeChild(mysdkBuildDownloadForm);
+        }
+        mysdkBuildDownloadForm = iframeDoc.createElement("form");
+        mysdkBuildDownloadForm.setAttribute("id", "mysdk-build-download-form");
+        mysdkBuildDownloadForm.setAttribute("method", "get");
+        mysdkBuildDownloadForm.setAttribute("action", "/download/{{ workspace_name }}/{{ project_name }}");
+        iframeDoc.body.appendChild(mysdkBuildDownloadForm);
+        mysdkBuildDownloadForm.submit();
+        $("#mysdk-build-modal").modal("hide");
+    });
+});
+</script>

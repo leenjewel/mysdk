@@ -10,11 +10,12 @@ LOCAL_C_INCLUDES    :=  $(JNI_H_INCLUDE)\
 	$(LOCAL_PATH)/../../src
 	
 	
-LOCAL_SRC_FILES     :=  ./MySDKJavaNativeMethod.cpp \
+LOCAL_SRC_FILES     := \
+	./MySDKJavaNativeMethod.cpp \
 	../../src/MySDKListener.cpp \
 	../../src/MySDKCallback.cpp \
 	../../src/MySDKJNIHelper.cpp \
-	../../src/MySDK.cpp
+	../../src/MySDK-Android.cpp
 
 LOCAL_LDLIBS :=  -llog
 

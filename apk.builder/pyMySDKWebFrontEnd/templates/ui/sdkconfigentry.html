@@ -1,0 +1,47 @@
+{% if has_add %}
+<div class="mysdk-sdk-config panel panel-success" id="{{ entry.get_config('id') }}">
+{% else %}
+<div class="mysdk-sdk-config panel panel-default" id="{{ entry.get_config('id') }}">
+{% end %}
+    <div class="panel-heading">
+        <h4 class="panel-title">{{ entry.get_config("id") }}</h4>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            {% for conf_key in ("id", "descript", "package", "class", "author", "email") %}
+            <tr><td>{{ conf_key }}</td><td>{{ entry.get_config(conf_key) }}</td></tr>
+            {% end %}
+        </table>
+        <h4 class="label label-default">Meta Data:</h4><br/><br/>
+        <div class="form-horizontal">
+            {% for meta_key, meta_conf in entry.get_config("metadata", {}).items() %}
+            <div class="form-group">
+                <label for="metadata{{ meta_key }}" class="col-sm-6 control-label">{{ meta_key }}</label>
+                <div class="col-sm-6">
+                    {% if is_build %}
+                    <input type="text" class="mysdk-sdk-config-input form-control" name="sdk_config[{{ entry.get_config('id') }}][metadata][{{ meta_key }}]" value="{{ meta_data.get(meta_key, meta_conf.get('default','')) }}" disabled />
+                    {% else %}
+                    <input type="text" class="mysdk-sdk-config-input form-control" name="sdk_config[{{ entry.get_config('id') }}][metadata][{{ meta_key }}]" value="{{ meta_data.get(meta_key, meta_conf.get('default','')) }}" />
+                    {% end %}
+                    {% if meta_conf.get("require", False) %}
+                    <span class="label label-danger">require!</span>
+                    {% end %}
+                </div>
+            </div>
+            {% end %}
+        </div>
+        {% if show_add %}
+        {% if has_add %}
+        <a class="btn-add-sdk btn btn-success btn-lg">
+            <span class="glyphicon glyphicon-ok"></span>
+            <span class="btn-text">Remove SDK</span>
+        </a>
+        {% else %}
+        <a class="btn-add-sdk btn btn-default btn-lg">
+            <span class="glyphicon glyphicon-plus"></span>
+            <span class="btn-text">Add SDK</span>
+        </a>
+        {% end %}
+        {% end %}
+    </div>
+</div>

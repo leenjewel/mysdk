@@ -1,0 +1,321 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		2BAFAB2E1BB2A635002B93B0 /* libmysdksdkexample.a */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 2BAFAB2F1BB2A635002B93B0 /* Build configuration list for PBXAggregateTarget "libmysdksdkexample.a" */;
+			buildPhases = (
+				2BAFAB321BB2A64F002B93B0 /* CopyFiles */,
+				2BAFAB341BB2A66F002B93B0 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = libmysdksdkexample.a;
+			productName = libmysdksdkexample.a;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		2BAFAB261BB2A479002B93B0 /* mysdksdkexample.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAB251BB2A479002B93B0 /* mysdksdkexample.h */; };
+		2BAFAB281BB2A479002B93B0 /* mysdksdkexample.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BAFAB271BB2A479002B93B0 /* mysdksdkexample.m */; };
+		2BAFAB331BB2A66A002B93B0 /* mysdksdkexample.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BAFAB251BB2A479002B93B0 /* mysdksdkexample.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2BAFAB201BB2A479002B93B0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				2BAFAB261BB2A479002B93B0 /* mysdksdkexample.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BAFAB321BB2A64F002B93B0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/mysdksdkexample;
+			dstSubfolderSpec = 16;
+			files = (
+				2BAFAB331BB2A66A002B93B0 /* mysdksdkexample.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2BAFAB221BB2A479002B93B0 /* libmysdksdkexample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmysdksdkexample.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BAFAB251BB2A479002B93B0 /* mysdksdkexample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mysdksdkexample.h; sourceTree = "<group>"; };
+		2BAFAB271BB2A479002B93B0 /* mysdksdkexample.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mysdksdkexample.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2BAFAB1F1BB2A479002B93B0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2BAFAB191BB2A479002B93B0 = {
+			isa = PBXGroup;
+			children = (
+				2BAFAB241BB2A479002B93B0 /* mysdksdkexample */,
+				2BAFAB231BB2A479002B93B0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2BAFAB231BB2A479002B93B0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAB221BB2A479002B93B0 /* libmysdksdkexample.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BAFAB241BB2A479002B93B0 /* mysdksdkexample */ = {
+			isa = PBXGroup;
+			children = (
+				2BAFAB251BB2A479002B93B0 /* mysdksdkexample.h */,
+				2BAFAB271BB2A479002B93B0 /* mysdksdkexample.m */,
+			);
+			path = mysdksdkexample;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2BAFAB211BB2A479002B93B0 /* mysdksdkexample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BAFAB2B1BB2A479002B93B0 /* Build configuration list for PBXNativeTarget "mysdksdkexample" */;
+			buildPhases = (
+				2BAFAB1E1BB2A479002B93B0 /* Sources */,
+				2BAFAB1F1BB2A479002B93B0 /* Frameworks */,
+				2BAFAB201BB2A479002B93B0 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mysdksdkexample;
+			productName = mysdksdkexample;
+			productReference = 2BAFAB221BB2A479002B93B0 /* libmysdksdkexample.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2BAFAB1A1BB2A479002B93B0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = leenjewel;
+				TargetAttributes = {
+					2BAFAB211BB2A479002B93B0 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+					2BAFAB2E1BB2A635002B93B0 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+				};
+			};
+			buildConfigurationList = 2BAFAB1D1BB2A479002B93B0 /* Build configuration list for PBXProject "mysdksdkexample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2BAFAB191BB2A479002B93B0;
+			productRefGroup = 2BAFAB231BB2A479002B93B0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2BAFAB211BB2A479002B93B0 /* mysdksdkexample */,
+				2BAFAB2E1BB2A635002B93B0 /* libmysdksdkexample.a */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2BAFAB341BB2A66F002B93B0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target mysdksdkexample ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\nxcodebuild -target mysdksdkexample -configuration ${CONFIGURATION} -sdk iphonesimulator -arch x86_64 BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 2. Create universal binary file using lipo\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\"\n\n# Last touch. copy the header files. Just for convenience\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/include\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2BAFAB1E1BB2A479002B93B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BAFAB281BB2A479002B93B0 /* mysdksdkexample.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2BAFAB291BB2A479002B93B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		2BAFAB2A1BB2A479002B93B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2BAFAB2C1BB2A479002B93B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2BAFAB2D1BB2A479002B93B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		2BAFAB301BB2A635002B93B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2BAFAB311BB2A635002B93B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2BAFAB1D1BB2A479002B93B0 /* Build configuration list for PBXProject "mysdksdkexample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BAFAB291BB2A479002B93B0 /* Debug */,
+				2BAFAB2A1BB2A479002B93B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2BAFAB2B1BB2A479002B93B0 /* Build configuration list for PBXNativeTarget "mysdksdkexample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BAFAB2C1BB2A479002B93B0 /* Debug */,
+				2BAFAB2D1BB2A479002B93B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		2BAFAB2F1BB2A635002B93B0 /* Build configuration list for PBXAggregateTarget "libmysdksdkexample.a" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BAFAB301BB2A635002B93B0 /* Debug */,
+				2BAFAB311BB2A635002B93B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2BAFAB1A1BB2A479002B93B0 /* Project object */;
+}

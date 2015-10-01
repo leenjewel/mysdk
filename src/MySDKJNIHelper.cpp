@@ -1,3 +1,19 @@
+/**
+ * Copyright 2015 leenjewel
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "MySDKJNIHelper.h"
 #include <pthread.h>
 
@@ -8,11 +24,20 @@ static JavaVM* _jvm = nullptr;
 
 void MySDKJNIHelper::setJavaVM(JavaVM* jvm)
 {
+#if MYSDK_DEBUG
+    pthread_t thisthread = pthread_self();
+    LOGD("setJavaVM(%p) pthread_self() = %ld", jvm, thisthread);
+#endif
     _jvm = jvm;
+    pthread_key_create(&_g_key, nullptr);
 }
 
 JavaVM* MySDKJNIHelper::getJavaVM()
 {
+#if MYSDK_DEBUG
+    pthread_t thisthread = pthread_self();
+    LOGD("getJavaVM pthread_self() = %ld", thisthread);
+#endif
     return _jvm;
 }
 
@@ -38,7 +63,7 @@ JNIEnv* MySDKJNIHelper::cacheJNIEnv(JavaVM* jvm)
 JNIEnv* MySDKJNIHelper::getJNIEnv()
 {
     JNIEnv* env = (JNIEnv*)pthread_getspecific(_g_key);
-    if (!env) {
+    if (nullptr == env) {
         env = MySDKJNIHelper::cacheJNIEnv(_jvm);
     }
     return env;
@@ -46,11 +71,14 @@ JNIEnv* MySDKJNIHelper::getJNIEnv()
 
 std::string MySDKJNIHelper::jstring2string(jstring jstr)
 {
-    JNIEnv* env = MySDKJNIHelper::getJNIEnv();
-    if (!env || !jstr) {
+    if (nullptr == jstr) {
         return "";
     }
-    const char* chars = env->GetStringUTFChars(jstr, NULL);
+    JNIEnv* env = MySDKJNIHelper::getJNIEnv();
+    if (!env) {
+        return nullptr;
+    }
+    const char* chars = env->GetStringUTFChars(jstr, nullptr);
     std::string ret(chars);
     env->ReleaseStringUTFChars(jstr, chars);
     return ret;
