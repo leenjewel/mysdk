@@ -15,7 +15,7 @@ LOCAL_SRC_FILES     := \
 	../../src/MySDKListener.cpp \
 	../../src/MySDKCallback.cpp \
 	../../src/MySDKJNIHelper.cpp \
-	../../src/MySDK.cpp
+	../../src/MySDK-Android.cpp
 
 LOCAL_LDLIBS :=  -llog
 

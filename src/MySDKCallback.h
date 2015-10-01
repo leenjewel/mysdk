@@ -15,7 +15,7 @@
  */
 
 #ifndef __MYSDK_CALLBACK_H__
-#define __MYSDK_CALLBACK_H_
+#define __MYSDK_CALLBACK_H__
 
 #include <stdlib.h>
 #include <string>
