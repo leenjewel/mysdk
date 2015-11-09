@@ -26,18 +26,18 @@
 #if MYSDK_DEBUG
 #define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 #else
-#define LOGD(...)  do{}while(0);
+#define LOGD(...)  do{}while(0)
 #endif
 #endif
 
 #if MYSDK_FOR_IOS
 #define LOG_TAG    @"MySDK"
-#define LOGW(...)  do{}while(0);
-#define LOGE(...)  do{}while(0);
+#define LOGW(...)  do{}while(0)
+#define LOGE(...)  do{}while(0)
 #if MYSDK_DEBUG
-#define LOGD(...)  do{}while(0);
+#define LOGD(...)  do{}while(0)
 #else
-#define LOGD(...)  do{}while(0);
+#define LOGD(...)  do{}while(0)
 #endif
 #endif
 

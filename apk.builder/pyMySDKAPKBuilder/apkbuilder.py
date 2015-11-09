@@ -70,11 +70,12 @@ class APKBuilder :
         context = self.write_mysdk_config(context)
 
         for sdk_config in context.sdk_list :
-            context = self.sdk_build_res(context, sdk_config)
-            context = self.sdk_build_src(context, sdk_config)
+            context = self.aapt_package_R(context, sdk_config)
+            context = self.javac_class(context, sdk_config)
 
-        context = self.javac_R(context)
-        context = self.jar_class(context, context.apk_dir, "bin")
+        context = self.aapt_package_R(context)
+        context = self.javac_class(context)
+        context = self.jar_class(context)
         context = self.dex_jar(context, context.apk_dir)
         context = self.aapt_res_assets(context)
         context = self.rebuild_apk(context)
@@ -95,6 +96,8 @@ class APKBuilder :
             "sdk_list" : [],
             "sdk_config" : {},
         }
+        context.javac_class_path = []
+        context.aapt_all_res = []
         return context
 
 
@@ -199,21 +202,18 @@ class APKBuilder :
         context.mysdk_config["sdk_config"][sdk_id] = {
                 "class_path" : sdk_config.get_sdk_class_path(),
         }
+        context.aapt_all_res.append(os.path.join(sdk_config.sdk_path, "res"))
+        sdk_class_path = sdk_config.get_config("classpath")
+        if (not isinstance(sdk_class_path, list)) or (not isinstance(sdk_class_path, tuple)) :
+            sdk_class_path = ["libs"]
+        for class_path in sdk_class_path :
+            path = os.path.join(sdk_config.sdk_path, class_path)
+            if os.path.exists(path) :
+                for rootpath, dirs, files in os.walk(path) :
+                    for jarfile in files :
+                        if jarfile[-4:] == '.jar' :
+                            context.javac_class_path.append(os.path.join(rootpath, jarfile))
         return context
-
-
-    def sdk_build_res(self, context, sdk_config) :
-        self.aapt_package_R(context, sdk_config.sdk_path)
-        return context
-
-
-    def sdk_build_src(self, context, sdk_config) :
-        src = sdk_config.get_config("src")
-        if None == src :
-            src = "src"
-        self.javac_class(context, sdk_config.sdk_path, src)
-        return context
-
 
 
     def finish_manifest(self, context) :
@@ -241,7 +241,13 @@ class APKBuilder :
         return context
 
 
-    def aapt_package_R(self, context, project_path) :
+    def aapt_package_R(self, context, sdk_config = None) :
+        if None == sdk_config:
+            project_path = context.apk_dir
+            android_manifest = os.path.join(context.apk_dir, "AndroidManifest.xml")
+        else :
+            project_path = sdk_config.sdk_path
+            android_manifest = os.path.join(project_path, "AndroidManifest.xml")
         gen_dir = os.path.join(context.apk_dir, "gen")
         if not os.path.exists(gen_dir) :
             os.mkdir(gen_dir)
@@ -251,14 +257,17 @@ class APKBuilder :
             "-m",
             "--auto-add-overlay",
             "-J", gen_dir,
-            "-M", os.path.join(project_path, "AndroidManifest.xml"),
+            "-M", android_manifest,
             "-I", os.path.join(context.android_sdk_root, "platforms", context.android_platform, "android.jar"),
             "-S", os.path.join(context.apk_dir, "res"),
         ]
-        res_dir = (os.path.join(project_path, "res"))
-        if os.path.exists(res_dir) :
+        for res_dir in context.aapt_all_res :
             commands.append("-S")
             commands.append(res_dir)
+        if None == project_path :
+            project_path = context.apk_dir
+        else:
+            commands.append("--non-constant-id")
 
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
@@ -320,7 +329,7 @@ class APKBuilder :
         return context
 
 
-    def javac_class(self, context, project_path, src_path) :
+    def javac_class(self, context, sdk_config = None) :
         gen_dir = os.path.join(context.apk_dir, "gen")
         bin_dir = os.path.join(context.apk_dir, "bin")
         if not os.path.exists(bin_dir) :
@@ -329,50 +338,67 @@ class APKBuilder :
             context.javac,
             "-target", "1.7",
             "-source", "1.7",
-            "-classpath", gen_dir,
             "-bootclasspath", os.path.join(context.android_sdk_root, "platforms", context.android_platform, "android.jar"),
             "-d", bin_dir
         ]
-        libs_dir = os.path.join(project_path, "libs")
-        if os.path.exists(libs_dir) :
-            commands.append("-extdirs")
-            commands.append(libs_dir)
 
-        if not isinstance(src_path, list) :
-            src_path = [src_path]
-        for src in src_path :
-            src_dir = os.path.join(project_path, src)
+        classpath = [gen_dir]
+        if sdk_config :
+            sdk_classpath_list = sdk_config.get_config("classpath")
+            if (not isinstance(sdk_classpath_list, list) or not isinstance(sdk_classpath_list, tuple)) :
+                sdk_classpath_list = ("libs",)
+            for sdk_classpath in sdk_classpath_list :
+                sdk_classpath_path = os.path.join(sdk_config.sdk_path, sdk_classpath)
+                if os.path.exists(sdk_classpath_path) :
+                    for rootpath, dirs, files in os.walk(sdk_classpath_path) :
+                        for jarfile in files :
+                             classpath.append(os.path.join(rootpath, jarfile))
+
+        commands.append("-classpath")
+        commands.append(":".join(classpath))
+
+        src_path_list = None
+        project_path = None
+        if sdk_config :
+            project_path = sdk_config.sdk_path
+            src_path_list = sdk_config.get_config("src")
+            if (not isinstance(src_path_list, list)) or (not isinstance(src_path_list, tuple)):
+                src_path_list = ["src"]
+        else :
+            project_path = context.apk_dir
+            src_path_list = ["gen"]
+
+        has_src_file = False
+        for src_path in src_path_list :
+            src_dir = os.path.join(project_path, src_path)
             if os.path.exists(src_dir) :
                 for path, dirs, files in os.walk(src_dir) :
                     for java_file in files :
                         if ".java" == java_file[-5:] :
+                            has_src_file = True
                             commands.append(os.path.join(path, java_file))
 
-        error = CommandUtil.run(*commands,
-                stdout = self.build_stdout,
-                stderr = self.build_stderr)
-        if error :
-            raise Exception("APKBuilder javac_class(%s) ERROR:\n%s\n%s"  %(src_dir, " ".join(commands), error))
+        if has_src_file :
+            error = CommandUtil.run(*commands,
+                    stdout = self.build_stdout,
+                    stderr = self.build_stderr)
+            if error :
+                raise Exception("APKBuilder javac_class(%s) ERROR:\n%s\n%s"  %(src_dir, " ".join(commands), error))
         return context
 
 
-    def javac_R(self, context) :
-        self.javac_class(context, context.apk_dir, "gen")
-        return context
-
-
-    def jar_class(self, context, project_path, class_path) :
+    def jar_class(self, context) :
         commands = [
             context.jar,
             "cvf",
-            os.path.join(project_path, "bin", "classes.jar"),
-            "-C", os.path.join(project_path, class_path), "."
+            os.path.join(context.apk_dir, "bin", "classes.jar"),
+            "-C", os.path.join(context.apk_dir, "bin"), "."
         ]
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
         if error :
-            raise Exception("APKBuilder jar_class(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
+            raise Exception("APKBuilder jar_class(%s) ERROR:\n%s\n%s"  %(context.apk_dir, " ".join(commands), error))
         return context
 
 
