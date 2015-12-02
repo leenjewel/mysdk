@@ -442,7 +442,9 @@ class APKBuilder :
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
-        if error:
+        if not os.path.isfile(unsigned_apk_path) :
+            if not error:
+                error = "unknow error"
             raise Exception("APKBuilder rebuild_apk rebuild ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.unsigned_apk_path = unsigned_apk_path
         return context
@@ -466,9 +468,12 @@ class APKBuilder :
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
-        if error:
-            raise Exception("APKBuilder sign_apk ERROR:\n%s\n%s"  %(" ".join(commands), error))
-        context.signed_apk_path = signed_apk_path
+        if not os.path.isfile(signed_apk_path) :
+            if not error:
+                error = "unknow error"
+            sys.stderr.write("APKBuilder sign_apk ERROR:\n%s\n%s\n"  %(" ".join(commands), error))
+        else :
+            context.signed_apk_path = signed_apk_path
         return context
 
 
@@ -484,9 +489,12 @@ class APKBuilder :
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
-        if error :
-            raise Exception("APKBuilder zipalign ERROR:\n%s\n%s"  %(" ".join(commands), error))
-        context.align_apk_path = align_apk_path
+        if not os.path.isfile(align_apk_path) :
+            if not error :
+                error = "unknow error"
+            sys.stderr.write("APKBuilder zipalign ERROR:\n%s\n%s\n"  %(" ".join(commands), error))
+        else :
+            context.align_apk_path = align_apk_path
         return context
 
 
