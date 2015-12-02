@@ -18,6 +18,7 @@
 #include <jni.h>
 #include "MySDK.h"
 #include "MySDKJNIHelper.h"
+#include "MySDKLog.h"
 
 using namespace mysdk;
 

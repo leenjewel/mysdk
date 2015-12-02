@@ -31,6 +31,7 @@ import os
 #      site        : "sdk-site-url",
 #      icon        : "sdk-icon-file",
 #      src         : ["src"],
+#      classpath   : ["libs"],
 #      metadata    : {
 #                        "meta-key" : {
 #                            "require" : False,

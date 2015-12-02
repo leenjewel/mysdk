@@ -42,9 +42,10 @@ context = {
 }
 """
 
-import os
+import sys,os
 import json
 import shutil
+from importlib import import_module
 from sdkconfig import SDKConfig
 
 class WorkSpace(object) :
@@ -78,12 +79,14 @@ class WorkSpace(object) :
         if not os.path.exists(work_dir) :
             os.mkdir(work_dir)
         self.context["work_dir"] = work_dir
-        work_space_json = os.path.join(root, "workspace.json")
-        if os.path.isfile(work_space_json) :
-            self.open(work_space_json)
-        work_space_json = os.path.join(work_dir, "workspace.json")
-        if os.path.isfile(work_space_json) :
-            self.open(work_space_json)
+
+        work_space_py = os.path.join(root, "workspace.py")
+        if os.path.isfile(work_space_py) :
+            self.open(work_space_py)
+
+        project_py = os.path.join(work_dir, "workspace.py")
+        if os.path.isfile(project_py) and False == os.path.samefile(work_space_py, project_py) :
+            self.open(project_py)
 
 
     def is_exe(self, file_path) :
@@ -128,7 +131,14 @@ class WorkSpace(object) :
             if self.context.has_key("output_apk") :
                 output_name = self.context["output_apk"]
             else :
-                output_name = self.name + ".output.apk"
+                name = None
+                if self.context.has_key("project_name") :
+                    name = self.context["project_name"]
+                else :
+                    name = self.name
+                if None == name or len(name) == 0 :
+                    name = "noname"
+                output_name = name + ".output.apk"
         if ".apk" != output_name[-4:] :
             output_name += ".apk"
         output_path, output_name = os.path.split(output_name)
@@ -268,12 +278,23 @@ class WorkSpace(object) :
         return self.context
 
 
-    def open(self, json_path) :
-        fp = open(json_path, "r")
-        out = json.load(fp, "utf-8")
-        for k, v in out.items() :
+    def open(self, py_path) :
+        py_dir, py_file = os.path.split(os.path.abspath(py_path))
+        py_dir, m1 = os.path.split(py_dir)
+        py_dir, m2 = os.path.split(py_dir)
+        module = "%s.%s"  %(m2, m1)
+
+        try :
+            workspace_config = import_module(".workspace", module)
+        except ImportError :
+            try :
+                workspace_config = import_module(".workspace", m1)
+            except ImportError :
+                workspace_config = import_module("workspace")
+
+        settings = workspace_config.settings
+        for k, v in settings.items() :
             self.context[k] = v
-        fp.close()
 
 
     def save(self, save_path = None) :
@@ -297,10 +318,19 @@ class WorkSpace(object) :
             out["keypass"] = self.context["keypass"]
 
         if None == save_path :
-            save_path = (os.path.join(self.context["work_dir"], "workspace.json"))
+            save_path = (os.path.join(self.context["work_dir"], "workspace.py"))
 
+        save_dir,save_file = os.path.split(os.path.abspath(save_path))
+        init_py = os.path.join(save_dir, "__init__.py")
+        with open(init_py, "a") :
+            os.utime(init_py, None)
+        settings = '''
+import os
+pwd = os.path.split(os.path.realpath(__file__))[0]
+settings = %s
+'''  %(json.dumps(out, indent = 4))
         fp = open(save_path, "w")
-        json.dump(out, fp, indent = 4)
+        fp.write(settings)
         fp.close()
 
 

@@ -30,18 +30,20 @@ class IndexHandler(AHandler) :
     def get(self) :
         workspace_entry_list = []
         settings = self.application.settings
-        if settings.has_key("workspace") :
-            for workspace_path in settings["workspace"] :
-                if not os.path.exists(workspace_path) :
-                    continue
-                workspace_entry = {
-                    "name" : os.path.split(workspace_path)[1],
-                    "workspace" : pyMySDKAPKBuilder.workspace.WorkSpace("./", workspace_path)
-                }
-                for path, dirs, files in os.walk(workspace_path) :
-                    workspace_entry["count"] = len(dirs)
-                    break
-                workspace_entry_list.append(workspace_entry)
+        cwd = os.getcwd()
+        for root, dirs, files in os.walk(cwd) :
+            if os.path.samefile(root, cwd) :
+                for workspace_dir in dirs :
+                    workspace_path = os.path.abspath(os.path.join(root, workspace_dir))
+                    workspace_entry = {
+                        "name" : workspace_dir,
+                        "workspace" : pyMySDKAPKBuilder.workspace.WorkSpace("", workspace_path)
+                    }
+                    for workspace_root, workspace_dirs, workspace_files in os.walk(workspace_path) :
+                        if os.path.samefile(workspace_root, workspace_path) :
+                            workspace_entry["count"] = len(workspace_dirs)
+                            break
+                    workspace_entry_list.append(workspace_entry)
         self.render("index.html",
             workspace_entry_list = workspace_entry_list
         )

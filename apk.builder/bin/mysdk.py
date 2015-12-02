@@ -18,6 +18,7 @@
 import sys,os,argparse
 try :
     from pyMySDKAPKBuilder.workspace import WorkSpace
+    from pyMySDKAPKBuilder.importlib import import_module
     from pyMySDKAPKBuilder.apkbuilder import APKBuilder
     from pyMySDKWebFrontEnd.application import Application
     from pyMySDKWebFrontEnd.application import ApplicationDaemon
@@ -25,6 +26,7 @@ except ImportError :
     pwd = os.path.split(os.path.realpath(__file__))[0]
     sys.path.append(os.path.abspath(os.path.join(pwd, os.pardir)))
     from pyMySDKAPKBuilder.workspace import WorkSpace
+    from pyMySDKAPKBuilder.importlib import import_module
     from pyMySDKAPKBuilder.apkbuilder import APKBuilder
     from pyMySDKWebFrontEnd.application import Application
     from pyMySDKWebFrontEnd.application import ApplicationDaemon
@@ -34,9 +36,10 @@ class MySDKCommand(argparse.ArgumentParser) :
 
     def __init__(self) :
         usage = '''
-        %(prog)s  {build, start-server, stop-server, restart-server}  [options]
+        %(prog)s  {build, create-server, start-server, stop-server, restart-server}  [options]
         \t
         \tbuild\tBuild project
+        \tcreate-server\tCreate MySDK Web frontend server
         \tstart-server\tStart MySDK Web frontend server
         \tstop-server\tStop MySDK Web frontend server
         \trestart-server\tRestart MySDK Web frontend server
@@ -45,7 +48,7 @@ class MySDKCommand(argparse.ArgumentParser) :
 
         command_help = ''
         self.add_argument("command", help = command_help,
-                choices = ("build", "start-server", "stop-server", "restart-server"))
+                choices = ("build", "create-server", "start-server", "stop-server", "restart-server"))
 
         sdk_list_help = 'SDK ID list which you want to build'
         self.add_argument("--sdk", help = sdk_list_help,
@@ -111,6 +114,10 @@ class MySDKCommand(argparse.ArgumentParser) :
         self.add_argument("--with-daemon", help = daemon_help,
                 dest = "daemon", action = "store_true", default = False)
 
+        server_path_help = 'Web fronted server path'
+        self.add_argument("--server-path", help = server_path_help,
+                dest = "server_path", metavar = "")
+
 
     def parse_args(self) :
         self.args = argparse.ArgumentParser.parse_args(self)
@@ -121,24 +128,67 @@ class MySDKCommand(argparse.ArgumentParser) :
             command_method(self.args)
 
 
+    def create_server(self, args) :
+        server_path = args.server_path
+        if None == server_path :
+            server_path = os.getcwd()
+        if not os.path.exists(server_path) :
+            os.makedirs(server_path)
+        print "Create MySDK server on %s"  %(server_path)
+        init_py = open(os.path.join(server_path, "__init__.py"), "w")
+        init_py.write("")
+        init_py.close()
+        settings = '''
+import os
+pwd = os.path.split(os.path.realpath(__file__))[0]
+settings = {
+    "debug" : True,
+    "sdk_search_paths" : [{{sdk_search_paths}},],
+}
+'''
+        sdk_path = args.sdk_path
+        if isinstance(sdk_path, list) or isinstance(sdk_path, tuple) :
+            sdk_search_paths = []
+            for sdk_dir in sdk_path :
+                if os.path.exists(sdk_dir) :
+                    sdk_search_paths.append(os.path.abspath(sdk_dir))
+            settings = settings.replace("{{sdk_search_paths}}", '"%s"'  %('","'.join(sdk_search_paths)))
+        else :
+            settings = settings.replace("{{sdk_search_paths}},", "")
+
+        settings_py_path = os.path.join(server_path, "settings.py")
+        settings_py = open(settings_py_path, "w")
+        settings_py.write(settings)
+        settings_py.close()
+        print "Now you can run\n\n\tmysdk.py start-server --server-config %s  --with-port 8080\n\nto start server."  %(os.path.abspath(settings_py_path))
+
+
     def server_settings(self, args) :
         settings = {}
         if not args.server_config :
             return settings
         if os.path.isfile(args.server_config) :
+            cwd,config_file = os.path.split(os.path.abspath(args.server_config))
+            os.chdir(cwd)
+            sys.path.append(cwd)
+            sys.path.append(os.path.join(cwd, os.pardir))
             if '.json' == args.server_config[-5:] :
                 import json
                 json_file = open(args.server_config, 'r')
                 settings = json.load(json_file)
                 json_file.close()
-            cwd,json_file = os.path.split(os.path.abspath(args.server_config))
-            os.chdir(cwd)
+            if '.py' == args.server_config[-3:] :
+                config_module = import_module("settings")
+                settings = config_module.settings
         else :
-            os.chdir(args.server_config)
+            cwd = os.path.abspath(args.server_config)
+            sys.path.append(cwd)
+            sys.path.append(os.path.join(cwd, os.pardir))
         return settings
 
 
     def start_server(self, args) :
+        print "Start MySDK Server..."
         settings = self.server_settings(args)
         if args.daemon :
             if args.port :
@@ -148,16 +198,23 @@ class MySDKCommand(argparse.ArgumentParser) :
             port = args.port
             if not port :
                 port = 8080
-            Application(settings).run(port)
-            sys.exit()
+            try :
+                Application(settings).run(port)
+            except KeyboardInterrupt :
+                sys.exit(0)
+            except Exception, e :
+                sys.stderr.write("Error : %s \n" %(str(e)))
+                os._exit(1)
 
 
     def stop_server(self, args) :
+        print "Stop MySDK Server..."
         settings = self.server_settings(args)
         ApplicationDaemon(settings).stop()
 
 
     def restart_server(self, args) :
+        print "Restart MySDK Server..."
         settings = self.server_settings(args)
         ApplicationDaemon(settings).restart()
 
@@ -165,14 +222,22 @@ class MySDKCommand(argparse.ArgumentParser) :
     def build(self, args) :
         if not os.path.exists(args.work_space) :
             os.makedirs(args.work_space)
+
+        work_space = os.path.abspath(args.work_space)
+        init_py = os.path.join(work_space, "__init__.py")
+        with open(init_py, "a") :
+            os.utime(init_py, None)
+        sys.path.append(work_space)
+
         name = args.name
         if None == args.name or len(args.name) == 0 :
-            for path, dirs, files in os.walk(args.work_space) :
-                if len(dirs) == 0 :
-                    raise Exception("need project name")
-                name = dirs[0]
-                break
-        work_space = WorkSpace(name, args.work_space)
+            for path, dirs, files in os.walk(work_space) :
+                if os.path.samefile(path, work_space) :
+                    if len(dirs) == 0 :
+                        raise Exception("need project name")
+                    name = dirs[0]
+                    break
+        work_space = WorkSpace(name, work_space)
 
         if args.apk_path :
             work_space.init_apk(args.apk_path)
@@ -204,7 +269,12 @@ class MySDKCommand(argparse.ArgumentParser) :
         work_space.init_keystore(args.keystore, args.storepass, args.alias, args.keypass)
 
         apk_builder = APKBuilder(work_space)
-        apk_builder.build()
+        ret = apk_builder.build()
+
+        if ret.output_apk is not None and os.path.isfile(ret.output_apk) :
+            print "Output : %s"  %(os.path.abspath(ret.output_apk))
+        else :
+            print "Build Failed"
 
         work_space.save()
 
