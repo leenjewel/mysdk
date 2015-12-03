@@ -85,7 +85,7 @@ class WorkSpace(object) :
             self.open(work_space_py)
 
         project_py = os.path.join(work_dir, "workspace.py")
-        if os.path.isfile(project_py) and False == os.path.samefile(work_space_py, project_py) :
+        if os.path.isfile(project_py) and (False == os.path.isfile(work_space_py) or False == os.path.samefile(work_space_py, project_py)) :
             self.open(project_py)
 
 
