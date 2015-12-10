@@ -50,7 +50,7 @@ int MySDKCallback::addCallback(MySDKCallback *callback)
     return handle;
 }
 
-int MySDKCallback::cleanCallback(int handle)
+MySDKCallback* MySDKCallback::cleanCallback(int handle)
 {
     MySDKCallback* last = NULL;
     MySDKCallback* callback = _head;
@@ -58,18 +58,16 @@ int MySDKCallback::cleanCallback(int handle)
         if (callback->handle == handle) {
             if (last) {
                 last->next = callback->next;
-                delete callback;
-                return handle;
+                return callback;
             } else {
                 _head = callback->next;
-                delete callback;
-                return handle;
+                return callback;
             }
         }
         last = callback;
         callback = callback->next;
     }
-    return 0;
+    return NULL;
 }
 
 MySDKCallback::~MySDKCallback()

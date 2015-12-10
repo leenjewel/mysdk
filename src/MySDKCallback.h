@@ -38,7 +38,7 @@ namespace mysdk
 
             static MySDKCallback* getCallback(int handle);
             static int addCallback(MySDKCallback *callback);
-            static int cleanCallback(int handle);
+            static MySDKCallback* cleanCallback(int handle);
 
         private:
             MySDKListener* _listener;

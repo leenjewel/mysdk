@@ -6,7 +6,7 @@ NDK_TOOLCHAIN_VERSION=4.9
 
 APP_CPPFLAGS := -frtti -std=c++11 -fsigned-char -DMYSDK_FOR_ANDROID=1
 APP_LDFLAGS := -latomic
-APP_ABI := all32
+APP_ABI := armeabi armeabi-v7a x86
 
 APP_DEBUG := $(strip $(NDK_DEBUG))
 ifeq ($(APP_DEBUG),1)
