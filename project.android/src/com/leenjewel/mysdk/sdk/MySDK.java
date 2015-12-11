@@ -118,7 +118,7 @@ public class MySDK {
 		return sdk;
 	}
 	
-	static private String[] getSDKNameList(Context context) {
+	static public String[] getSDKNameList(Context context) {
 		if (null == _sdkNameList) {
 			AssetManager assetMgr = context.getAssets();
 			BufferedReader reader = null;

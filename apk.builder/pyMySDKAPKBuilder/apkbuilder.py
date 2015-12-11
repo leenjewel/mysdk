@@ -211,7 +211,7 @@ class APKBuilder :
             if os.path.exists(path) :
                 for rootpath, dirs, files in os.walk(path) :
                     for jarfile in files :
-                        if jarfile[-4:] == '.jar' :
+                        if jarfile[-4:] == '.jar' and jarfile != 'mysdk.jar':
                             context.javac_class_path.append(os.path.join(rootpath, jarfile))
         return context
 
@@ -303,7 +303,9 @@ class APKBuilder :
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
-        if error :
+        if not os.path.isfile(resources_apk) :
+            if not error :
+                error = "unknow error"
             raise Exception("APKBuilder aapt_res_assets ERROR:\n%s\n%s"  %(" ".join(commands), error))
         context.resources_apk = resources_apk
 
@@ -368,22 +370,27 @@ class APKBuilder :
             project_path = context.apk_dir
             src_path_list = ["gen"]
 
-        has_src_file = False
+        java_src_files = []
         for src_path in src_path_list :
             src_dir = os.path.join(project_path, src_path)
             if os.path.exists(src_dir) :
                 for path, dirs, files in os.walk(src_dir) :
                     for java_file in files :
                         if ".java" == java_file[-5:] :
-                            has_src_file = True
-                            commands.append(os.path.join(path, java_file))
+                            java_src_file = os.path.abspath(os.path.join(path, java_file))
+                            java_src_files.append(java_src_file.replace(os.path.abspath(src_dir), ""))
+                            commands.append(java_src_file)
 
-        if has_src_file :
+        if len(java_src_files) > 0 :
             error = CommandUtil.run(*commands,
                     stdout = self.build_stdout,
                     stderr = self.build_stderr)
-            if error :
-                raise Exception("APKBuilder javac_class(%s) ERROR:\n%s\n%s"  %(src_dir, " ".join(commands), error))
+            for java_src_file in java_src_files :
+                java_class_file = (os.path.abspath(bin_dir) + java_src_file[:-4] + "class")
+                if not os.path.isfile(java_class_file) :
+                    if not error :
+                        error = "Could not compile %s to %s"  %(java_src_file, java_class_file)
+                    raise Exception("APKBuilder javac_class(%s) ERROR:\n%s\n%s"  %(src_dir, " ".join(commands), error))
         return context
 
 
@@ -403,16 +410,20 @@ class APKBuilder :
 
 
     def dex_jar(self, context, project_path) :
+        classes_dex = os.path.join(project_path, "bin", "classes.dex")
         commands = [
             context.dx,
             "--dex",
-            "--output", os.path.join(project_path, "bin", "classes.dex"),
-            os.path.join(project_path, "bin", "classes.jar")
+            "--output", classes_dex,
+            os.path.join(project_path, "bin", "classes.jar"),
+            " ".join([os.path.abspath(p) for p in context.javac_class_path]),
         ]
         error = CommandUtil.run(*commands,
                 stdout = self.build_stdout,
                 stderr = self.build_stderr)
-        if error :
+        if not os.path.isfile(classes_dex) :
+            if not error :
+                error = "unknow error"
             raise Exception("APKBuilder dex_jar(%s) ERROR:\n%s\n%s"  %(project_path, " ".join(commands), error))
         return context
 

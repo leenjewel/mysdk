@@ -21,14 +21,15 @@ import com.leenjewel.mysdk.exception.MySDKDoNotImplementMethod;
 import com.leenjewel.mysdk.sdk.MySDK;
 
 import android.app.Activity;
+import android.app.AlertDialog.Builder;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 public class MySDKAPPExampleActivity extends Activity implements OnClickListener {
 	
@@ -40,6 +41,8 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 		MySDK.setDebugMode(true);
 		MySDK.onCreate(this, savedInstanceState);
 		setContentView(R.layout.activity_mysdk_app_example);
+		
+		initSpinner();
 		
 		this.findViewById(R.id.btnApplySDKMethodAndReturnInt)
 			.setOnClickListener(this);
@@ -76,25 +79,68 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 		super.onActivityResult(requestCode, resultCode, data);
 		MySDK.onActivityResult(this, requestCode, resultCode, data);
 	}
+	
+	static public void showResult(final String title, final String content) {
+		final Activity activity = MySDK.getActivity();
+		android.util.Log.d("MySDK", "[ "+title+" ] : "+content);
+		activity.runOnUiThread(new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				(new Builder(activity))
+					.setMessage(content)
+					.setTitle(title)
+					.setPositiveButton("OK", null)
+					.show();
+			}});
+	}
+	static public void showResult(String content) {
+		showResult("MySDK", content);
+	}
+	
+	private void initSpinner() {
+		Spinner sdkSpinner = (Spinner)this.findViewById(R.id.spinner1);
+		String[] sdkNames = MySDK.getSDKNameList(this);
+		if (null != sdkNames) {
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sdkNames);  
+	        //设置下拉列表风格  
+	        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);  
+	        //将适配器添加到spinner中去  
+	        sdkSpinner.setAdapter(adapter);  
+	        sdkSpinner.setVisibility(View.VISIBLE);//设置默认显示  
+		}
+	}
 
 	@Override
 	public void onClick(View btn) {
 		// TODO Auto-generated method stub
 		try {
 		String ret = "Result:\n";
-		final TextView tv = (TextView)this.findViewById(R.id.textViewResult);
+		
 		CheckBox rb = (CheckBox)this.findViewById(R.id.checkBoxIsTestCPP);
 		boolean isTestCPP = rb.isChecked();
+		
+		EditText methodText = (EditText)this.findViewById(R.id.editText1);
+		String method = methodText.getText().toString();
+		
+		Spinner sdkSpinner = (Spinner)this.findViewById(R.id.spinner1);
+		String sdkName = sdkSpinner.getSelectedItem().toString();
+		if (null == sdkName || sdkName.length() == 0) {
+			sdkName = SDK_NAME;
+		}
+		
 		int btnID = btn.getId();
+		
 		switch (btnID) {
 		case R.id.btnApplySDKMethodAndReturnInt:
 			ret += "btnApplySDKMethodAndReturnInt\n";
 			int intRet = 0;
 			if (isTestCPP) {
-				intRet = applySDKMethodAndReturnInt(SDK_NAME, "add", "10");
+				intRet = applySDKMethodAndReturnInt(sdkName, method, "10");
 				ret += "[CPP Test]return: "+String.valueOf(intRet)+"\n";
 			} else {
-				intRet = MySDK.applySDKMethodAndReturnInt(SDK_NAME, "add", "1");
+				intRet = MySDK.applySDKMethodAndReturnInt(sdkName, method, "1");
 				ret += "return: "+String.valueOf(intRet)+"\n";
 			}
 			break;
@@ -102,10 +148,10 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 			ret += "btnApplySDKMethodAndReturnLong\n";
 			long longRet = 0;
 			if (isTestCPP) {
-				longRet = applySDKMethodAndReturnLong(SDK_NAME, "add", "20");
+				longRet = applySDKMethodAndReturnLong(sdkName, method, "20");
 				ret += "[CPP Test]return: "+String.valueOf(longRet)+"\n";
 			} else {
-				longRet = MySDK.applySDKMethodAndReturnLong(SDK_NAME, "add", "2");
+				longRet = MySDK.applySDKMethodAndReturnLong(sdkName, method, "2");
 				ret += "return: "+String.valueOf(longRet)+"\n";
 			}
 			break;
@@ -113,10 +159,10 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 			ret += "btnApplySDKMethodAndReturnFloat\n";
 			float floatRet = 0;
 			if (isTestCPP) {
-				floatRet = applySDKMethodAndReturnFloat(SDK_NAME, "add", "30");
+				floatRet = applySDKMethodAndReturnFloat(sdkName, method, "30");
 				ret += "[CPP Test]return: "+String.valueOf(floatRet)+"\n";
 			} else {
-				floatRet = MySDK.applySDKMethodAndReturnFloat(SDK_NAME, "add", "3");
+				floatRet = MySDK.applySDKMethodAndReturnFloat(sdkName, method, "3");
 				ret += "return: "+String.valueOf(floatRet)+"\n";
 			}
 			break;
@@ -124,10 +170,10 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 			ret += "btnApplySDKMethodAndReturnDouble\n";
 			double doubleRet = 0;
 			if (isTestCPP) {
-				doubleRet = applySDKMethodAndReturnDouble(SDK_NAME, "add", "40");
+				doubleRet = applySDKMethodAndReturnDouble(sdkName, method, "40");
 				ret += "[CPP Test]return: "+String.valueOf(doubleRet)+"\n";
 			} else {
-				doubleRet = MySDK.applySDKMethodAndReturnDouble(SDK_NAME, "add", "4");
+				doubleRet = MySDK.applySDKMethodAndReturnDouble(sdkName, method, "4");
 				ret += "return: "+String.valueOf(doubleRet)+"\n";
 			}
 			break;
@@ -135,10 +181,10 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 			ret += "btnApplySDKMethodAndReturnBoolean\n";
 			boolean booleanRet = false;
 			if (isTestCPP) {
-				booleanRet = applySDKMethodAndReturnBoolean(SDK_NAME, "!", "false");
+				booleanRet = applySDKMethodAndReturnBoolean(sdkName, method, "false");
 				ret += (booleanRet?"[CPP Test]return: true\n":"return: false\n");
 			} else {
-				booleanRet = MySDK.applySDKMethodAndReturnBoolean(SDK_NAME, "!", "true");
+				booleanRet = MySDK.applySDKMethodAndReturnBoolean(sdkName, method, "true");
 				ret += (booleanRet?"return: true\n":"return: false\n");
 			}
 			break;
@@ -146,100 +192,91 @@ public class MySDKAPPExampleActivity extends Activity implements OnClickListener
 			ret += "btnApplySDKMethodAndReturnString\n";
 			String stringRet = "null";
 			if (isTestCPP) {
-				stringRet = applySDKMethodAndReturnString(SDK_NAME, "hello-world", "Hello");
+				stringRet = applySDKMethodAndReturnString(sdkName, method, "Hello");
 				ret += "[CPP Test]return: "+stringRet+"\n";
 			} else {
-				stringRet = MySDK.applySDKMethodAndReturnString(SDK_NAME, "hello-world", "Hello");
+				stringRet = MySDK.applySDKMethodAndReturnString(sdkName, method, "Hello");
 				ret += "return: "+stringRet+"\n";
 			}
 			break;
 		case R.id.btnApplySDKMethodWithCallback:
 			ret += "btnApplySDKMethodWithCallback\n";
-			tv.setText(ret);
 			if (isTestCPP) {
-				applySDKMethodWithCallback(SDK_NAME, "test", "");
+				applySDKMethodWithCallback(sdkName, method, "");
 			} else {
-			MySDK.applySDKMethodWithCallback(SDK_NAME, "test", "", new IMySDKCallback(){
+			MySDK.applySDKMethodWithCallback(sdkName, method, "", new IMySDKCallback(){
 
 				@Override
 				public void onCancel(String arg0, String arg1, String arg2) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onCancel(" + arg2 + ")\n");
+					showResult("callback: onCancel(" + arg2 + ")\n");
 				}
 
 				@Override
 				public void onFail(String arg0, String arg1, int arg2, String arg3, String arg4) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onFail(" + arg3 + ")\n");
+					showResult("callback: onFail(" + arg3 + ")\n");
 				}
 
 				@Override
 				public void onPayResult(boolean arg0, int arg1, String arg2, String arg3, String arg4, String arg5,
 						String arg6) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onPayResult\n");
+					showResult("callback: onPayResult\n");
 				}
 
 				@Override
 				public void onSuccess(String arg0, String arg1, String arg2) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onSuccess(" + arg2 + ")\n");
+					showResult("callback: onSuccess(" + arg2 + ")\n");
 				}});
 			}
 			return;
 		case R.id.btnApplySDKPay:
 			ret += "btnApplySDKPay\n";
-			tv.setText(ret);
+			showResult(ret);
 			if (isTestCPP) {
-				applySDKPay(SDK_NAME, "productID", "orderID", "");
+				applySDKPay(sdkName, "productID", "orderID", "");
 			} else {
-			MySDK.applySDKPay(SDK_NAME, "productID", "orderID", "", new IMySDKCallback(){
+			MySDK.applySDKPay(sdkName, "productID", "orderID", "", new IMySDKCallback(){
 
 				@Override
 				public void onCancel(String arg0, String arg1, String arg2) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onCancel(" + arg2 + ")\n");
+					showResult("callback: onCancel(" + arg2 + ")\n");
 				}
 
 				@Override
 				public void onFail(String arg0, String arg1, int arg2, String arg3, String arg4) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onFail(" + arg3 + ")\n");
+					showResult("callback: onFail(" + arg3 + ")\n");
 				}
 
 				@Override
 				public void onPayResult(boolean arg0, int arg1, String arg2, String arg3, String arg4, String arg5,
 						String arg6) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onPayResult("+arg6+")\n");
+					showResult("callback: onPayResult("+arg6+")\n");
 				}
 
 				@Override
 				public void onSuccess(String arg0, String arg1, String arg2) {
 					// TODO Auto-generated method stub
-					tv.setText(tv.getText()+"callback: onSuccess(" + arg2 + ")\n");
+					showResult("callback: onSuccess(" + arg2 + ")\n");
 				}});
 			}
 			return;
 		default :
 			break;
 		}
-		tv.setText(ret);
+		showResult(ret);
 		} catch (MySDKDoNotImplementMethod e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	static public void setTestResult(final String ret) {
-		final Activity activity = MySDK.getActivity();
-		activity.runOnUiThread(new Runnable(){
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				TextView tv = (TextView)activity.findViewById(R.id.textViewResult);
-				tv.setText(ret);
-			}});
+		showResult(ret);
 	}
 	static public native int applySDKMethodAndReturnInt(String sdkName, String methodName, String params);
 	static public native long applySDKMethodAndReturnLong(String sdkName, String methodName, String params);
